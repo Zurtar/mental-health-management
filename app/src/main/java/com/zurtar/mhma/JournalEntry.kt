@@ -20,9 +20,29 @@ data class JournalEntry(
 @RequiresApi(Build.VERSION_CODES.O)
 fun getExampleEntry() : List<JournalEntry>{
     return listOf<JournalEntry>(
-        JournalEntry(123, "First Entry", "Insert Example Content", Date.from(Instant.now())),
-        JournalEntry(124, "Second Entry", "Insert Example Content", Date.from(Instant.now())),
-        JournalEntry(125, "Third Entry", "Insert Example Content", Date.from(Instant.now())),
-        JournalEntry(126, "Fourth Entry", "Insert Example Content", Date.from(Instant.now())),
+        JournalEntry(
+            123,
+            "First Entry",
+            "Insert Example Content",
+            Date.from(Instant.now())
+        ),
+        JournalEntry(
+            124,
+            "Second Entry",
+            "Insert Example Content",
+            Date.from(Instant.now())
+        ),
+        JournalEntry(
+            125,
+            "Third Entry",
+            "Insert Example Content",
+            Date.from(Instant.now())
+        ),
+        JournalEntry(
+            126,
+            "Fourth Entry",
+            "Insert Example Content",
+            Date.from(Instant.now())
+        ),
     )
 }

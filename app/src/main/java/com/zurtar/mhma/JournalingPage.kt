@@ -13,11 +13,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.material3.Text
@@ -35,71 +39,54 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun JournalingPage(viewModel: JournalViewModel) {
+fun JournalingPage(viewModel: JournalViewModel, onNavigateToEntryModification: () -> Unit) {
     val entryList by viewModel.entryList.observeAsState()
-    var inputText by remember {
-        mutableStateOf("")
-    }
 
-    Column(
-        modifier = Modifier
-            .fillMaxHeight()
-            .padding(8.dp)
-    ) {
-        Row (
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
-        ){
-            OutlinedTextField(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(8.dp),
-                value = inputText,
-                onValueChange = {
-                    inputText = it
-                }
-            )
-            Button(onClick = {
-                viewModel.addEntry(inputText, "Insert Example Content")
-                inputText = ""
-            }) {
-                Text(text = "New Entry")
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(onClick = {onNavigateToEntryModification() }) {
+                Icon(Icons.Filled.Add, "Add new entry")
             }
         }
-
-        entryList?.let {
-            LazyColumn(
-                content = {
-                    itemsIndexed(it){index: Int, item: JournalEntry ->
-                        EntryItem(item = item, onDelete ={
-                            viewModel.deleteEntry(item.id)
-                        })
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(innerPadding)
+                .padding(8.dp)
+        ) {
+            entryList?.let {
+                LazyColumn(
+                    content = {
+                        itemsIndexed(it){index: Int, item: JournalEntry ->
+                            EntryItem(item = item, onDelete ={
+                                viewModel.deleteEntry(item.id)
+                            })
+                        }
                     }
-                }
+                )
+            }?: Text(
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                text = "No entries found",
+                fontSize = 16.sp
             )
-        }?: Text(
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            text = "No entries found",
-            fontSize = 16.sp
-        )
+        }
     }
 }
 
 @Composable
 fun EntryItem(item : JournalEntry, onDelete: () -> Unit) {
     Row (
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(8.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.primary)
@@ -121,7 +108,7 @@ fun EntryItem(item : JournalEntry, onDelete: () -> Unit) {
                 text = item.title,
                 fontSize = 20.sp,
                 color = Color.White
-                )
+            )
         }
         IconButton(onClick = onDelete) {
             Icon(

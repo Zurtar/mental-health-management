@@ -16,6 +16,10 @@ object JournalEntryManager {
     fun addEntry(title : String, content : String) {
         entryList.add(JournalEntry(System.currentTimeMillis().toInt(), title, content, Date.from(Instant.now())))
     }
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun addEntry(JournalEntry: JournalEntry) {
+        entryList.add(JournalEntry)
+    }
 
     fun deleteEntry(id : Int) {
         entryList.removeIf {

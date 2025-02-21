@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 import java.time.Instant
 import java.util.Date
 
-class JournalViewModel : ViewModel() {
+open class JournalViewModel : ViewModel() {
     private var _entryList = MutableLiveData<List<JournalEntry>>()
     val entryList: LiveData<List<JournalEntry>> = _entryList
 

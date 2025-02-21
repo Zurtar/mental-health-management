@@ -22,15 +22,15 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val JournalViewModel = ViewModelProvider(this)[JournalViewModel::class.java]
-        enableEdgeToEdge()
+
+        // Get an instance of the JournalViewModel
+        val viewModel = ViewModelProvider(this)[JournalViewModel::class.java]
+
         setContent {
-            AppTheme {
-                Surface (
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    JournalingPage(JournalViewModel)
+            AppTheme { // Assuming you have an AppTheme defined
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    // Pass the viewModel to JournalNavigation
+                    JournalNavigation(viewModel)
                 }
             }
         }
