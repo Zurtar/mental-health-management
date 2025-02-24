@@ -1,3 +1,15 @@
 <resources>
-    <string name="app_name">My Application</string>
+   <string name="app_name">My Application</string>
+
+    <string-array name="phq_9_questions">
+        <item>Little interest or pleasure in doing things</item>
+        <item>Feeling down, depressed, or hopeless</item>
+        <item>Trouble falling or staying asleep, or sleeping too much</item>
+        <item>Poor appetite or overeating</item>
+        <item>Feeling bad about yourself-or that your are a failure or have let yourself or your family down</item>
+        <item>Trouble concentrating on things, such as reading the newspaper or watching television</item>
+        <item>Moving or speaking so slowly that other people could have noticed, or are you figety or restless that you have been moving around a lot more than usual</item>
+        <item>Thoughts that you would be better off dead, or of hurting yourself </item>
+    </string-array>
+
 </resources>

@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
-
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -56,7 +55,8 @@ class MainActivity : ComponentActivity() {
                     Box(modifier = Modifier.padding(innerPadding)
                         .fillMaxSize()
                     ) {
-                        Screen(modifier=Modifier.align(Alignment.TopCenter))
+                        val user = User()
+                        WeeklyQuestionScreenLayout(modifier=Modifier.align(Alignment.TopCenter))
                     }
 
                 }
@@ -73,20 +73,18 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
     )
 }
 
-
-@Composable
-fun QuestionCard(num:Int, question:String) {
-    ElevatedCard(elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-        modifier = Modifier.size(width = 320.dp, height = 100.dp)
-    ){
-        Text(
-            text = "Question ${num}"
-        )
-    
-    }
-
-
-}
+//
+//@Composable
+//fun QuestionCard(num:Int, question:String) {
+//    ElevatedCard(elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+//        modifier = Modifier.size(width = 320.dp, height = 100.dp)
+//    ){
+//        Text(
+//            text = "Question ${num}"
+//        )
+//
+//    }
+//}
 
 
 //Preview(showBackground = true)
