@@ -1,62 +1,67 @@
 package com.zurtar.mhma
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
+import com.zurtar.mhma.auth.AccountViewModel
+import com.zurtar.mhma.auth.LoginViewModel
+import com.zurtar.mhma.auth.SignupViewModel
 
 
+//Split up into ViewModel likely
 @Composable
-fun AccountPage() {
+fun AccountScreen(
+    modifier: Modifier,
+    viewModel: AccountViewModel = viewModel(),
+    onLogout: () -> Unit
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     Column(
-        modifier = Modifier
-            .fillMaxHeight(.75f),
-        Arrangement.Center,
+        modifier = modifier.fillMaxHeight(.75f),
+        verticalArrangement = Arrangement.Top,
         Alignment.CenterHorizontally
     ) {
+
 
         Text("Account Page")
         Spacer(Modifier.height(25.dp))
         Text(
-//            "Email: ${userState.userInfo?.email ?: ""}"
-            text = "Email: "
+            "Email: ${uiState.email}"
         )
         Text(
-//            text = "Welcome, ${userState.userInfo?.email?.substringBefore('@') ?: ""}"
-            text = "Welcome, "
+            text = "Welcome, ${uiState.displayName}"
         )
         OutlinedButton(
-            onClick = { TODO() },
+            onClick = { viewModel.signOut(onLogout) },
             content = { Text("Logout") }
         )
     }
 }
 
 @Composable
-fun LoginScreen(modifier: Modifier) {
-    val scope = rememberCoroutineScope()
-    val email = remember { mutableStateOf("") }
-    val password = remember { mutableStateOf("") }
-
-    var (response, setResponse) = remember { mutableStateOf<String>("") }
-
+fun LoginScreen(
+    modifier: Modifier,
+    viewModel: LoginViewModel = viewModel(),
+    onLoginSuccess: () -> Unit
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Column(
         modifier = modifier.fillMaxHeight(.75f),
@@ -66,46 +71,38 @@ fun LoginScreen(modifier: Modifier) {
         Spacer(Modifier.height(25.dp))
         Text("Login Page")
         Spacer(Modifier.height(25.dp))
-        EmailTextField(email)
+        EmailTextField(uiState.email, viewModel::onEmailChange)
         Spacer(Modifier.height(12.5.dp))
-        PasswordTextField(password)
+        PasswordTextField(uiState.password, viewModel::onPasswordChange)
         Spacer(Modifier.height(12.5.dp))
 
         OutlinedButton(
-            onClick = { TODO() },
+            onClick = { viewModel.login(onResult = onLoginSuccess) },
 //            colors = ButtonDefaults.buttonColors(ButtonColor)
         ) {
-            Text(
-                text = "Login",
-//                color = Color.White
-            )
+            Text(text = "Login")
         }
         Text("Or")
         OutlinedButton(
-            onClick = { TODO() },
+            onClick = { },
 //            colors = ButtonDefaults.buttonColors(ButtonColor)
         ) {
-            Text(
-                "Sign Up",
-            )
+            Text("Sign Up")
         }
         Spacer(Modifier.height(12.5.dp))
         Text(
-            "Debug Greeting!"
+            "Debug: Ah!"
         )
     }
 }
 
 @Composable
-fun SignUpScreen(modifier: Modifier) {
-    val scope = rememberCoroutineScope()
-
-    val email = remember { mutableStateOf("") }
-
-    val password = remember { mutableStateOf("") }
-    val password_ = remember { mutableStateOf("") }
-
-    var (response, setResponse) = remember { mutableStateOf<String>("") }
+fun SignUpScreen(
+    viewModel: SignupViewModel = viewModel(),
+    modifier: Modifier,
+    onSignUp: () -> Unit
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Column(
         modifier = modifier.fillMaxHeight(.75f),
@@ -117,19 +114,17 @@ fun SignUpScreen(modifier: Modifier) {
         Text("Sign Up Page")
 
         Spacer(Modifier.height(25.dp))
-        EmailTextField(email)
-
+        EmailTextField(uiState.email, viewModel::onEmailChange)
         Spacer(Modifier.height(12.5.dp))
-        PasswordTextField(password)
+        PasswordTextField(uiState.password, viewModel::onPasswordChange)
         Spacer(Modifier.height(12.5.dp))
-        PasswordTextField(password_, "Confirm Password")
+        PasswordTextField(uiState.password_, viewModel::onVerifyPasswordChange, "Confirm Password")
 
         Spacer(Modifier.height(12.5.dp))
         OutlinedButton(
             onClick = {
-                scope.launch { TODO() }
+                viewModel.createAccount(onSignUp)
             },
-//            colors = ButtonDefaults.buttonColors(ButtonColor)
         ) {
             Text(
                 text = "Sign Up",
@@ -142,11 +137,14 @@ fun SignUpScreen(modifier: Modifier) {
 }
 
 @Composable
-fun PasswordTextField(password: MutableState<String>, label: String = "Enter password") {
-//    var password by rememberSaveable { mutableStateOf("") }
+fun PasswordTextField(
+    value: String,
+    onNewValue: (String) -> Unit,
+    label: String = "Enter password"
+) {
     OutlinedTextField(
-        value = password.value,
-        onValueChange = { password.value = it },
+        value = value,
+        onValueChange = { onNewValue(it) },
         label = { Text(label) },
         maxLines = 1,
         visualTransformation = PasswordVisualTransformation(),
@@ -155,12 +153,12 @@ fun PasswordTextField(password: MutableState<String>, label: String = "Enter pas
 }
 
 @Composable
-fun EmailTextField(email: MutableState<String>) {
-//    var email by remember { mutableStateOf("") }
+fun EmailTextField(value: String, onNewValue: (String) -> Unit) {
     OutlinedTextField(
-        value = email.value,
-        onValueChange = { email.value = it },
+        value = value,
+        onValueChange = { onNewValue(it) },
         label = { Text("Enter Email") },
-        maxLines = 1
+        maxLines = 1,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
     )
 }
