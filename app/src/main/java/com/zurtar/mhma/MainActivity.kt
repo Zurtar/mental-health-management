@@ -62,12 +62,8 @@ class MainActivity : ComponentActivity() {
      * Nav Host Objects
      */
 
-
-    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        //
         enableEdgeToEdge()
         setContent {
             MyApp()
@@ -227,15 +223,3 @@ fun customDrawerShape() = object : Shape {
         )
     }
 }
-//
-//@Composable
-//fun QuestionCard(num:Int, question:String) {
-//    ElevatedCard(elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-//        modifier = Modifier.size(width = 320.dp, height = 100.dp)
-//    ){
-//        Text(
-//            text = "Question ${num}"
-//        )
-//
-//    }
-//}
