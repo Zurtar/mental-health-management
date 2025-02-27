@@ -227,3 +227,15 @@ fun customDrawerShape() = object : Shape {
         )
     }
 }
+//
+//@Composable
+//fun QuestionCard(num:Int, question:String) {
+//    ElevatedCard(elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+//        modifier = Modifier.size(width = 320.dp, height = 100.dp)
+//    ){
+//        Text(
+//            text = "Question ${num}"
+//        )
+//
+//    }
+//}
