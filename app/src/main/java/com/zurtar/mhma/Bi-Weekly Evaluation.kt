@@ -58,12 +58,11 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 data class BiWeeklyUiState(
-    val questionCount: Int = 0,
-    val currQuestion: String = ""
+    val questionCount: Int = 0, val currQuestion: String = ""
 
 )
 
-public class BiWeeklyEvalViewModel : ViewModel() {
+class BiWeeklyEvalViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(BiWeeklyUiState())
     val uiState: StateFlow<BiWeeklyUiState> = _uiState.asStateFlow()
 
@@ -209,61 +208,54 @@ fun WeeklyQuestionScreenLayout(modifier: Modifier = Modifier) {
         listOf("Not at all", "Several days", "More than half the days", "Nearly every day")
 
 
-    Column(modifier = modifier.background(MaterialTheme.colorScheme.background), horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            text = "Over the last 2 weeks, have you felt...",
-            modifier = Modifier.align(Alignment.Start).padding(start = 5.dp, top = 15.dp),
-            style = MaterialTheme.typography.bodyMedium
-        )
-        Spacer(Modifier.size(16.dp))
-        QuestionCard(questionCount + 1, text)
-        Spacer(Modifier.size(5.dp))
-        ResponseCard(radioOptions)
-        Spacer(Modifier.size(16.dp))
-        Row(Modifier.fillMaxWidth()) {
-            FilledTonalButton(onClick = {
-
-                if (questionCount - 1 < questions.size) {
-                    questionCount--
-                    text = questions[questionCount]
-                }
-            }
-            ) {
-                Text("Back")
-            }
-            Spacer(Modifier.width(230.dp))
-            FilledTonalButton(onClick = {
-
-                if (questionCount + 1 < questions.size) {
-                    questionCount++
-                    text = questions[questionCount]
-                }
-                if (questionCount == questions.size) {
-                    buttonText = "Finish"
-                }
-
-            }
-            ) {
-                Text(buttonText)
-            }
-        }
-
-    }
-
+    Column(modifier = modifier.background(MaterialTheme.colorScheme.background),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        content = {
+            Text(
+                text = "Over the last 2 weeks, have you felt...",
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(start = 5.dp, top = 15.dp),
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Spacer(Modifier.size(16.dp))
+            QuestionCard(questionCount + 1, text)
+            Spacer(Modifier.size(5.dp))
+            ResponseCard(radioOptions)
+            Spacer(Modifier.size(16.dp))
+            Row(Modifier.fillMaxWidth(), content = {
+                FilledTonalButton(onClick = {
+                    if (questionCount - 1 < questions.size) {
+                        questionCount--
+                        text = questions[questionCount]
+                    }
+                }, content = { Text("Back") })
+                Spacer(Modifier.width(230.dp))
+                FilledTonalButton(onClick = {
+                    if (questionCount + 1 < questions.size) {
+                        questionCount++
+                        text = questions[questionCount]
+                    }
+                    if (questionCount == questions.size) {
+                        buttonText = "Finish"
+                    }
+                }, content = { Text(buttonText) })
+            })
+        })
 }
 
 
 @Composable
-fun EndEvalDialog(){
-    val response = listOf("Nearly everyday", "Several days", "More than half the days", "Not at all")
+fun EndEvalDialog() {
+    val response =
+        listOf("Nearly everyday", "Several days", "More than half the days", "Not at all")
 
     val openAlertDialog = remember { mutableStateOf(false) }
 
     when {
 
         openAlertDialog.value -> {
-            AlertDialogExample(
-                onDismissRequest = { openAlertDialog.value = false },
+            AlertDialogExample(onDismissRequest = { openAlertDialog.value = false },
                 onConfirmation = {
                     openAlertDialog.value = false
                     println("Confirmation registered") // Add logic here to handle confirmation.
@@ -276,17 +268,17 @@ fun EndEvalDialog(){
     }
 }
 
-fun calcScore(list:List<String>):Int {
+fun calcScore(list: List<String>): Int {
     var total = 0
 
-    for(response:String in list) {
-        if(response == "Several days"){
-            total +=1
+    for (response: String in list) {
+        if (response == "Several days") {
+            total += 1
         }
-        if(response == "More than half the days") {
-            total +=2
+        if (response == "More than half the days") {
+            total += 2
         }
-        if(response == "Nearly everyday") {
+        if (response == "Nearly everyday") {
             total += 3
         }
     }
@@ -294,53 +286,50 @@ fun calcScore(list:List<String>):Int {
 }
 
 @Composable
-fun AlertDialogExample(onDismissRequest: () -> Unit, onConfirmation: () -> Unit, dialogTitle: String, dialogText: String, icon: Any) {
-    AlertDialog(
-        title = {
-            Text(text = dialogTitle)
-        },
-        text = {
-            Text(text = dialogText)
-        },
-        onDismissRequest = {
-            onDismissRequest()
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    onConfirmation()
-                }
-            ) {
-                Text("Continue to Analysis")
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = {
-                    onDismissRequest()
-                }
-            ) {
-                Text("Dismiss")
-            }
+fun AlertDialogExample(
+    onDismissRequest: () -> Unit,
+    onConfirmation: () -> Unit,
+    dialogTitle: String,
+    dialogText: String,
+    icon: Any
+) {
+    AlertDialog(title = {
+        Text(text = dialogTitle)
+    }, text = {
+        Text(text = dialogText)
+    }, onDismissRequest = {
+        onDismissRequest()
+    }, confirmButton = {
+        TextButton(onClick = {
+            onConfirmation()
+        }) {
+            Text("Continue to Analysis")
         }
-    )
+    }, dismissButton = {
+        TextButton(onClick = {
+            onDismissRequest()
+        }) {
+            Text("Dismiss")
+        }
+    })
 }
 
 @Preview
 @Composable
 fun BiWeeklyIntroScreen() {
 
-    Column(modifier = Modifier.fillMaxWidth()
-        .background(MaterialTheme.colorScheme.background), horizontalAlignment = Alignment.CenterHorizontally
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.background),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Bi-Weekly Evaluation:",
-            style = MaterialTheme.typography.titleMedium
+            text = "Bi-Weekly Evaluation:", style = MaterialTheme.typography.titleMedium
         )
         Spacer(Modifier.size(16.dp))
         Text(
-            text = "The set of questions will help to evaluate your mood over the last 2 weeks based on your responses. " +
-                    "The questions used are taken from the PHQ-9, which helps ",
+            text = "The set of questions will help to evaluate your mood over the last 2 weeks based on your responses. " + "The questions used are taken from the PHQ-9, which helps ",
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center
         )
@@ -353,8 +342,8 @@ fun BiWeeklyIntroScreen() {
 @Composable
 fun ScoreChart() {
 
-    ElevatedCard( elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)) {
-        Column( horizontalAlignment = Alignment.CenterHorizontally) {
+    ElevatedCard(elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
             RowChart("Score", "Severity")
             RowChart("1-4", "Minimal depression")
@@ -369,7 +358,7 @@ fun ScoreChart() {
 }
 
 @Composable
-fun RowChart(score:String, severity:String){
+fun RowChart(score: String, severity: String) {
     Row() {
         Text(
             text = score,
@@ -377,7 +366,7 @@ fun RowChart(score:String, severity:String){
             modifier = Modifier.padding(start = 5.dp)
         )
         Text(
-            text =  severity,
+            text = severity,
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(start = 5.dp)
         )
