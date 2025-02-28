@@ -1,11 +1,14 @@
-package com.zurtar.mhma.auth
+package com.zurtar.mhma.models
+
+
+// im unsure about the project structure, ive moved this into a dedicated model folder.
+// I dont  have time to focus on the best way to arrange the file structure though.
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.compose.dropUnlessStarted
 import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import com.zurtar.mhma.auth.AccountServiceImplementation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -57,6 +60,12 @@ data class AccountUiState(
 
 data class NavDrawerUiState(
     val isLoggedIn: Boolean = false
+)
+
+data class BiWeeklyEvaluationUiState(
+    val score: Int = 0,
+    val page: Int = 0,
+//    val questionResponse: List<>
 )
 
 class LoginViewModel : ViewModel() {
@@ -126,8 +135,8 @@ class SignupViewModel : ViewModel() {
 
     fun createAccount(onResult: () -> Unit) {
         accountService.createAccount(
-            email = uiState.value.email,
-            uiState.value.password,
+            email = _uiState.value.email,
+            password = _uiState.value.password,
             onResult = { error ->
                 // OnResult
                 if (error == null)
@@ -226,5 +235,34 @@ class NavigationDrawerViewModel : ViewModel() {
     }
 
 }
+
+class BiWeeklyEvaluationViewModel : ViewModel() {
+    private val _uiState = MutableStateFlow(BiWeeklyEvaluationUiState())
+    val uiState: StateFlow<BiWeeklyEvaluationUiState> = _uiState.asStateFlow()
+
+
+    /**
+     * Triggered when Next button is pressed
+     * Should increment page count and possibly do verification
+     */
+    fun onNext() {
+        _uiState.update { currentState ->
+            currentState.copy(page = currentState.page + 1)
+        }
+    }
+
+    fun onBack() {
+        _uiState.update { currentState ->
+            currentState.copy(page = currentState.page - 1)
+        }
+    }
+
+    fun resetPage() {
+        _uiState.update { currentState ->
+            currentState.copy(page = 0)
+        }
+    }
+}
+
 
 //https://stackoverflow.com/collectives/google-cloud/articles/68104924/listen-for-authentication-state-in-android

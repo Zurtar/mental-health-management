@@ -8,11 +8,18 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -28,16 +35,15 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -45,23 +51,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 import com.zurtar.mhma.ui.theme.AppTheme
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.zurtar.mhma.auth.NavigationDrawerViewModel
-
-private lateinit var auth: FirebaseAuth
+import com.zurtar.mhma.models.NavigationDrawerViewModel
 
 class MainActivity : ComponentActivity() {
-
-    /**
-     * Nav Host Objects
-     */
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -71,17 +67,25 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+/**
+ * Nav Host Objects
+ *
+ * I need to centralize this
+ */
 @Serializable
 object Login;
-
 @Serializable
 object SignUp;
-
 @Serializable
 object Account;
-
 @Serializable
 object Home;
+@Serializable
+object MoodEvaluation;
+@Serializable
+object BiWeeklyEvaluation;
+@Serializable
+object DailyEvaluation;
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -179,7 +183,8 @@ fun MyApp() {
                         composable<Home> {
                             HomeScreen(
                                 "VibeCheck",
-                                modifier = Modifier.padding(innerPadding)
+                                modifier = Modifier.padding(innerPadding),
+                                navController::navigate
                             )
                         }
                         composable<Account> {
@@ -197,6 +202,18 @@ fun MyApp() {
                                 modifier = Modifier.padding(innerPadding),
                                 onSignUp = { navController.navigate(Login) })
                         }
+                        composable<MoodEvaluation> {
+                            MoodEvaluationScreen(
+                                modifier = Modifier.padding(innerPadding),
+                                onNavigate = navController::navigate
+                            )
+                        }
+                        composable<BiWeeklyEvaluation> {
+                            BiWeeklyEvaluationScreen(
+                                modifier = Modifier.padding(innerPadding),
+                            )
+                        }
+                        composable<DailyEvaluation> {}
                     }
                 })
             })
@@ -205,10 +222,29 @@ fun MyApp() {
 }
 
 @Composable
-fun HomeScreen(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!", modifier = modifier
-    )
+fun HomeScreen(name: String, modifier: Modifier = Modifier, onNavigate: (Any) -> Unit) {
+    Column(
+        modifier = modifier.fillMaxWidth(0.5f), horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        ElevatedCard(
+            modifier = Modifier
+                .padding(top = 20.dp)
+                .fillMaxWidth(0.75f)
+                .fillMaxHeight(0.2f)
+                .background(color = MaterialTheme.colorScheme.background),
+            onClick = { onNavigate(MoodEvaluation) }
+        ) {
+            Text(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .height(150.dp)
+                    .wrapContentHeight(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.headlineMedium,
+                text = "Mood Evaluation"
+            )
+        }
+    }
 }
 
 fun customDrawerShape() = object : Shape {
