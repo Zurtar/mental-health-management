@@ -3,11 +3,9 @@ package com.zurtar.mhma
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,14 +13,13 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
@@ -36,22 +33,36 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+/*
+This is the home page for the Journaling section. It is composed of two functions:
+JournalingPage, and EntryItem. EntryItem is used to to create composables of any
+entries currently in existence, which JournalingPage then displays to the user in
+a lazy column.
+ */
+
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun JournalingPage(viewModel: JournalViewModel, onNavigateToEntryModification: () -> Unit) {
+fun JournalingPage(
+    viewModel: JournalViewModel,
+    onNavigateToEntryCreation: () -> Unit,
+    onNavigateToEntryEdit: (Int) -> Unit) {
     val entryList by viewModel.entryList.observeAsState()
+
+    //This should be removed in the final version. Only here for
+    //demo purposes
+    for (entry in getExampleEntry()) {
+        viewModel.addEntry(entry)
+    }
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = {onNavigateToEntryModification() }) {
+            FloatingActionButton(onClick = {onNavigateToEntryCreation() }) {
                 Icon(Icons.Filled.Add, "Add new entry")
             }
         }
@@ -62,13 +73,21 @@ fun JournalingPage(viewModel: JournalViewModel, onNavigateToEntryModification: (
                 .padding(innerPadding)
                 .padding(8.dp)
         ) {
+            Text(
+                text = "Journal",
+                fontSize = 30.sp,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+            )
             entryList?.let {
                 LazyColumn(
                     content = {
                         itemsIndexed(it){index: Int, item: JournalEntry ->
-                            EntryItem(item = item, onDelete ={
-                                viewModel.deleteEntry(item.id)
-                            })
+                            EntryItem(
+                                item = item,
+                                onDelete ={viewModel.deleteEntry(item.id)},
+                                onEdit = {onNavigateToEntryEdit(item.id)})
                         }
                     }
                 )
@@ -83,7 +102,8 @@ fun JournalingPage(viewModel: JournalViewModel, onNavigateToEntryModification: (
 }
 
 @Composable
-fun EntryItem(item : JournalEntry, onDelete: () -> Unit) {
+fun EntryItem(item : JournalEntry, onDelete: () -> Unit, onEdit: () -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
     Row (
         modifier = Modifier
             .fillMaxWidth()
@@ -109,14 +129,37 @@ fun EntryItem(item : JournalEntry, onDelete: () -> Unit) {
                 fontSize = 20.sp,
                 color = Color.White
             )
+            Text(
+                text = item.content.take(200),
+                fontSize = 10.sp,
+                color = Color.White
+            )
         }
-        IconButton(onClick = onDelete) {
+        IconButton(onClick = { expanded = true }) {
             Icon(
-                painter = painterResource(id = R.drawable.baseline_delete_outline_24),
-                contentDescription = "Delete Entry",
+                painter = painterResource(id = R.drawable.baseline_arrow_drop_down_circle_24),
+                contentDescription = "Options",
                 tint = Color.White
             )
-
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text("Edit") },
+                    onClick = {
+                        onEdit()
+                        expanded = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Delete") },
+                    onClick = {
+                        onDelete()
+                        expanded = false
+                    }
+                )
+            }
         }
     }
 
