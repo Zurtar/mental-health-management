@@ -1,4 +1,4 @@
-package com.zurtar.mhma
+package com.zurtar.mhma.mood
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -9,32 +9,19 @@ import androidx.compose.foundation.layout.Box
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -46,21 +33,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringArrayResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.zurtar.mhma.R
 import com.zurtar.mhma.models.BiWeeklyEvaluationViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-
-
-class User {
-    var weeklyEval = BiWeeklyEval()
-
-}
 
 class BiWeeklyEval {
     private var completed = false
@@ -108,9 +88,8 @@ class BiWeeklyEval {
 
 }
 
-
 @Composable
-fun AltQuestionCard(modifier: Modifier = Modifier, num: Int, question: String) {
+fun QuestionCard(modifier: Modifier = Modifier, num: Int, question: String) {
     val radioOptions =
         listOf("Not at all", "Several days", "More than half the days", "Nearly every day")
 
@@ -122,7 +101,7 @@ fun AltQuestionCard(modifier: Modifier = Modifier, num: Int, question: String) {
     ) {
         Column(modifier = Modifier.padding(all = 15.dp)) {
             Text(text = question)
-            AltQuestionResponse(radioOptions)
+            QuestionResponse(radioOptions)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -133,7 +112,7 @@ fun AltQuestionCard(modifier: Modifier = Modifier, num: Int, question: String) {
                     modifier = Modifier.align(Alignment.BottomCenter),
                     textAlign = TextAlign.Center,
                     color = Color.Gray,
-                    text = "Question ${num+1}"
+                    text = "Question ${num + 1}"
                 )
             }
         }
@@ -141,7 +120,7 @@ fun AltQuestionCard(modifier: Modifier = Modifier, num: Int, question: String) {
 }
 
 @Composable
-fun AltQuestionResponse(radioOptions: List<String>) {
+fun QuestionResponse(radioOptions: List<String>) {
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
     Column(
         modifier = Modifier
@@ -206,72 +185,10 @@ fun AltQuestionResponse(radioOptions: List<String>) {
 }
 
 @Composable
-fun QuestionCard(modifier: Modifier = Modifier, num: Int, question: String) {
-    val radioOptions =
-        listOf("Not at all", "Several days", "More than half the days", "Nearly every day")
-
-    ElevatedCard(
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-        modifier = modifier
-            .padding(bottom = 15.dp)
-            .fillMaxWidth(0.85f)
-            .fillMaxHeight(0.2f)
-    ) {
-        Column(modifier) {
-            Text(text = "Question ${num + 1}: " + question)
-            HorizontalDivider()
-            QuestionResponse(radioOptions)
-        }
-    }
-}
-
-
-@Composable
-fun QuestionResponse(radioOptions: List<String>) {
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
-    Row(
-        modifier = Modifier
-            .selectableGroup()
-            .fillMaxHeight()
-            .fillMaxWidth()
-            .padding(start = 10.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        radioOptions.forEach { text ->
-            Column(
-                Modifier
-                    .padding(start = 5.dp, top = 15.dp)
-                    .selectable(
-                        selected = (text == selectedOption),
-                        onClick = { onOptionSelected(text) },
-                        role = Role.RadioButton
-                    )
-            ) {
-                RadioButton(
-                    selected = (text == selectedOption),
-                    onClick = null,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
-                Text(
-                    text = text,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontSize = 11.sp,
-                    textAlign = TextAlign.Center,
-                    //modifier = Modifier.padding(start = 10.dp)
-                )
-
-            }
-        }
-    }
-}
-
-
-@Composable
 fun BiWeeklyEvaluationScreen(
     modifier: Modifier = Modifier,
     viewModel: BiWeeklyEvaluationViewModel = viewModel()
 ) {
-
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val questions: Array<String> = stringArrayResource(R.array.phq_9_questions)
 
@@ -286,7 +203,7 @@ fun BiWeeklyEvaluationScreen(
                 .padding(start = 5.dp, top = 15.dp),
             style = MaterialTheme.typography.headlineSmall
         )
-        AltQuestionCard(num = uiState.page, question = questions[uiState.page])
+        QuestionCard(num = uiState.page, question = questions[uiState.page])
         /*   repeat(times = 3) { i ->
                Spacer(Modifier.size(16.dp))
                QuestionCard(num = uiState.page * 3 + i, question = questions[uiState.page * 3 + i])
@@ -316,7 +233,6 @@ fun EndEvalDialog() {
     val openAlertDialog = remember { mutableStateOf(false) }
 
     when {
-
         openAlertDialog.value -> {
             AlertDialogExample(
                 onDismissRequest = { openAlertDialog.value = false },
@@ -403,10 +319,8 @@ fun BiWeeklyEvaluationScreen(modifier: Modifier) {
 
 @Composable
 fun ScoreChart() {
-
     ElevatedCard(elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-
             RowChart("Score", "Severity")
             RowChart("1-4", "Minimal depression")
             RowChart("5-9", "Mild depression")
@@ -415,8 +329,6 @@ fun ScoreChart() {
             RowChart("20-27", "Severe depression")
         }
     }
-
-
 }
 
 @Composable
@@ -432,12 +344,5 @@ fun RowChart(score: String, severity: String) {
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.padding(start = 5.dp)
         )
-    }
-}
-
-@Composable
-fun NextButton(clicks: Int, onClick: () -> Unit) {
-    Button(onClick = onClick) {
-        Text("I've been clicked $clicks times")
     }
 }

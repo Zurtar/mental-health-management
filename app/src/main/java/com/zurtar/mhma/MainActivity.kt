@@ -56,6 +56,8 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.zurtar.mhma.models.NavigationDrawerViewModel
+import com.zurtar.mhma.mood.BiWeeklyEvaluationScreen
+import com.zurtar.mhma.mood.MoodEvaluationScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
