@@ -1,9 +1,5 @@
 package com.zurtar.mhma
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,16 +22,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.zurtar.mhma.ui.theme.AppTheme
 
 @Composable
-fun EmotionPickerScreen(modifier: Modifier = Modifier, onNavigate: () -> Unit) {
+fun DailyMoodEvaluationScreen(modifier: Modifier = Modifier, onNavigate: () -> Unit) {
     var selectedEmotion by remember { mutableStateOf<String?>(null) }
     var selectedRating by remember { mutableStateOf<Int?>(null) }
 
@@ -111,6 +102,27 @@ fun EmotionPickerScreen(modifier: Modifier = Modifier, onNavigate: () -> Unit) {
 }
 
 @Composable
+fun EmotionChip(emotion: String, color: Color, isSelected: Boolean, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        shape = RoundedCornerShape(50), // Oval shape
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (isSelected) color else color.copy(alpha = 0.3f),
+            contentColor = Color.White
+        ),
+        modifier = Modifier
+            .fillMaxWidth() // Make it stretch horizontally
+            .height(50.dp) // Oval-like height
+    ) {
+        Text(
+            text = emotion,
+            style = MaterialTheme.typography.bodyMedium,
+            maxLines = 1
+        )
+    }
+}
+
+@Composable
 fun AIPage() {
     // Variable to hold the text entered in the TextField
     var aiText by remember { mutableStateOf("") }
@@ -164,26 +176,6 @@ fun PastEmotionsScreen(modifier: Modifier = Modifier, navController: NavHostCont
     }
 }
 
-@Composable
-fun EmotionChip(emotion: String, color: Color, isSelected: Boolean, onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
-        shape = RoundedCornerShape(50), // Oval shape
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSelected) color else color.copy(alpha = 0.3f),
-            contentColor = Color.White
-        ),
-        modifier = Modifier
-            .fillMaxWidth() // Make it stretch horizontally
-            .height(50.dp) // Oval-like height
-    ) {
-        Text(
-            text = emotion,
-            style = MaterialTheme.typography.bodyMedium,
-            maxLines = 1
-        )
-    }
-}
 /*
 
 @Preview(showBackground = true)
