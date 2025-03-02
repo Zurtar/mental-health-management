@@ -1,16 +1,26 @@
 package com.zurtar.mhma
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -22,14 +32,124 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.zurtar.mhma.ui.theme.EmojiFrown
+import com.zurtar.mhma.ui.theme.EmojiNeutral
+import com.zurtar.mhma.ui.theme.EmojiSmile
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DailyMoodEvaluationScreen(modifier: Modifier = Modifier, onNavigate: () -> Unit) {
-    var selectedEmotion by remember { mutableStateOf<String?>(null) }
+
     var selectedRating by remember { mutableStateOf<Int?>(null) }
 
+    Column(
+        modifier = modifier.background(MaterialTheme.colorScheme.background),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top
+    ) {
+        MoodSelectionCard()
+        EmotionSelectionCard()
+
+        FilledTonalButton(onClick = { onNavigate() }, content = { Text("Submit") })
+    }
+}
+
+@Composable
+fun MoodSelectionCard(
+    modifier: Modifier = Modifier,
+) {
+    var selectedMood by remember { mutableStateOf<ImageVector?>(null) }
+
+    val icons = listOf(
+        EmojiFrown to Color.Red,
+        EmojiNeutral to Color.LightGray,
+        EmojiSmile to Color.Green
+    )
+
+    ElevatedCard(
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        modifier = modifier
+            .padding(bottom = 15.dp, top = 15.dp)
+            .fillMaxWidth(0.85f)
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text("How are you feeling today?")
+            HorizontalDivider()
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                icons.forEach { p ->
+                    val emoji = p.first
+                    var tint = Color.Gray
+                    if (emoji == selectedMood)
+                        tint = Color.White
+
+                    Icon(
+                        imageVector = emoji,
+                        contentDescription = "Neutral Emoji",
+                        modifier = Modifier
+                            .size(35.dp)
+                            .clickable(
+                                interactionSource = null,
+                                indication = null,
+                                onClick = { selectedMood = emoji }
+                            ),
+                        tint = tint,
+                    )
+                }
+            }
+//                Spacer(modifier = Modifier.height(16.dp))
+            /*
+                            if (selectedEmotion != null) {
+                                Text(
+                                    text = "Please pick a option on why you are feeling $selectedEmotion:",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+
+                                // Rating options: 1 to 5 as a vertical list
+                                Column(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                                ) {
+                                    (1..5).forEach { rating ->
+                                        Button(
+                                            onClick = {
+                                                selectedRating = rating
+                                                onNavigate() // Navigate to the AI page when a button is clicked
+                                            },
+                                            shape = RoundedCornerShape(50),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = if (selectedRating == rating) Color.Gray else Color.LightGray
+                                            ),
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(50.dp)
+                                        ) {
+                                            Text("Item $rating")
+                                        }
+                                    }
+                                }
+                            }
+            */
+        }
+    }
+}
+
+@Composable
+fun EmotionSelectionCard(
+    modifier: Modifier = Modifier,
+) {
+    var selectedEmotion by remember { mutableStateOf<String?>(null) }
     val emotions = listOf(
         "Sad" to Color(0xFF1E88E5), // Blue
         "Happy" to Color(0xFFFFEB3B), // Yellow
@@ -39,62 +159,33 @@ fun DailyMoodEvaluationScreen(modifier: Modifier = Modifier, onNavigate: () -> U
         "Disgusted" to Color(0xFF388E3C) // Green
     )
 
-    Column(
+    ElevatedCard(
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(bottom = 15.dp, top =5.dp)
+            .fillMaxWidth(0.85f)
     ) {
-        Text(
-            text = "How are you feeling today?",
-            style = MaterialTheme.typography.titleMedium
-        )
 
-        // Vertical Emotion Picker
         Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            emotions.forEach { (emotion, color) ->
-                EmotionChip(
-                    emotion = emotion,
-                    color = color,
-                    isSelected = selectedEmotion == emotion,
-                    onClick = { selectedEmotion = emotion }
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        if (selectedEmotion != null) {
-            Text(
-                text = "Please pick a option on why you are feeling $selectedEmotion:",
-                style = MaterialTheme.typography.bodyMedium
-            )
-
-            // Rating options: 1 to 5 as a vertical list
+            Text("What emotion have you felt strongest today?")
+            HorizontalDivider()
+            // Vertical Emotion Picker
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                (1..5).forEach { rating ->
-                    Button(
-                        onClick = {
-                            selectedRating = rating
-                            onNavigate() // Navigate to the AI page when a button is clicked
-                        },
-                        shape = RoundedCornerShape(50),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (selectedRating == rating) Color.Gray else Color.LightGray
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp)
-                    ) {
-                        Text("Item $rating")
-                    }
+                emotions.forEach { (emotion, color) ->
+                    EmotionChip(
+                        emotion = emotion,
+                        color = color,
+                        isSelected = selectedEmotion == emotion,
+                        onClick = { selectedEmotion = emotion }
+                    )
                 }
             }
         }
@@ -107,7 +198,8 @@ fun EmotionChip(emotion: String, color: Color, isSelected: Boolean, onClick: () 
         onClick = onClick,
         shape = RoundedCornerShape(50), // Oval shape
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSelected) color else color.copy(alpha = 0.3f),
+            containerColor = if (isSelected) color else MaterialTheme.colorScheme.onSecondary,
+//            containerColor = if (isSelected) color else color.copy(alpha = 0.3f),
             contentColor = Color.White
         ),
         modifier = Modifier
