@@ -14,8 +14,9 @@
 .cxx
 local.properties
 /.idea
-/.idea
+.idea/
+.kotlin/
 /.kotlin/sessions
-.kotlin/errors/errors-1740942032991.log
-/.kotlin/sessions
+/.kotlin/errors
+.idea/misc.xml
 *.salive

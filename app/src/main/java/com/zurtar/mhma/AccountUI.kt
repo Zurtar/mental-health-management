@@ -42,8 +42,9 @@ fun AccountScreen(
             "Email: ${uiState.email}"
         )
         Text(
-            text = "Welcome, ${uiState.displayName}"
+            text = "Welcome!"
         )
+        Spacer(Modifier.height(10.dp))
         OutlinedButton(
             onClick = { viewModel.signOut(onLogout) },
             content = { Text("Logout") }
@@ -55,7 +56,8 @@ fun AccountScreen(
 fun LoginScreen(
     modifier: Modifier,
     viewModel: LoginViewModel = viewModel(),
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: () -> Unit,
+    onNavigate: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -80,15 +82,12 @@ fun LoginScreen(
         }
         Text("Or")
         OutlinedButton(
-            onClick = { },
+            onClick = onNavigate,
 //            colors = ButtonDefaults.buttonColors(ButtonColor)
         ) {
             Text("Sign Up")
         }
         Spacer(Modifier.height(12.5.dp))
-        Text(
-            "Debug: Ah!"
-        )
     }
 }
 
@@ -122,11 +121,9 @@ fun SignUpScreen(
         ) {
             Text(
                 text = "Sign Up",
-//                color = Color.White
             )
         }
         Spacer(Modifier.height(12.5.dp))
-        Text("Debug Greeting!")
     }
 }
 
