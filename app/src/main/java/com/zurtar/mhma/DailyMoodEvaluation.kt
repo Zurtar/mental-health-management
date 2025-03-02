@@ -34,30 +34,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.zurtar.mhma.ui.theme.AppTheme
 
-
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            AppTheme {
-                val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = "emotionPicker") {
-                    composable("emotionPicker") {
-                        EmotionPickerScreen(navController = navController)
-                    }
-                    composable("aiPage") {
-                        AIPage()
-                    }
-                    composable("pastEmotions") {
-                        PastEmotionsScreen(navController = navController)
-                    }
-                }
-            }
-        }
-    }
-}
-
 @Composable
 fun EmotionPickerScreen(modifier: Modifier = Modifier, navController: NavHostController) {
     var selectedEmotion by remember { mutableStateOf<String?>(null) }
@@ -134,8 +110,6 @@ fun EmotionPickerScreen(modifier: Modifier = Modifier, navController: NavHostCon
     }
 }
 
-
-
 @Composable
 fun AIPage() {
     // Variable to hold the text entered in the TextField
@@ -161,7 +135,6 @@ fun AIPage() {
         )
     }
 }
-
 
 @Composable
 fun PastEmotionsScreen(modifier: Modifier = Modifier, navController: NavHostController) {
