@@ -65,7 +65,7 @@ data class NavDrawerUiState(
 
 data class BiWeeklyEvaluationUiState(
     val score: Int = 0,
-    val page: Int = 0,
+    val page: Int = 9,
     val questionResponse: List<Int> = listOf(0, 0, 0, 0, 0, 0, 0, 0, 0)
 )
 

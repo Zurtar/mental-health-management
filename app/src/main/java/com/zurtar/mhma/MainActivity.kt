@@ -238,7 +238,6 @@ fun MyApp() {
                                 onNavigate = { navController.navigate(Home) }
                             )
                         }
-                        composable<TempResults> {
 
                         // Directly copied from Journal branch, which is why its different
                         composable<JournalEntryR> {

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,7 +41,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -233,12 +236,31 @@ fun BiWeeklyResult(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.Top,
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ScoreChart()
+        Text(
+            text = "Your Score:",
+            style = MaterialTheme.typography.displaySmall
+        )
+        Text(
+            text = "${score}",
+            style = MaterialTheme.typography.displaySmall
+        )
+
         Spacer(Modifier.height(15.dp))
-        Text("Your Score: $score")
+        ScoreChart()
+
+
+    }
+}
+
+@Preview
+@Composable
+fun BiWeeklyResultsPrev() {
+    Column () {
+        BiWeeklyResult(modifier = Modifier.padding(1.dp), score = 13)
+
     }
 }
 
@@ -311,26 +333,87 @@ fun BiWeeklyEvaluationScreen(modifier: Modifier) {
     }
 }*/
 
+
 @Composable
-fun ScoreChart() {
+fun ScoreChartAlt() {
     ElevatedCard(Modifier.padding(top=15.dp), elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            RowChart(score = "Score", severity = "Severity")
+        Column (modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+            Row(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
+                Text(
+                    text = "SCORE",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(start = 5.dp),
+                   // textAlign = TextAlign.
+                )
+                Text(
+                    text = "SEVERITY",
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(start = 15.dp)
+                )
+            }
+
             RowChart(score = "1-4", severity = "Minimal depression")
             RowChart(score = "5-9", severity = "Mild depression")
             RowChart(score = "10-14", severity = "Moderate depression")
             RowChart(score = "15-19", severity = "Moderately severe depression")
             RowChart(score = "20-27", severity = "Severe depression")
         }
+
     }
 }
 
 @Composable
+fun ScoreChart() {
+    ElevatedCard(Modifier.padding(top=15.dp), elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)) {
+        Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+            Column () {
+                Text(
+                    text = "SCORE",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                ScoreColumn("1-4")
+                ScoreColumn("5-9")
+                ScoreColumn("10-14")
+                ScoreColumn("15-19")
+                ScoreColumn("20-27")
+            }
+            Spacer(modifier = Modifier.width(15.dp))
+            Column() {
+                Text(
+                    text = "SEVERITY",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                ScoreColumn("Minimal depression")
+                ScoreColumn("Mild depression")
+                ScoreColumn("Moderate depression")
+                ScoreColumn("Moderately severe depression")
+                ScoreColumn("Severe depression")
+            }
+        }
+
+    }
+}
+
+@Composable
+fun ScoreColumn(text:String){
+    Text (
+        text = text,
+        style = MaterialTheme.typography.titleMedium,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.padding(start = 15.dp)
+    )
+
+}
+
+@Composable
 fun RowChart(modifier: Modifier = Modifier, score: String, severity: String) {
-    Row(modifier = modifier) {
+    Row(modifier = modifier.background(MaterialTheme.colorScheme.background).fillMaxWidth()) {
         Text(
             text = score,
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(start = 5.dp)
         )
         Text(
