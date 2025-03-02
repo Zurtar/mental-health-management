@@ -1,4 +1,4 @@
-package com.example.testing
+package com.zurtar.mhma
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -32,7 +32,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.testing.ui.theme.TestingTheme
+import com.zurtar.mhma.ui.theme.AppTheme
 
 
 class MainActivity : ComponentActivity() {
@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            TestingTheme {
+            AppTheme {
                 val navController = rememberNavController()
                 NavHost(navController = navController, startDestination = "emotionPicker") {
                     composable("emotionPicker") {
@@ -211,7 +211,7 @@ fun EmotionChip(emotion: String, color: Color, isSelected: Boolean, onClick: () 
 @Preview(showBackground = true)
 @Composable
 fun EmotionPickerScreenPreview() {
-    TestingTheme {
+    AppTheme {
         val navController = rememberNavController()
         EmotionPickerScreen(navController = navController)
     }
@@ -220,7 +220,7 @@ fun EmotionPickerScreenPreview() {
 @Preview(showBackground = true)
 @Composable
 fun PastEmotionsScreenPreview() {
-    TestingTheme {
+    AppTheme {
         val navController = rememberNavController()
         PastEmotionsScreen(navController = navController)
     }
@@ -229,7 +229,7 @@ fun PastEmotionsScreenPreview() {
 @Preview(showBackground = true)
 @Composable
 fun AIPagePreview() {
-    TestingTheme {
+    AppTheme {
         AIPage()
     }
 }
