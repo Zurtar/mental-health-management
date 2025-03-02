@@ -112,7 +112,7 @@ fun MyApp() {
                 ModalDrawerSheet(
                     drawerShape = customDrawerShape(),
                     content = {
-                        Text("ModalNavDrawer", modifier = Modifier.padding(16.dp))
+                        Text("Navigation", modifier = Modifier.padding(16.dp))
                         HorizontalDivider()
                         NavigationDrawerItem(
                             label = { Text(text = "Home") },
@@ -155,7 +155,7 @@ fun MyApp() {
                     })
             }, content = {
                 Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
-                    TopAppBar(title = { Text("TopAppBar") }, colors = topAppBarColors(
+                    TopAppBar(title = { Text("Mental-Health Tracker") }, colors = topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer,
                         titleContentColor = MaterialTheme.colorScheme.primary,
                     ), navigationIcon = {
@@ -200,7 +200,8 @@ fun MyApp() {
                         composable<Login> {
                             LoginScreen(
                                 modifier = Modifier.padding(innerPadding),
-                                onLoginSuccess = { navController.navigate(Account) })
+                                onLoginSuccess = { navController.navigate(Account) },
+                                onNavigate = { navController.navigate(SignUp) })
                         }
                         composable<SignUp> {
                             SignUpScreen(
