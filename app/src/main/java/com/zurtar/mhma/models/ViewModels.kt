@@ -5,6 +5,7 @@ package com.zurtar.mhma.models
 // I dont  have time to focus on the best way to arrange the file structure though.
 
 import android.util.Log
+import androidx.compose.runtime.currentComposer
 import androidx.lifecycle.ViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -65,7 +66,7 @@ data class NavDrawerUiState(
 data class BiWeeklyEvaluationUiState(
     val score: Int = 0,
     val page: Int = 0,
-//    val questionResponse: List<>
+    val questionResponse: List<Int> = listOf(0, 0, 0, 0, 0, 0, 0, 0, 0)
 )
 
 class LoginViewModel : ViewModel() {
@@ -249,12 +250,35 @@ class BiWeeklyEvaluationViewModel : ViewModel() {
         _uiState.update { currentState ->
             currentState.copy(page = currentState.page + 1)
         }
+
+        if (_uiState.value.page == 8)
+            debugScore()
     }
 
     fun onBack() {
         _uiState.update { currentState ->
             currentState.copy(page = currentState.page - 1)
         }
+    }
+
+    fun onSelect(selected: Int) {
+        val newList = _uiState.value.questionResponse.toMutableList()
+        newList[_uiState.value.page] = selected
+
+        _uiState.update { currentState ->
+            currentState.copy(
+                questionResponse = newList
+            )
+        }
+    }
+
+    fun debugScore() {
+        val score = _uiState.value.questionResponse.sum()
+        _uiState.update { currentState ->
+            currentState.copy(score = score)
+        }
+
+        Log.println(Log.DEBUG, "BiWeeklyEvalVM", "$score")
     }
 
     fun resetPage() {

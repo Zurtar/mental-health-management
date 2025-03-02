@@ -88,6 +88,9 @@ object MoodEvaluation;
 object BiWeeklyEvaluation;
 @Serializable
 object DailyEvaluation;
+@Serializable
+object TempResults;
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -216,6 +219,9 @@ fun MyApp() {
                             )
                         }
                         composable<DailyEvaluation> {}
+                        composable<TempResults> {
+
+                        }
                     }
                 })
             })

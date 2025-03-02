@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.Box
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,11 +28,16 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.style.TextAlign
@@ -89,7 +96,63 @@ class BiWeeklyEval {
 }
 
 @Composable
-fun QuestionCard(modifier: Modifier = Modifier, num: Int, question: String) {
+fun BiWeeklyEvaluationScreen(
+    modifier: Modifier = Modifier,
+    viewModel: BiWeeklyEvaluationViewModel = viewModel()
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val questions: Array<String> = stringArrayResource(R.array.phq_9_questions)
+
+    if (uiState.page == 9) {
+        BiWeeklyResult(modifier=modifier, uiState.score)
+        return
+    }
+
+    Column(
+        modifier = modifier.background(MaterialTheme.colorScheme.background),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Over the last 2 weeks, have you felt...",
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(start = 5.dp, top = 15.dp),
+            style = MaterialTheme.typography.headlineSmall
+        )
+
+        QuestionCard(
+            num = uiState.page,
+            question = questions[uiState.page],
+            selectedOption = uiState.questionResponse[uiState.page],
+            onSelect = viewModel::onSelect
+        )
+
+
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            if (uiState.page > 0)
+                FilledTonalButton(
+                    onClick = { viewModel.onBack() },
+                    content = { Text("Back") })
+
+            var text = "Next"
+            if (uiState.page == 8)
+                text = "Submit";
+            FilledTonalButton(onClick = { viewModel.onNext() }, content = { Text(text) })
+        }
+    }
+}
+
+@Composable
+fun QuestionCard(
+    modifier: Modifier = Modifier,
+    num: Int,
+    question: String,
+    selectedOption: Int,
+    onSelect: (Int) -> Unit
+) {
     val radioOptions =
         listOf("Not at all", "Several days", "More than half the days", "Nearly every day")
 
@@ -101,7 +164,8 @@ fun QuestionCard(modifier: Modifier = Modifier, num: Int, question: String) {
     ) {
         Column(modifier = Modifier.padding(all = 15.dp)) {
             Text(text = question)
-            QuestionResponse(radioOptions)
+            QuestionResponse(radioOptions, selectedOption, onSelect)
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -120,8 +184,7 @@ fun QuestionCard(modifier: Modifier = Modifier, num: Int, question: String) {
 }
 
 @Composable
-fun QuestionResponse(radioOptions: List<String>) {
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
+fun QuestionResponse(radioOptions: List<String>, selectedOption: Int, onSelect: (Int) -> Unit) {
     Column(
         modifier = Modifier
             .selectableGroup()
@@ -130,7 +193,7 @@ fun QuestionResponse(radioOptions: List<String>) {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        radioOptions.forEach { text ->
+        radioOptions.forEachIndexed { index, text ->
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -142,9 +205,11 @@ fun QuestionResponse(radioOptions: List<String>) {
                             size = 12.dp,
                         )
                     )
-                    .clickable { onOptionSelected(text) }
+                    .clickable {
+                        onSelect(index)
+                    }
                     .background(
-                        if (text == selectedOption)
+                        if (index == selectedOption)
                             MaterialTheme.colorScheme.inversePrimary
                         else
                             MaterialTheme.colorScheme.onSecondary
@@ -156,95 +221,24 @@ fun QuestionResponse(radioOptions: List<String>) {
                     text = text
                 )
             }
-//            }
-            /*  Column(
-              Modifier
-                  .padding(start = 5.dp, top = 15.dp)
-                  .selectable(
-                      selected = (text == selectedOption),
-                      onClick = { onOptionSelected(text) },
-                      role = Role.RadioButton
-                  )
-          ) {
-              RadioButton(
-                  selected = (text == selectedOption),
-                  onClick = null,
-                  modifier = Modifier.align(Alignment.CenterHorizontally)
-              )
-              Text(
-                  text = text,
-                  style = MaterialTheme.typography.bodyLarge,
-                  fontSize = 11.sp,
-                  textAlign = TextAlign.Center,
-                  //modifier = Modifier.padding(start = 10.dp)
-              )
-
-          }*/
         }
     }
 }
 
-@Composable
-fun BiWeeklyEvaluationScreen(
-    modifier: Modifier = Modifier,
-    viewModel: BiWeeklyEvaluationViewModel = viewModel()
-) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val questions: Array<String> = stringArrayResource(R.array.phq_9_questions)
 
+@Composable
+fun BiWeeklyResult(
+    modifier: Modifier = Modifier,
+    score: Int
+) {
     Column(
-        modifier = modifier.background(MaterialTheme.colorScheme.background),
+        modifier = modifier,
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Over the last 2 weeks, have you felt...",
-            modifier = Modifier
-                .align(Alignment.Start)
-                .padding(start = 5.dp, top = 15.dp),
-            style = MaterialTheme.typography.headlineSmall
-        )
-        QuestionCard(num = uiState.page, question = questions[uiState.page])
-        /*   repeat(times = 3) { i ->
-               Spacer(Modifier.size(16.dp))
-               QuestionCard(num = uiState.page * 3 + i, question = questions[uiState.page * 3 + i])
-           }*/
-        Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            var text = "Next"
-            if (uiState.page > 0)
-                FilledTonalButton(
-                    onClick = { viewModel.onBack() },
-                    content = { Text("Back") })
-            if (uiState.page == 8)
-                text = "Submit";
-            FilledTonalButton(onClick = { viewModel.onNext() }, content = { Text(text) })
-        }
-    }
-}
-
-
-@Composable
-fun EndEvalDialog() {
-    val response =
-        listOf("Nearly everyday", "Several days", "More than half the days", "Not at all")
-
-    val openAlertDialog = remember { mutableStateOf(false) }
-
-    when {
-        openAlertDialog.value -> {
-            AlertDialogExample(
-                onDismissRequest = { openAlertDialog.value = false },
-                onConfirmation = {
-                    openAlertDialog.value = false
-                    println("Confirmation registered") // Add logic here to handle confirmation.
-                },
-                dialogTitle = "Evaluation Completed",
-                dialogText = "Your Score:\n     ${calcScore(response)}",
-                icon = Icons.Default.Info
-            )
-        }
+        ScoreChart()
+        Spacer(Modifier.height(15.dp))
+        Text("Your Score: $score")
     }
 }
 
@@ -319,21 +313,21 @@ fun BiWeeklyEvaluationScreen(modifier: Modifier) {
 
 @Composable
 fun ScoreChart() {
-    ElevatedCard(elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)) {
+    ElevatedCard(Modifier.padding(top=15.dp), elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            RowChart("Score", "Severity")
-            RowChart("1-4", "Minimal depression")
-            RowChart("5-9", "Mild depression")
-            RowChart("10-14", "Moderate depression")
-            RowChart("15-19", "Moderately severe depression")
-            RowChart("20-27", "Severe depression")
+            RowChart(score = "Score", severity = "Severity")
+            RowChart(score = "1-4", severity = "Minimal depression")
+            RowChart(score = "5-9", severity = "Mild depression")
+            RowChart(score = "10-14", severity = "Moderate depression")
+            RowChart(score = "15-19", severity = "Moderately severe depression")
+            RowChart(score = "20-27", severity = "Severe depression")
         }
     }
 }
 
 @Composable
-fun RowChart(score: String, severity: String) {
-    Row() {
+fun RowChart(modifier: Modifier = Modifier, score: String, severity: String) {
+    Row(modifier = modifier) {
         Text(
             text = score,
             style = MaterialTheme.typography.bodySmall,

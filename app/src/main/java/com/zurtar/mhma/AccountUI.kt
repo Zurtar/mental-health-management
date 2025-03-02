@@ -106,9 +106,7 @@ fun SignUpScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(Modifier.height(25.dp))
-
         Text("Sign Up Page")
-
         Spacer(Modifier.height(25.dp))
         EmailTextField(uiState.email, viewModel::onEmailChange)
         Spacer(Modifier.height(12.5.dp))
