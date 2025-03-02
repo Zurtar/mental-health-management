@@ -7,8 +7,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,11 +15,9 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
-import com.zurtar.mhma.auth.AccountViewModel
-import com.zurtar.mhma.auth.LoginViewModel
-import com.zurtar.mhma.auth.SignupViewModel
+import com.zurtar.mhma.models.AccountViewModel
+import com.zurtar.mhma.models.LoginViewModel
+import com.zurtar.mhma.models.SignupViewModel
 
 
 //Split up into ViewModel likely
@@ -110,9 +106,7 @@ fun SignUpScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(Modifier.height(25.dp))
-
         Text("Sign Up Page")
-
         Spacer(Modifier.height(25.dp))
         EmailTextField(uiState.email, viewModel::onEmailChange)
         Spacer(Modifier.height(12.5.dp))
