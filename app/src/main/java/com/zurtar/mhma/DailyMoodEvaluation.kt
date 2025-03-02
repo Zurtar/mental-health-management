@@ -35,7 +35,7 @@ import androidx.navigation.compose.rememberNavController
 import com.zurtar.mhma.ui.theme.AppTheme
 
 @Composable
-fun EmotionPickerScreen(modifier: Modifier = Modifier, navController: NavHostController) {
+fun EmotionPickerScreen(modifier: Modifier = Modifier, onNavigate: () -> Unit) {
     var selectedEmotion by remember { mutableStateOf<String?>(null) }
     var selectedRating by remember { mutableStateOf<Int?>(null) }
 
@@ -92,7 +92,7 @@ fun EmotionPickerScreen(modifier: Modifier = Modifier, navController: NavHostCon
                     Button(
                         onClick = {
                             selectedRating = rating
-                            navController.navigate("aiPage") // Navigate to the AI page when a button is clicked
+                            onNavigate() // Navigate to the AI page when a button is clicked
                         },
                         shape = RoundedCornerShape(50),
                         colors = ButtonDefaults.buttonColors(
@@ -117,7 +117,9 @@ fun AIPage() {
 
     // Simple screen with a TextField
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -130,7 +132,9 @@ fun AIPage() {
             value = aiText,
             onValueChange = { aiText = it },
             label = { Text("Enter something here...") },
-            modifier = Modifier.fillMaxWidth().height(150.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(150.dp),
             placeholder = { Text("Type your input...") }
         )
     }
@@ -180,13 +184,13 @@ fun EmotionChip(emotion: String, color: Color, isSelected: Boolean, onClick: () 
         )
     }
 }
+/*
 
 @Preview(showBackground = true)
 @Composable
 fun EmotionPickerScreenPreview() {
     AppTheme {
         val navController = rememberNavController()
-        EmotionPickerScreen(navController = navController)
     }
 }
 
@@ -206,3 +210,4 @@ fun AIPagePreview() {
         AIPage()
     }
 }
+*/

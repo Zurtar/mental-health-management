@@ -218,7 +218,12 @@ fun MyApp() {
                                 modifier = Modifier.padding(innerPadding),
                             )
                         }
-                        composable<DailyEvaluation> {}
+                        composable<DailyEvaluation> {
+                            EmotionPickerScreen(
+                                modifier = Modifier.padding(innerPadding),
+                                onNavigate = { navController.navigate(Home) }
+                            )
+                        }
                         composable<TempResults> {
 
                         }
