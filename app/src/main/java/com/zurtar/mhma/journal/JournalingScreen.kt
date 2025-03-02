@@ -113,7 +113,7 @@ fun EntryItem(item: JournalEntry, onDelete: () -> Unit, onEdit: () -> Unit) {
             .fillMaxWidth()
             .padding(8.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.primary)
+            .background(MaterialTheme.colorScheme.onPrimary)
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
 

@@ -152,11 +152,10 @@ fun EmotionSelectionCard(
     var selectedEmotion by remember { mutableStateOf<String?>(null) }
     val emotions = listOf(
         "Sad" to Color(0xFF1E88E5), // Blue
-        "Happy" to Color(0xFFFFEB3B), // Yellow
+        "Happy" to Color(0xFF4CAF50), // Yellow
         "Fearful" to Color(0xFF8E24AA), // Purple
-        "Angry" to Color(0xFFD32F2F), // Red
-        "Surprised" to Color(0xFFFFA726), // Orange
-        "Disgusted" to Color(0xFF388E3C) // Green
+        "Angry" to Color(0xBAD32F2F), // Red
+
     )
 
     ElevatedCard(
