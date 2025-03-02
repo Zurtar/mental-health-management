@@ -107,6 +107,72 @@ fun JournalingScreen(
 
 @Composable
 fun EntryItem(item: JournalEntry, onDelete: () -> Unit, onEdit: () -> Unit) {
+
+    var expanded by remember { mutableStateOf(false) }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.onPrimary)
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(8.dp)
+        ) {
+            Text(
+                text = SimpleDateFormat("HH:mm:aa, dd/mm", Locale.ENGLISH).format(item.createdAt),
+                fontSize = 12.sp,
+                color = Color.LightGray
+            )
+            Text(
+                text = item.title,
+                fontSize = 20.sp,
+                color = Color.White
+            )
+            Text(
+                text = item.content.take(200),
+                fontSize = 10.sp,
+                color = Color.White
+            )
+        }
+        IconButton(onClick = { expanded = true }) {
+            Icon(
+                painter = painterResource(id = R.drawable.baseline_arrow_drop_down_circle_24),
+                contentDescription = "Options",
+                tint = Color.White
+            )
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text("Edit") },
+                    onClick = {
+                        onEdit()
+                        expanded = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Delete") },
+                    onClick = {
+                        onDelete()
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+
+}
+
+@Composable
+fun EntryItemAlt(item: JournalEntry, onDelete: () -> Unit, onEdit: () -> Unit) {
+
     var expanded by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier

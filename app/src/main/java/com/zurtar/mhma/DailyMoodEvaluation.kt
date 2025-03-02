@@ -39,7 +39,6 @@ import com.zurtar.mhma.ui.theme.EmojiFrown
 import com.zurtar.mhma.ui.theme.EmojiNeutral
 import com.zurtar.mhma.ui.theme.EmojiSmile
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DailyMoodEvaluationScreen(modifier: Modifier = Modifier, onNavigate: () -> Unit) {
 
