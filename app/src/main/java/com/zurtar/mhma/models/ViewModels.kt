@@ -150,6 +150,7 @@ class SignupViewModel : ViewModel() {
 class AccountViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(AccountUiState())
     val uiState: StateFlow<AccountUiState> = _uiState.asStateFlow()
+
     private val accountService: AccountServiceImplementation = AccountServiceImplementation()
 
     init {

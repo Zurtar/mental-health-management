@@ -55,6 +55,10 @@ import com.zurtar.mhma.ui.theme.AppTheme
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import com.zurtar.mhma.journal.EntryModificationScreen
+import com.zurtar.mhma.journal.JournalingScreen
 import com.zurtar.mhma.models.NavigationDrawerViewModel
 import com.zurtar.mhma.mood.BiWeeklyEvaluationScreen
 import com.zurtar.mhma.mood.MoodEvaluationScreen
@@ -88,9 +92,13 @@ object MoodEvaluation;
 object BiWeeklyEvaluation;
 @Serializable
 object DailyEvaluation;
-@Serializable
-object TempResults;
 
+
+@Serializable
+object Journal
+
+@Serializable
+object JournalEntryR
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -155,7 +163,7 @@ fun MyApp() {
                     })
             }, content = {
                 Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
-                    TopAppBar(title = { Text("TopAppBar") }, colors = topAppBarColors(
+                    TopAppBar(title = { Text("Mental-Health Tracker") }, colors = topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer,
                         titleContentColor = MaterialTheme.colorScheme.primary,
                     ), navigationIcon = {
@@ -187,7 +195,6 @@ fun MyApp() {
                     ) {
                         composable<Home> {
                             HomeScreen(
-                                "VibeCheck",
                                 modifier = Modifier.padding(innerPadding),
                                 navController::navigate
                             )
@@ -219,8 +226,34 @@ fun MyApp() {
                             )
                         }
                         composable<DailyEvaluation> {}
-                        composable<TempResults> {
+                        composable<Journal> {
+                            JournalingScreen(
+                                modifier = Modifier.padding(innerPadding),
+                                onNavigateToEntryCreation = { navController.navigate(JournalEntryR) },
+                                onNavigateToEntryEdit = { id -> navController.navigate("entryEdit/$id") }
+                            )
+                        }
 
+                        // Directly copied from Journal branch, which is why its different
+                        composable<JournalEntryR> {
+                            EntryModificationScreen(
+                                modifier = Modifier.padding(innerPadding),
+                                onNavigateBack = { navController.popBackStack() }
+                            )
+                        }
+
+                        composable(
+                            route = "entryEdit/{entryId}",
+                            arguments = listOf(navArgument("entryId") {
+                                type = NavType.IntType
+                            }) // Added this line
+                        ) { backStackEntry ->
+                            val entryId = backStackEntry.arguments?.getInt("entryId") ?: -1
+                            EntryModificationScreen(
+                                modifier = Modifier.padding(innerPadding),
+                                id = entryId,
+                                onNavigateBack = { navController.popBackStack() },
+                            )
                         }
                     }
                 })
@@ -230,7 +263,7 @@ fun MyApp() {
 }
 
 @Composable
-fun HomeScreen(name: String, modifier: Modifier = Modifier, onNavigate: (Any) -> Unit) {
+fun HomeScreen(modifier: Modifier = Modifier, onNavigate: (Any) -> Unit) {
     Column(
         modifier = modifier.fillMaxWidth(0.5f), horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -250,6 +283,25 @@ fun HomeScreen(name: String, modifier: Modifier = Modifier, onNavigate: (Any) ->
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.headlineMedium,
                 text = "Mood Evaluation"
+            )
+        }
+
+        ElevatedCard(
+            modifier = Modifier
+                .padding(top = 20.dp)
+                .fillMaxWidth(0.75f)
+                .fillMaxHeight(0.2f)
+                .background(color = MaterialTheme.colorScheme.background),
+            onClick = { onNavigate(Journal) }
+        ) {
+            Text(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .height(150.dp)
+                    .wrapContentHeight(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.headlineMedium,
+                text = "Journal"
             )
         }
     }

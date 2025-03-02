@@ -1,4 +1,4 @@
-package com.zurtar.mhma
+package com.zurtar.mhma.journal
 
 /*The following contains examples of Journal entries In updated version of application, Journal entries should
 /be taken from a database. This modification will be done by modifying the functions found in JournalEntryManager
@@ -8,6 +8,7 @@ and JournalViewModel
 import android.os.Build
 import androidx.annotation.RequiresApi
 import java.time.Instant
+import java.time.LocalDateTime
 import java.util.Date
 
 data class JournalEntry(
@@ -20,7 +21,6 @@ data class JournalEntry(
 
 //These are just "example" entries for demo purposes. I just took them from random sections of
 //the cognitive behavioural therapy document.
-@RequiresApi(Build.VERSION_CODES.O)
 fun getExampleEntry() : List<JournalEntry>{
     return listOf<JournalEntry>(
         JournalEntry(

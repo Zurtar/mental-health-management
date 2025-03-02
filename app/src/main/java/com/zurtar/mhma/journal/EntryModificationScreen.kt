@@ -1,4 +1,4 @@
-package com.zurtar.mhma
+package com.zurtar.mhma.journal
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 /*
 EntryModification page can be called upon in two different ways: a version where it is
@@ -24,16 +25,16 @@ it is given an id, then title and content boxes will be filled from the associat
 entry's data: this is used for entry editing.
  */
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun EntryModificationPage(
-    viewModel: JournalViewModel,
+fun EntryModificationScreen(
+    modifier: Modifier = Modifier,
+    viewModel: JournalViewModel = viewModel(),
     onNavigateBack: () -> Unit
 ) {
     var title by remember { mutableStateOf("") }
     var content by remember { mutableStateOf("") }
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = modifier.padding(16.dp)) {
         OutlinedTextField(
             value = title,
             onValueChange = { title = it },
@@ -57,16 +58,17 @@ fun EntryModificationPage(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun EntryModificationPage(id: Int,
-    viewModel: JournalViewModel,
+fun EntryModificationScreen(
+    modifier: Modifier = Modifier,
+    viewModel: JournalViewModel = viewModel(),
+    id: Int,
     onNavigateBack: () -> Unit
 ) {
     var title by remember { mutableStateOf(viewModel.getEntry(id)?.title ?: "") }
     var content by remember { mutableStateOf(viewModel.getEntry(id)?.content ?: "") }
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = modifier.padding(16.dp)) {
         OutlinedTextField(
             value = title,
             onValueChange = { title = it },
@@ -82,7 +84,7 @@ fun EntryModificationPage(id: Int,
                 .weight(1f)
         )
         Button(onClick = {
-            viewModel.editEntry(id,title, content)
+            viewModel.editEntry(id, title, content)
             onNavigateBack()
         }) {
             Text("Save Entry")

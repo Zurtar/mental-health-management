@@ -1,4 +1,4 @@
-package com.zurtar.mhma
+package com.zurtar.mhma.journal
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.zurtar.mhma.JournalEntryR
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -17,15 +18,15 @@ fun JournalNavigation(viewModel: JournalViewModel) {
     NavHost(navController = navController, startDestination = "journaling") {
         //Main page
         composable("journaling") {
-            JournalingPage(
+            JournalingScreen(
                 viewModel = viewModel,
-                onNavigateToEntryCreation = { navController.navigate("entryCreation") },
+                onNavigateToEntryCreation = { navController.navigate(JournalEntryR) },
                 onNavigateToEntryEdit = { id -> navController.navigate("entryEdit/$id")}
             )
         }
         //moves to EntryModificationPage using parameters for entry creation
         composable("entryCreation") {
-            EntryModificationPage(
+            EntryModificationScreen(
                 viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() }
             )
@@ -34,8 +35,8 @@ fun JournalNavigation(viewModel: JournalViewModel) {
         composable(route = "entryEdit/{entryId}", arguments = listOf(navArgument("entryId") { type = NavType.IntType }) // Added this line
             ) { backStackEntry ->
             val entryId = backStackEntry.arguments?.getInt("entryId") ?: -1
-            EntryModificationPage(
-                entryId,
+            EntryModificationScreen(
+                id = entryId,
                 viewModel = viewModel,
                 onNavigateBack = {navController.popBackStack()},
             )

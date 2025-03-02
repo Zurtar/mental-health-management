@@ -1,4 +1,4 @@
-package com.zurtar.mhma
+package com.zurtar.mhma.journal
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -35,6 +35,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.zurtar.mhma.R
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -46,12 +48,13 @@ a lazy column.
  */
 
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun JournalingPage(
-    viewModel: JournalViewModel,
+fun JournalingScreen(
+    modifier: Modifier = Modifier,
+    viewModel: JournalViewModel = viewModel(),
     onNavigateToEntryCreation: () -> Unit,
-    onNavigateToEntryEdit: (Int) -> Unit) {
+    onNavigateToEntryEdit: (Int) -> Unit
+) {
     val entryList by viewModel.entryList.observeAsState()
 
     //This should be removed in the final version. Only here for
@@ -61,8 +64,9 @@ fun JournalingPage(
     }
 
     Scaffold(
+        modifier = modifier,
         floatingActionButton = {
-            FloatingActionButton(onClick = {onNavigateToEntryCreation() }) {
+            FloatingActionButton(onClick = { onNavigateToEntryCreation() }) {
                 Icon(Icons.Filled.Add, "Add new entry")
             }
         }
@@ -83,15 +87,15 @@ fun JournalingPage(
             entryList?.let {
                 LazyColumn(
                     content = {
-                        itemsIndexed(it){index: Int, item: JournalEntry ->
+                        itemsIndexed(it) { index: Int, item: JournalEntry ->
                             EntryItem(
                                 item = item,
-                                onDelete ={viewModel.deleteEntry(item.id)},
-                                onEdit = {onNavigateToEntryEdit(item.id)})
+                                onDelete = { viewModel.deleteEntry(item.id) },
+                                onEdit = { onNavigateToEntryEdit(item.id) })
                         }
                     }
                 )
-            }?: Text(
+            } ?: Text(
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 text = "No entries found",
@@ -102,9 +106,9 @@ fun JournalingPage(
 }
 
 @Composable
-fun EntryItem(item : JournalEntry, onDelete: () -> Unit, onEdit: () -> Unit) {
+fun EntryItem(item: JournalEntry, onDelete: () -> Unit, onEdit: () -> Unit) {
     var expanded by remember { mutableStateOf(false) }
-    Row (
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
@@ -113,8 +117,8 @@ fun EntryItem(item : JournalEntry, onDelete: () -> Unit, onEdit: () -> Unit) {
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
 
-    ){
-        Column (
+    ) {
+        Column(
             modifier = Modifier
                 .weight(1f)
                 .padding(8.dp)
