@@ -93,7 +93,6 @@ object BiWeeklyEvaluation;
 @Serializable
 object DailyEvaluation;
 
-
 @Serializable
 object Journal
 

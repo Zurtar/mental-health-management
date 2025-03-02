@@ -16,3 +16,7 @@ local.properties
 /.idea
 /.idea
 /.kotlin/sessions
+/.kotlin/errors
+/.idea
+/.idea
+.idea/misc.xml
