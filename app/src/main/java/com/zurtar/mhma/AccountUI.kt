@@ -86,9 +86,6 @@ fun LoginScreen(
             Text("Sign Up")
         }
         Spacer(Modifier.height(12.5.dp))
-        Text(
-            "Debug: Ah!"
-        )
     }
 }
 
@@ -122,11 +119,9 @@ fun SignUpScreen(
         ) {
             Text(
                 text = "Sign Up",
-//                color = Color.White
             )
         }
         Spacer(Modifier.height(12.5.dp))
-        Text("Debug Greeting!")
     }
 }
 
