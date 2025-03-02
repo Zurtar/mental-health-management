@@ -225,7 +225,6 @@ fun MyApp() {
                                 modifier = Modifier.padding(innerPadding),
                             )
                         }
-                        composable<DailyEvaluation> {}
                         composable<Journal> {
                             JournalingScreen(
                                 modifier = Modifier.padding(innerPadding),
@@ -233,6 +232,13 @@ fun MyApp() {
                                 onNavigateToEntryEdit = { id -> navController.navigate("entryEdit/$id") }
                             )
                         }
+                        composable<DailyEvaluation> {
+                            EmotionPickerScreen(
+                                modifier = Modifier.padding(innerPadding),
+                                onNavigate = { navController.navigate(Home) }
+                            )
+                        }
+                        composable<TempResults> {
 
                         // Directly copied from Journal branch, which is why its different
                         composable<JournalEntryR> {
