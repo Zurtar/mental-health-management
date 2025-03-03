@@ -249,7 +249,7 @@ fun BiWeeklyResult(
         )
 
         Spacer(Modifier.height(15.dp))
-        ScoreChart()
+        ScoreChartAlt()
 
 
     }
@@ -366,7 +366,7 @@ fun ScoreChartAlt() {
 @Composable
 fun ScoreChart() {
     ElevatedCard(Modifier.padding(top=15.dp), elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)) {
-        Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+        Row (modifier = Modifier.fillMaxWidth()) {
             Column () {
                 Text(
                     text = "SCORE",
@@ -410,16 +410,18 @@ fun ScoreColumn(text:String){
 
 @Composable
 fun RowChart(modifier: Modifier = Modifier, score: String, severity: String) {
-    Row(modifier = modifier.background(MaterialTheme.colorScheme.background).fillMaxWidth()) {
+    Row(modifier = modifier.background(MaterialTheme.colorScheme.background).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
         Text(
             text = score,
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(start = 5.dp)
+            modifier = Modifier.padding(start = 5.dp).width(50.dp),
+            textAlign = TextAlign.Left
         )
         Text(
             text = severity,
             style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.padding(start = 5.dp)
+            modifier = Modifier.padding(start = 5.dp).width(180.dp),
+            textAlign = TextAlign.Left
         )
     }
 }
