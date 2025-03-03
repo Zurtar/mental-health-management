@@ -6,10 +6,13 @@ package com.zurtar.mhma.models
 
 import android.util.Log
 import androidx.compose.runtime.currentComposer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.zurtar.mhma.auth.AccountServiceImplementation
+import com.zurtar.mhma.ui.theme.EmojiFrown
+import com.zurtar.mhma.ui.theme.EmojiNeutral
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -67,6 +70,14 @@ data class BiWeeklyEvaluationUiState(
     val score: Int = 0,
     val page: Int = 0,
     val questionResponse: List<Int> = listOf(0, 0, 0, 0, 0, 0, 0, 0, 0)
+)
+
+data class DailyEvaluationUiState(
+    val currentEmotion:String = "default_initial",
+   // val emotionResponse:List<String> = listOf(0, 0, 0, 0),
+    val isSubmitted:Int = 0,
+    val strongestEmotion:String = "default_initial"
+
 )
 
 class LoginViewModel : ViewModel() {
@@ -237,6 +248,58 @@ class NavigationDrawerViewModel : ViewModel() {
                         isLoggedIn = true,
                     )
                 }
+        }
+    }
+
+}
+class DailyEvaluationViewModel : ViewModel() {
+    private val _uiState = MutableStateFlow( DailyEvaluationUiState())
+    val uiState: StateFlow<DailyEvaluationUiState> = _uiState.asStateFlow()
+
+    fun onSubmit() {
+        _uiState.update { currentState ->
+            currentState.copy(isSubmitted = 1)
+        }
+    }
+
+    fun updateEmotion(emoji:ImageVector) {
+        if(emoji == EmojiFrown) {
+            _uiState.update { currentState ->
+                currentState.copy(currentEmotion = "Upset")
+            }
+        } else if (emoji == EmojiNeutral ) {
+            _uiState.update { currentState ->
+                currentState.copy(currentEmotion = "Neutral")
+            }
+        } else {
+            _uiState.update { currentState ->
+                currentState.copy(currentEmotion = "Happy")
+            }
+        }
+    }
+
+    fun emotionSelect(emotion: String) {
+//
+//        val newList = _uiState.value.emotionResponse.toMutableList()
+//        var index = 0
+//        if(emotion == "Happy"){
+//            index = 1
+//        }else if(emotion == "Fearful") {
+//            index = 2
+//        } else if (emotion == "Angry") {
+//            index = 3
+//        } else {
+//            index = 0
+//        }
+//        newList[index] = _uiState.value.emotionResponse[index] +1
+//
+//        _uiState.update { currentState ->
+//            currentState.copy(
+//                emotionResponse = newList
+//            )
+//        }
+        _uiState.update { currentState ->
+            currentState.copy(strongestEmotion = emotion)
         }
     }
 
