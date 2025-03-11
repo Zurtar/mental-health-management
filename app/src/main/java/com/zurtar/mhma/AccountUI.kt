@@ -19,7 +19,6 @@ import com.zurtar.mhma.models.AccountViewModel
 import com.zurtar.mhma.models.LoginViewModel
 import com.zurtar.mhma.models.SignupViewModel
 
-
 //Split up into ViewModel likely
 @Composable
 fun AccountScreen(

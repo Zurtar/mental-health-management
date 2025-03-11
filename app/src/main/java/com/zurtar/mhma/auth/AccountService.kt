@@ -4,6 +4,8 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.firestore
+import java.time.Instant
 
 /**
  *
@@ -27,12 +29,20 @@ class AccountServiceImplementation : AccountService {
 
     override fun createAccount(email: String, password: String, onResult: (Throwable?) -> Unit) {
         Firebase.auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { onResult(it.exception) }
+            .addOnCompleteListener {
+                onResult(it.exception)
+            }
     }
 
     override fun authenticate(email: String, password: String, onResult: (Throwable?) -> Unit) {
         Firebase.auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { onResult(it.exception) }
+            .addOnCompleteListener {
+                onResult(it.exception)
+                val uid = it.result.user?.uid ?: return@addOnCompleteListener
+
+                Firebase.firestore.collection("users").document("$uid")
+                    .set("online" to Instant.now().toString())
+            }
     }
 
     override fun linkAccount(email: String, password: String, onResult: (Throwable?) -> Unit) {

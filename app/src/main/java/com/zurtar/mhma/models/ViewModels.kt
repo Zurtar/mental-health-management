@@ -150,15 +150,15 @@ class SignupViewModel : ViewModel() {
             return
 
 
-            accountService.createAccount(
-                email = _uiState.value.email,
-                password = _uiState.value.password,
-                onResult = { error ->
-                    // OnResult
-                    if (error == null)
-                        onResult()
-                    //Handle error!
-                })
+        accountService.createAccount(
+            email = _uiState.value.email,
+            password = _uiState.value.password,
+            onResult = { error ->
+                // OnResult
+                if (error == null)
+                    onResult()
+                //Handle error!
+            })
     }
 }
 
