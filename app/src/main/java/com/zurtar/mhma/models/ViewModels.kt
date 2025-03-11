@@ -223,7 +223,7 @@ class NavigationDrawerViewModel : ViewModel() {
         Firebase.auth.addAuthStateListener { auth ->
             Log.println(
                 Log.INFO,
-                "AccountViewModel_FirebaseListener",
+                "NavigationDrawerViewModel_FirebaseListener",
                 "Auth State Listener Fired currentUser:${auth.currentUser}"
             )
 
