@@ -1,13 +1,19 @@
 package com.zurtar.mhma
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -19,47 +25,105 @@ import com.zurtar.mhma.models.AccountViewModel
 import com.zurtar.mhma.models.LoginViewModel
 import com.zurtar.mhma.models.SignupViewModel
 
-//Split up into ViewModel likely
+
+/**
+ * Account Screen & Content
+ */
 @Composable
 fun AccountScreen(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     viewModel: AccountViewModel = viewModel(),
-    onLogout: () -> Unit
+    openDrawer: () -> Unit,
+    onLogoutResult: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    Scaffold(modifier = modifier.fillMaxSize(),
+        topBar = {
+            DefaultTopAppBar(openDrawer = openDrawer)
+        }
+    ) { innerPadding ->
+        AccountScreenContent(
+            modifier = modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
+            onLogout = { viewModel.signOut(onLogoutResult) },
+            email = uiState.email
+        )
+    }
+}
+
+@Composable
+private fun AccountScreenContent(
+    modifier: Modifier = Modifier,
+    onLogout: () -> Unit,
+    email: String
+) {
     Column(
         modifier = modifier.fillMaxHeight(.75f),
         verticalArrangement = Arrangement.Top,
         Alignment.CenterHorizontally
     ) {
-
-
         Text("Account Page")
         Spacer(Modifier.height(25.dp))
         Text(
-            "Email: ${uiState.email}"
+            "Email: ${email}"
         )
         Text(
             text = "Welcome!"
         )
         Spacer(Modifier.height(10.dp))
         OutlinedButton(
-            onClick = { viewModel.signOut(onLogout) },
+            onClick = onLogout,
             content = { Text("Logout") }
         )
     }
 }
 
+
+/**
+ * Login Screen & Content
+ */
 @Composable
 fun LoginScreen(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     viewModel: LoginViewModel = viewModel(),
-    onLoginSuccess: () -> Unit,
-    onNavigate: () -> Unit
+    openDrawer: () -> Unit,
+    onLoginResult: () -> Unit,
+    onNavigateToSignUp: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    Scaffold(modifier = modifier.fillMaxSize(),
+        topBar = {
+            DefaultTopAppBar(openDrawer = openDrawer)
+        }
+    ) { innerPadding ->
+        LoginScreenContent(
+            modifier = modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
+            email = uiState.email,
+            password = uiState.password,
+            onLogin = { viewModel.login(onResult = onLoginResult) },
+            onNavigateToSignUp = onNavigateToSignUp,
+            onEmailChange = viewModel::onEmailChange,
+            onPasswordChange = viewModel::onPasswordChange
+        )
+    }
+}
+
+
+@Composable
+private fun LoginScreenContent(
+    modifier: Modifier = Modifier,
+    email: String,
+    password: String,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onLogin: () -> Unit,
+    onNavigateToSignUp: () -> Unit
+) {
     Column(
         modifier = modifier.fillMaxHeight(.75f),
         verticalArrangement = Arrangement.Top,
@@ -68,21 +132,19 @@ fun LoginScreen(
         Spacer(Modifier.height(25.dp))
         Text("Login Page")
         Spacer(Modifier.height(25.dp))
-        EmailTextField(uiState.email, viewModel::onEmailChange)
+        EmailTextField(email, onEmailChange)
         Spacer(Modifier.height(12.5.dp))
-        PasswordTextField(uiState.password, viewModel::onPasswordChange)
+        PasswordTextField(password, onPasswordChange)
         Spacer(Modifier.height(12.5.dp))
 
         OutlinedButton(
-            onClick = { viewModel.login(onResult = onLoginSuccess) },
-//            colors = ButtonDefaults.buttonColors(ButtonColor)
+            onClick = onLogin,
         ) {
             Text(text = "Login")
         }
         Text("Or")
         OutlinedButton(
-            onClick = onNavigate,
-//            colors = ButtonDefaults.buttonColors(ButtonColor)
+            onClick = onNavigateToSignUp,
         ) {
             Text("Sign Up")
         }
@@ -90,14 +152,51 @@ fun LoginScreen(
     }
 }
 
+
+/**
+ * SignUp Screen & Content
+ */
+
 @Composable
 fun SignUpScreen(
+    modifier: Modifier = Modifier,
     viewModel: SignupViewModel = viewModel(),
-    modifier: Modifier,
-    onSignUp: () -> Unit
+    openDrawer: () -> Unit,
+    onSignUpResult: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    Scaffold(modifier = modifier.fillMaxSize(),
+        topBar = {
+            DefaultTopAppBar(openDrawer = openDrawer)
+        }
+    ) { innerPadding ->
+        SignUpScreenContent(
+            modifier = modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
+            email = uiState.email,
+            password = uiState.password,
+            password_ = uiState.password_,
+            onEmailChange = viewModel::onEmailChange,
+            onPasswordChange = viewModel::onPasswordChange,
+            onVerifyPasswordChange = viewModel::onVerifyPasswordChange,
+            onSignUp = { viewModel.createAccount(onSignUpResult) }
+        )
+    }
+}
+
+@Composable
+private fun SignUpScreenContent(
+    modifier: Modifier = Modifier,
+    email: String,
+    password: String,
+    password_: String,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onVerifyPasswordChange: (String) -> Unit,
+    onSignUp: () -> Unit
+) {
     Column(
         modifier = modifier.fillMaxHeight(.75f),
         verticalArrangement = Arrangement.Top,
@@ -106,17 +205,15 @@ fun SignUpScreen(
         Spacer(Modifier.height(25.dp))
         Text("Sign Up Page")
         Spacer(Modifier.height(25.dp))
-        EmailTextField(uiState.email, viewModel::onEmailChange)
+        EmailTextField(email, onEmailChange)
         Spacer(Modifier.height(12.5.dp))
-        PasswordTextField(uiState.password, viewModel::onPasswordChange)
+        PasswordTextField(password, onPasswordChange)
         Spacer(Modifier.height(12.5.dp))
-        PasswordTextField(uiState.password_, viewModel::onVerifyPasswordChange, "Confirm Password")
+        PasswordTextField(password_, onVerifyPasswordChange, "Confirm Password")
 
         Spacer(Modifier.height(12.5.dp))
         OutlinedButton(
-            onClick = {
-                viewModel.createAccount(onSignUp)
-            },
+            onClick = onSignUp
         ) {
             Text(
                 text = "Sign Up",
@@ -127,7 +224,7 @@ fun SignUpScreen(
 }
 
 @Composable
-fun PasswordTextField(
+private fun PasswordTextField(
     value: String,
     onNewValue: (String) -> Unit,
     label: String = "Enter password"
@@ -143,7 +240,7 @@ fun PasswordTextField(
 }
 
 @Composable
-fun EmailTextField(value: String, onNewValue: (String) -> Unit) {
+private fun EmailTextField(value: String, onNewValue: (String) -> Unit) {
     OutlinedTextField(
         value = value,
         onValueChange = { onNewValue(it) },

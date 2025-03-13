@@ -3,9 +3,6 @@ package com.zurtar.mhma
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
@@ -14,7 +11,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavGraph
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -22,11 +18,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.zurtar.mhma.home.HomeScreen
 import com.zurtar.mhma.journal.EntryModificationScreen
 import com.zurtar.mhma.journal.JournalingScreen
 import com.zurtar.mhma.mood.BiWeeklyEvaluationScreen
+import com.zurtar.mhma.mood.DailyMoodEvaluationScreen
 import com.zurtar.mhma.mood.MoodEvaluationScreen
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
 @Composable
@@ -39,7 +38,6 @@ fun NavGraph(
     navActions: NavigationActions = remember(navController) {
         NavigationActions(navController)
     },
-    innerPadding: PaddingValues
 ) {
     val currentNavBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentNavBackStackEntry?.destination?.route ?: startDestination
@@ -54,6 +52,8 @@ fun NavGraph(
      * every time we transition.
      *
      * So we can switch if we're either okay with that or when we eventually add dependency injection with Hilt, which we will likely end up doing at some point
+     *
+     * Also the viewModel that's causing the problem needs a rework. It's a hacky implementation meant to function for the v1 demo
      *
      * 2025-03-11 Ethan
      * */
@@ -73,55 +73,60 @@ fun NavGraph(
         ) {
             composable<Home> {
                 HomeScreen(
-                    modifier = Modifier.padding(innerPadding),
-                    navController::navigate
+                    openDrawer = { coroutineScope.launch { drawerState.open() } },
+                    onNavigateToMoodEvaluation = { navActions.navigateToMoodEvaluation() },
+                    onNavigateToJournal = { navActions.navigateToJournal() }
                 )
-
             }
+
             composable<Account> {
                 AccountScreen(
-                    modifier = Modifier.padding(innerPadding),
-                    onLogout = { navController.navigate(Home) })
+                    openDrawer = { coroutineScope.launch { drawerState.open() } },
+                    onLogoutResult = { navActions.navigateToHome() })
             }
             composable<Login> {
                 LoginScreen(
-                    modifier = Modifier.padding(innerPadding),
-                    onLoginSuccess = { navController.navigate(Account) },
-                    onNavigate = { navController.navigate(SignUp) })
+                    openDrawer = { coroutineScope.launch { drawerState.open() } },
+                    onLoginResult = { navActions.navigateToAccount() },
+                    onNavigateToSignUp = { navActions.navigateToSignup() })
             }
             composable<SignUp> {
                 SignUpScreen(
-                    modifier = Modifier.padding(innerPadding),
-                    onSignUp = { navController.navigate(Login) })
+                    openDrawer = { coroutineScope.launch { drawerState.open() } },
+                    onSignUpResult = { navActions.navigateToLogin() })
             }
+
             composable<MoodEvaluation> {
                 MoodEvaluationScreen(
-                    modifier = Modifier.padding(innerPadding),
-                    onNavigate = navController::navigate
+                    openDrawer = { coroutineScope.launch { drawerState.open() } },
+                    onNavigateToDaily = { navActions.navigateToDailyEvaluation() },
+                    onNavigateToBiWeekly = { navActions.navigateToBiWeeklyEvaluation() }
                 )
             }
             composable<BiWeeklyEvaluation> {
                 BiWeeklyEvaluationScreen(
-                    modifier = Modifier.padding(innerPadding),
+                    openDrawer = { coroutineScope.launch { drawerState.open() } },
                 )
             }
+
+            composable<DailyEvaluation> {
+                DailyMoodEvaluationScreen(
+                    openDrawer = { coroutineScope.launch { drawerState.open() } },
+                )
+            }
+
             composable<Journal> {
                 JournalingScreen(
-                    modifier = Modifier.padding(innerPadding),
+                    openDrawer = { coroutineScope.launch { drawerState.open() } },
                     onNavigateToEntryCreation = { navController.navigate(JournalEntryR) },
                     onNavigateToEntryEdit = { id -> navController.navigate("entryEdit/$id") }
                 )
             }
-            composable<DailyEvaluation> {
-                DailyMoodEvaluationScreen(
-                    modifier = Modifier.padding(innerPadding),
-                    onNavigate = { navController.navigate(Home) }
-                )
-            }
+
             // Directly copied from Journal branch, which is why its different
             composable<JournalEntryR> {
                 EntryModificationScreen(
-                    modifier = Modifier.padding(innerPadding),
+                    openDrawer = { coroutineScope.launch { drawerState.open() } },
                     onNavigateBack = { navController.popBackStack() }
                 )
             }
@@ -135,7 +140,7 @@ fun NavGraph(
                 val entryId = backStackEntry.arguments?.getInt("entryId") ?: -1
 
                 EntryModificationScreen(
-                    modifier = Modifier.padding(innerPadding),
+                    openDrawer = { coroutineScope.launch { drawerState.open() } },
                     id = entryId,
                     onNavigateBack = { navController.popBackStack() },
                 )

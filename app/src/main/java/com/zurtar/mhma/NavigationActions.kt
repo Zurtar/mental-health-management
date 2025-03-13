@@ -1,13 +1,11 @@
 package com.zurtar.mhma
 
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 
 class NavigationActions(private val navController: NavHostController) {
 
     fun navigateToHome() {
         navController.navigate(Home) {
-
             restoreState = true
         }
     }
@@ -38,6 +36,19 @@ class NavigationActions(private val navController: NavHostController) {
 
     fun navigateToMoodEvaluation() {
         navController.navigate(MoodEvaluation) {
+            restoreState = true
+        }
+    }
+
+
+    fun navigateToDailyEvaluation() {
+        navController.navigate(DailyEvaluation) {
+            restoreState = true
+        }
+    }
+
+    fun navigateToBiWeeklyEvaluation() {
+        navController.navigate(BiWeeklyEvaluation) {
             restoreState = true
         }
     }
