@@ -34,7 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.zurtar.mhma.DefaultTopAppBar
+import com.zurtar.mhma.util.DefaultTopAppBar
 import com.zurtar.mhma.R
 import java.text.SimpleDateFormat
 import java.util.Locale

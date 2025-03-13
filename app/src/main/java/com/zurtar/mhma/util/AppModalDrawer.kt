@@ -1,4 +1,4 @@
-package com.zurtar.mhma
+package com.zurtar.mhma.util
 
 import android.util.Log
 import androidx.compose.foundation.layout.padding
@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.zurtar.mhma.models.NavigationDrawerViewModel
+import com.zurtar.mhma.Navigation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 fun AppModalDrawer(
     drawerState: DrawerState,
     currentRoute: Any,
-    navigationActions: NavigationActions,
+    navigationActions: Navigation,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     content: @Composable () -> Unit
 ) {
@@ -53,7 +53,7 @@ fun AppModalDrawer(
 @Composable
 private fun AppDrawer(
     currentRoute: Any,
-    viewModel: NavigationDrawerViewModel = viewModel(),
+    viewModel: ModalDrawerViewModel = viewModel(),
     navigateToHome: () -> Unit,
     navigateToAccount: () -> Unit,
     navigateToLogin: () -> Unit,

@@ -1,17 +1,13 @@
-package com.zurtar.mhma.models
+package com.zurtar.mhma.auth
 
 
 // im unsure about the project structure, ive moved this into a dedicated model folder.
 // I dont  have time to focus on the best way to arrange the file structure though.
 
 import android.util.Log
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-import com.zurtar.mhma.auth.AccountServiceImplementation
-import com.zurtar.mhma.ui.theme.EmojiFrown
-import com.zurtar.mhma.ui.theme.EmojiNeutral
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -42,6 +38,8 @@ import kotlinx.coroutines.flow.update
  *    one signal, the children then react, and can also tell other children that arent listening for that bell. I dont like the bulk of logic all being in that
  *    listener, or that im adding listeners in the init function of these view models. When the lifecycle of the viewmodel is up, is that listener removed?
  *    .
+ *
+ *    ^ this applies to all view models, it was written when there was a central model file.
  */
 
 data class LoginUiState(
@@ -59,24 +57,6 @@ data class AccountUiState(
     val isLoggedIn: Boolean = false,
     val email: String = "default_initial",
     val displayName: String = "default_initial"
-)
-
-data class NavDrawerUiState(
-    val isLoggedIn: Boolean = false
-)
-
-data class BiWeeklyEvaluationUiState(
-    val score: Int = 0,
-    val page: Int = 0,
-    val questionResponse: List<Int> = listOf(0, 0, 0, 0, 0, 0, 0, 0, 0)
-)
-
-data class DailyEvaluationUiState(
-    val currentEmotion: String = "default_initial",
-    // val emotionResponse:List<String> = listOf(0, 0, 0, 0),
-    val isSubmitted: Int = 0,
-    val strongestEmotion: String = "default_initial"
-
 )
 
 class LoginViewModel : ViewModel() {
@@ -210,148 +190,6 @@ class AccountViewModel : ViewModel() {
             if (error == null)
                 onResult()
             //Handle error!
-        }
-    }
-}
-
-class NavigationDrawerViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(NavDrawerUiState())
-    val uiState: StateFlow<NavDrawerUiState> = _uiState.asStateFlow()
-
-    init {
-        Firebase.auth.addAuthStateListener { auth ->
-            Log.println(
-                Log.INFO,
-                "NavigationDrawerViewModel_FirebaseListener",
-                "Auth State Listener Fired currentUser:${auth.currentUser}"
-            )
-
-            /**
-             * This event will fire on Authentication change, sign in sign out, if we update
-             * regardless we'll trigger a lot of redundant recompositions. So we check if there is a mistmatch
-             * between the userState and our isLoggedIn value. This is ugly, and im sure theres a better way
-             * but you are welcome to find it :D
-             */
-            if (auth.currentUser == null) {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        isLoggedIn = false,
-                    )
-                }
-            }
-
-            if (auth.currentUser != null) {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        isLoggedIn = true,
-                    )
-                }
-            }
-        }
-    }
-
-}
-
-class DailyEvaluationViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(DailyEvaluationUiState())
-    val uiState: StateFlow<DailyEvaluationUiState> = _uiState.asStateFlow()
-
-    fun onSubmit() {
-        _uiState.update { currentState ->
-            currentState.copy(isSubmitted = 1)
-        }
-    }
-
-    fun updateEmotion(emoji: ImageVector) {
-        if (emoji == EmojiFrown) {
-            _uiState.update { currentState ->
-                currentState.copy(currentEmotion = "Upset")
-            }
-        } else if (emoji == EmojiNeutral) {
-            _uiState.update { currentState ->
-                currentState.copy(currentEmotion = "Neutral")
-            }
-        } else {
-            _uiState.update { currentState ->
-                currentState.copy(currentEmotion = "Happy")
-            }
-        }
-    }
-
-    fun emotionSelect(emotion: String) {
-//
-//        val newList = _uiState.value.emotionResponse.toMutableList()
-//        var index = 0
-//        if(emotion == "Happy"){
-//            index = 1
-//        }else if(emotion == "Fearful") {
-//            index = 2
-//        } else if (emotion == "Angry") {
-//            index = 3
-//        } else {
-//            index = 0
-//        }
-//        newList[index] = _uiState.value.emotionResponse[index] +1
-//
-//        _uiState.update { currentState ->
-//            currentState.copy(
-//                emotionResponse = newList
-//            )
-//        }
-        _uiState.update { currentState ->
-            currentState.copy(strongestEmotion = emotion)
-        }
-    }
-
-}
-
-class BiWeeklyEvaluationViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(BiWeeklyEvaluationUiState())
-    val uiState: StateFlow<BiWeeklyEvaluationUiState> = _uiState.asStateFlow()
-
-
-    /**
-     * Triggered when Next button is pressed
-     * Should increment page count and possibly do verification
-     */
-    fun onNext() {
-        _uiState.update { currentState ->
-            currentState.copy(page = currentState.page + 1)
-        }
-
-        if (_uiState.value.page == 8)
-            debugScore()
-    }
-
-    fun onBack() {
-        _uiState.update { currentState ->
-            currentState.copy(page = currentState.page - 1)
-        }
-    }
-
-    fun onSelect(selected: Int) {
-        val newList = _uiState.value.questionResponse.toMutableList()
-        newList[_uiState.value.page] = selected
-
-        _uiState.update { currentState ->
-            currentState.copy(
-                questionResponse = newList
-            )
-        }
-    }
-
-    fun debugScore() {
-        val score = _uiState.value.questionResponse.sum()
-        _uiState.update { currentState ->
-            currentState.copy(score = score)
-        }
-
-        Log.println(Log.DEBUG, "BiWeeklyEvalVM", "$score")
-    }
-
-    fun resetPage() {
-        _uiState.update { currentState ->
-            currentState.copy(page = 0)
         }
     }
 }

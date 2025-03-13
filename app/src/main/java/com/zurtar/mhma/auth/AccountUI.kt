@@ -1,4 +1,4 @@
-package com.zurtar.mhma
+package com.zurtar.mhma.auth
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,9 +21,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.zurtar.mhma.models.AccountViewModel
-import com.zurtar.mhma.models.LoginViewModel
-import com.zurtar.mhma.models.SignupViewModel
+import com.zurtar.mhma.util.DefaultTopAppBar
 
 
 /**

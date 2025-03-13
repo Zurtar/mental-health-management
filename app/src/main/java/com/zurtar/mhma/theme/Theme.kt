@@ -1,4 +1,4 @@
-package com.zurtar.mhma.ui.theme
+package com.zurtar.mhma.theme
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

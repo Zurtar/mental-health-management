@@ -11,7 +11,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -19,16 +18,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.zurtar.mhma.auth.AccountScreen
+import com.zurtar.mhma.auth.LoginScreen
+import com.zurtar.mhma.auth.SignUpScreen
 import com.zurtar.mhma.home.HomeScreen
 import com.zurtar.mhma.journal.EntryModificationScreen
 import com.zurtar.mhma.journal.JournalingScreen
-import com.zurtar.mhma.models.NavigationDrawerViewModel
 import com.zurtar.mhma.mood.BiWeeklyEvaluationScreen
 import com.zurtar.mhma.mood.DailyMoodEvaluationScreen
 import com.zurtar.mhma.mood.MoodEvaluationScreen
+import com.zurtar.mhma.util.AppModalDrawer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
 
 @Composable
 fun NavGraph(
@@ -37,8 +38,8 @@ fun NavGraph(
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     startDestination: Any = Home,
-    navActions: NavigationActions = remember(navController) {
-        NavigationActions(navController)
+    navActions: Navigation = remember(navController) {
+        Navigation(navController)
     },
 ) {
     val currentNavBackStackEntry by navController.currentBackStackEntryAsState()
@@ -149,34 +150,3 @@ fun NavGraph(
     }
 }
 
-/**
- * Nav Host Objects
- *
- * I need to centralize this
- */
-@Serializable
-object Login
-
-@Serializable
-object SignUp
-
-@Serializable
-object Account
-
-@Serializable
-object Home
-
-@Serializable
-object MoodEvaluation
-
-@Serializable
-object BiWeeklyEvaluation
-
-@Serializable
-object DailyEvaluation
-
-@Serializable
-object Journal
-
-@Serializable
-object JournalEntryR

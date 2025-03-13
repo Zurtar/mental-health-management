@@ -1,8 +1,11 @@
 package com.zurtar.mhma
 
 import androidx.navigation.NavHostController
+import kotlinx.serialization.Serializable
 
-class NavigationActions(private val navController: NavHostController) {
+class Navigation(private val navController: NavHostController) {
+
+
 
     fun navigateToHome() {
         navController.navigate(Home) {
@@ -53,3 +56,35 @@ class NavigationActions(private val navController: NavHostController) {
         }
     }
 }
+
+/**
+ * Nav Host Objects
+ *
+ * I need to centralize this
+ */
+@Serializable
+object Login
+
+@Serializable
+object SignUp
+
+@Serializable
+object Account
+
+@Serializable
+object Home
+
+@Serializable
+object MoodEvaluation
+
+@Serializable
+object BiWeeklyEvaluation
+
+@Serializable
+object DailyEvaluation
+
+@Serializable
+object Journal
+
+@Serializable
+object JournalEntryR

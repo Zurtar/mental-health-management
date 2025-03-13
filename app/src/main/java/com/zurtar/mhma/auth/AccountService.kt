@@ -7,8 +7,6 @@ import com.google.firebase.firestore.firestore
 import java.time.Instant
 
 /**
- *
- *
  * Let me ask you a question, you don't look like a dancer but would be make an exception?
  */
 

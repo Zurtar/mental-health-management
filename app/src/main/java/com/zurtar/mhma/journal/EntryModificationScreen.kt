@@ -16,7 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.zurtar.mhma.DefaultTopAppBar
+import com.zurtar.mhma.util.DefaultTopAppBar
 
 /*
 EntryModification page can be called upon in two different ways: a version where it is
