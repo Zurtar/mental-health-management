@@ -58,7 +58,11 @@ fun DailyMoodEvaluationScreen(
         }
     ) { innerPadding ->
         if (uiState.isSubmitted == 1) {
-            DailyResult(modifier, uiState.currentEmotion, uiState.strongestEmotion)
+            DailyResult(
+                modifier = modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(), uiState.currentEmotion, uiState.strongestEmotion
+            )
             return@Scaffold
         }
 

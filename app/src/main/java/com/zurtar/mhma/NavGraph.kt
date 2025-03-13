@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -21,6 +22,7 @@ import androidx.navigation.navArgument
 import com.zurtar.mhma.home.HomeScreen
 import com.zurtar.mhma.journal.EntryModificationScreen
 import com.zurtar.mhma.journal.JournalingScreen
+import com.zurtar.mhma.models.NavigationDrawerViewModel
 import com.zurtar.mhma.mood.BiWeeklyEvaluationScreen
 import com.zurtar.mhma.mood.DailyMoodEvaluationScreen
 import com.zurtar.mhma.mood.MoodEvaluationScreen
@@ -42,7 +44,6 @@ fun NavGraph(
     val currentNavBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentNavBackStackEntry?.destination?.route ?: startDestination
 
-
     /** this wraps around nav host to provide a shared modal drawer across all pages
      *
      * The alternative is to have it within each composable<> call, wrapping the specific screen
@@ -57,7 +58,6 @@ fun NavGraph(
      *
      * 2025-03-11 Ethan
      * */
-
 
     AppModalDrawer(drawerState, currentRoute, navActions) {
         NavHost(

@@ -63,7 +63,7 @@ private fun AppDrawer(
 ) {
     val navDrawerUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    ModalDrawerSheet(drawerShape = customDrawerShape()) {
+    ModalDrawerSheet(modifier = modifier, drawerShape = customDrawerShape()) {
         Text("Navigation", modifier = Modifier.padding(16.dp))
         HorizontalDivider()
         NavigationDrawerItem(
