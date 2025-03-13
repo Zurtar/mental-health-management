@@ -5,7 +5,6 @@ package com.zurtar.mhma.models
 // I dont  have time to focus on the best way to arrange the file structure though.
 
 import android.util.Log
-import androidx.compose.runtime.currentComposer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import com.google.firebase.Firebase
@@ -73,10 +72,10 @@ data class BiWeeklyEvaluationUiState(
 )
 
 data class DailyEvaluationUiState(
-    val currentEmotion:String = "default_initial",
-   // val emotionResponse:List<String> = listOf(0, 0, 0, 0),
-    val isSubmitted:Int = 0,
-    val strongestEmotion:String = "default_initial"
+    val currentEmotion: String = "default_initial",
+    // val emotionResponse:List<String> = listOf(0, 0, 0, 0),
+    val isSubmitted: Int = 0,
+    val strongestEmotion: String = "default_initial"
 
 )
 
@@ -223,7 +222,7 @@ class NavigationDrawerViewModel : ViewModel() {
         Firebase.auth.addAuthStateListener { auth ->
             Log.println(
                 Log.INFO,
-                "AccountViewModel_FirebaseListener",
+                "NavigationDrawerViewModel_FirebaseListener",
                 "Auth State Listener Fired currentUser:${auth.currentUser}"
             )
 
@@ -233,7 +232,6 @@ class NavigationDrawerViewModel : ViewModel() {
              * between the userState and our isLoggedIn value. This is ugly, and im sure theres a better way
              * but you are welcome to find it :D
              */
-
             if (auth.currentUser == null) {
                 _uiState.update { currentState ->
                     currentState.copy(
@@ -242,18 +240,20 @@ class NavigationDrawerViewModel : ViewModel() {
                 }
             }
 
-            if (auth.currentUser != null)
+            if (auth.currentUser != null) {
                 _uiState.update { currentState ->
                     currentState.copy(
                         isLoggedIn = true,
                     )
                 }
+            }
         }
     }
 
 }
+
 class DailyEvaluationViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow( DailyEvaluationUiState())
+    private val _uiState = MutableStateFlow(DailyEvaluationUiState())
     val uiState: StateFlow<DailyEvaluationUiState> = _uiState.asStateFlow()
 
     fun onSubmit() {
@@ -262,12 +262,12 @@ class DailyEvaluationViewModel : ViewModel() {
         }
     }
 
-    fun updateEmotion(emoji:ImageVector) {
-        if(emoji == EmojiFrown) {
+    fun updateEmotion(emoji: ImageVector) {
+        if (emoji == EmojiFrown) {
             _uiState.update { currentState ->
                 currentState.copy(currentEmotion = "Upset")
             }
-        } else if (emoji == EmojiNeutral ) {
+        } else if (emoji == EmojiNeutral) {
             _uiState.update { currentState ->
                 currentState.copy(currentEmotion = "Neutral")
             }

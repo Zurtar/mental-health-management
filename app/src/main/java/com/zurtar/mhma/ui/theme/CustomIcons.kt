@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
-public val EmojiFrown: ImageVector
+val EmojiFrown: ImageVector
     get() {
         if (_EmojiFrown != null) {
             return _EmojiFrown!!
@@ -75,7 +75,7 @@ public val EmojiFrown: ImageVector
 
 private var _EmojiFrown: ImageVector? = null
 
-public val EmojiNeutral: ImageVector
+val EmojiNeutral: ImageVector
     get() {
         if (_EmojiNeutral != null) {
             return _EmojiNeutral!!
@@ -140,7 +140,7 @@ public val EmojiNeutral: ImageVector
 private var _EmojiNeutral: ImageVector? = null
 
 
-public val EmojiSmile: ImageVector
+val EmojiSmile: ImageVector
     get() {
         if (_EmojiSmile != null) {
             return _EmojiSmile!!
