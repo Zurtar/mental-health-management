@@ -85,12 +85,14 @@ fun NavGraph(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
                     onLogoutResult = { navActions.navigateToHome() })
             }
+
             composable<Login> {
                 LoginScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
                     onLoginResult = { navActions.navigateToAccount() },
                     onNavigateToSignUp = { navActions.navigateToSignup() })
             }
+
             composable<SignUp> {
                 SignUpScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
@@ -104,6 +106,7 @@ fun NavGraph(
                     onNavigateToBiWeekly = { navActions.navigateToBiWeeklyEvaluation() }
                 )
             }
+
             composable<BiWeeklyEvaluation> {
                 BiWeeklyEvaluationScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },

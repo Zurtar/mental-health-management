@@ -5,8 +5,6 @@ import kotlinx.serialization.Serializable
 
 class Navigation(private val navController: NavHostController) {
 
-
-
     fun navigateToHome() {
         navController.navigate(Home) {
             restoreState = true
