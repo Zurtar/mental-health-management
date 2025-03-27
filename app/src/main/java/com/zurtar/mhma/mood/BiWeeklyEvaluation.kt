@@ -1,5 +1,6 @@
 package com.zurtar.mhma.mood
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -7,25 +8,36 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.SuggestionChipDefaults
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -59,7 +71,7 @@ fun BiWeeklyEvaluationScreen(
                 .padding(innerPadding)
                 .fillMaxSize(),
             page = uiState.page,
-            score = uiState.score,
+            score = uiState.depressionScore,
             questionResponses = uiState.questionResponse,
             onSelect = viewModel::onSelect,
             onBack = viewModel::onBack,
@@ -116,7 +128,7 @@ private fun BiWeeklyEvaluationScreenContent(
                     content = { Text("Back") })
 
             var text = "Next"
-            if (questions.size == 8) text = "Submit"
+            if (page == questions.size - 1) text = "Submit"
             FilledTonalButton(onClick = { onNext() }, content = { Text(text) })
         }
     }
@@ -215,11 +227,10 @@ fun BiWeeklyResult(
         "Severe depression"
     )
 
-    var text = ""
-    if (depressionScore < 10 || anxietyScore < 10) {
-        text = "unlikely"
+    val text = if (depressionScore < 10 || anxietyScore < 10) {
+        "unlikely"
     } else {
-        text = "likely"
+        "likely"
     }
 
 
@@ -337,7 +348,7 @@ fun BiWeeklyResultsPrev() {
 @Composable
 fun AnalyticsTab() {
 
-    var pagerState by remember { mutableStateOf(1) }
+    var pagerState by remember { mutableIntStateOf(1) }
 
     val tabs = listOf("Quick", "BiWeekly")
     Column(
@@ -413,18 +424,16 @@ fun BiWeeklyAnalyticsScreen() {
         )
 
 
-
     }
 
 }
 
 @Composable
 fun SummaryCards() {
-    ElevatedCard() {
+    ElevatedCard {
 
     }
 }
-
 
 
 /*@Composable

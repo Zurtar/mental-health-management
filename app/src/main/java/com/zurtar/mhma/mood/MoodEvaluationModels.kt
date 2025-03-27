@@ -11,9 +11,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 data class BiWeeklyEvaluationUiState(
-    val score: Int = 0,
+    val depressionScore: Int = 0,
+    val anxietyScore: Int = 0,
     val page: Int = 0,
-    val questionResponse: List<Int> = listOf(0, 0, 0, 0, 0, 0, 0, 0, 0)
+    val questionResponse: List<Int> = listOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 )
 
 data class DailyEvaluationUiState(
@@ -91,7 +92,7 @@ class BiWeeklyEvaluationViewModel : ViewModel() {
             currentState.copy(page = currentState.page + 1)
         }
 
-        if (_uiState.value.page == 8)
+        if (_uiState.value.page == _uiState.value.questionResponse.size)
             debugScore()
     }
 
@@ -113,12 +114,17 @@ class BiWeeklyEvaluationViewModel : ViewModel() {
     }
 
     fun debugScore() {
-        val score = _uiState.value.questionResponse.sum()
+        val depressionScore = _uiState.value.questionResponse.subList(0, 9).sum()
+        val anxietyScore = _uiState.value.questionResponse.subList(9, 15).sum()
         _uiState.update { currentState ->
-            currentState.copy(score = score)
+            currentState.copy(
+                depressionScore = depressionScore,
+                anxietyScore = anxietyScore
+            )
         }
 
-        Log.println(Log.DEBUG, "BiWeeklyEvalVM", "$score")
+        Log.println(Log.DEBUG, "BiWeeklyEvalVM", "Depression Score: $depressionScore")
+        Log.println(Log.DEBUG, "BiWeeklyEvalVM", "Anxiety Score: $anxietyScore")
     }
 
     fun resetPage() {
