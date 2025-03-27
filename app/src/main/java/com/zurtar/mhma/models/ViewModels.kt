@@ -5,7 +5,6 @@ package com.zurtar.mhma.models
 // I dont  have time to focus on the best way to arrange the file structure though.
 
 import android.util.Log
-import androidx.compose.runtime.currentComposer
 import androidx.lifecycle.ViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -64,7 +63,7 @@ data class NavDrawerUiState(
 )
 
 data class BiWeeklyEvaluationUiState(
-    val depresessionScore: Int = 0,
+    val depressionScore: Int = 0,
     val anxietyScore: Int = 0,
     val page: Int = 0,
     val questionResponse: List<Int> = listOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
@@ -140,15 +139,15 @@ class SignupViewModel : ViewModel() {
             return
 
 
-            accountService.createAccount(
-                email = _uiState.value.email,
-                password = _uiState.value.password,
-                onResult = { error ->
-                    // OnResult
-                    if (error == null)
-                        onResult()
-                    //Handle error!
-                })
+        accountService.createAccount(
+            email = _uiState.value.email,
+            password = _uiState.value.password,
+            onResult = { error ->
+                // OnResult
+                if (error == null)
+                    onResult()
+                //Handle error!
+            })
     }
 }
 
@@ -279,12 +278,18 @@ class BiWeeklyEvaluationViewModel : ViewModel() {
     }
 
     fun debugScore() {
-        val d_score = _uiState.value.questionResponse.sum()
+        val depressionScore = _uiState.value.questionResponse.subList(0, 9).sum()
+        val anxietyScore = _uiState.value.questionResponse.subList(9, 15).sum()
+
         _uiState.update { currentState ->
-            currentState.copy(depresessionScore = d_score)
+            currentState.copy(
+                depressionScore = depressionScore,
+                anxietyScore = anxietyScore
+            )
         }
 
-        Log.println(Log.DEBUG, "BiWeeklyEvalVM", "$d_score")
+        Log.println(Log.DEBUG, "BiWeeklyEvalVM", "Depression Score: $depressionScore")
+        Log.println(Log.DEBUG, "BiWeeklyEvalVM", "Anxiety Score: $anxietyScore")
     }
 
     fun resetPage() {

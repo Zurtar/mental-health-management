@@ -111,9 +111,10 @@ fun BiWeeklyEvaluationScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val questions: Array<String> = stringArrayResource(R.array.phq_9_questions)
+
     // val gadQuestions = Array<String> = stringArrayResource(R.array.gad_7_questions)
 
-    if (uiState.page == 2) {
+    if (uiState.page == questions.size) {
         // BiWeeklyResult(modifier = modifier, uiState.depresessionScore, uiState.anxietyScore)
         AnalyticsTab()
         return
@@ -146,7 +147,7 @@ fun BiWeeklyEvaluationScreen(
                 content = { Text("Back") })
 
             var text = "Next"
-            if (uiState.page == 8) text = "Submit";
+            if (uiState.page == questions.size) text = "Submit";
             FilledTonalButton(onClick = { viewModel.onNext() }, content = { Text(text) })
         }
     }
