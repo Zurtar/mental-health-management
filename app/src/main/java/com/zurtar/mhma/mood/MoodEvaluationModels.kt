@@ -3,12 +3,18 @@ package com.zurtar.mhma.mood
 import android.util.Log
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.zurtar.mhma.data.MoodEntry
+import com.zurtar.mhma.data.MoodRemoteDataSource
+import com.zurtar.mhma.data.MoodRepository
 import com.zurtar.mhma.theme.EmojiFrown
 import com.zurtar.mhma.theme.EmojiNeutral
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import java.util.Date
 
 data class BiWeeklyEvaluationUiState(
     val score: Int = 0,
@@ -78,6 +84,9 @@ class DailyEvaluationViewModel : ViewModel() {
 }
 
 class BiWeeklyEvaluationViewModel : ViewModel() {
+
+    private val moodRepository = MoodRepository(moodRemoteDataSource = MoodRemoteDataSource())
+
     private val _uiState = MutableStateFlow(BiWeeklyEvaluationUiState())
     val uiState: StateFlow<BiWeeklyEvaluationUiState> = _uiState.asStateFlow()
 
@@ -91,8 +100,8 @@ class BiWeeklyEvaluationViewModel : ViewModel() {
             currentState.copy(page = currentState.page + 1)
         }
 
-        if (_uiState.value.page == 8)
-            debugScore()
+        if (_uiState.value.page == _uiState.value.questionResponse.size)
+            submitMoodEntry()
     }
 
     fun onBack() {
@@ -112,6 +121,7 @@ class BiWeeklyEvaluationViewModel : ViewModel() {
         }
     }
 
+
     fun debugScore() {
         val score = _uiState.value.questionResponse.sum()
         _uiState.update { currentState ->
@@ -120,6 +130,20 @@ class BiWeeklyEvaluationViewModel : ViewModel() {
 
         Log.println(Log.DEBUG, "BiWeeklyEvalVM", "$score")
     }
+
+    fun submitMoodEntry() {
+        debugScore();
+
+        val entry = MoodEntry(
+            depressionScore = _uiState.value.score,
+            anxietyScore = -1,
+            dateCompleted = Date()
+        )
+        viewModelScope.launch {
+            moodRepository.addMoodEntry(entry)
+        }
+    }
+
 
     fun resetPage() {
         _uiState.update { currentState ->

@@ -3,6 +3,7 @@ package com.zurtar.mhma.auth
 import com.google.firebase.Firebase
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
 import java.time.Instant
 
@@ -36,9 +37,16 @@ class AccountServiceImplementation : AccountService {
             .addOnCompleteListener {
                 onResult(it.exception)
                 val uid = it.result.user?.uid ?: return@addOnCompleteListener
+                val user = it.result.user!!
+                user.email!!
 
-                Firebase.firestore.collection("users").document("$uid")
-                    .set("online" to Instant.now().toString())
+                val updates = hashMapOf<String, Any>(
+                    "email" to user.email!!,
+                    "last_login" to FieldValue.serverTimestamp()
+                )
+
+                Firebase.firestore.collection("users").document(uid)
+                    .set(updates)
             }
     }
 

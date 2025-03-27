@@ -4,14 +4,19 @@ package com.zurtar.mhma.auth
 // im unsure about the project structure, ive moved this into a dedicated model folder.
 // I dont  have time to focus on the best way to arrange the file structure though.
 
+import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import com.zurtar.mhma.data.MoodRemoteDataSource
+import com.zurtar.mhma.data.MoodRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 /**
  * This file will hold no UI logic!! This is a ViewModel/Buisness Logic Class only!
@@ -147,6 +152,9 @@ class AccountViewModel : ViewModel() {
 
     private val accountService: AccountServiceImplementation = AccountServiceImplementation()
 
+    // debug to check
+    private val moodRepository: MoodRepository = MoodRepository(MoodRemoteDataSource())
+
     init {
         Firebase.auth.addAuthStateListener { auth ->
             Log.println(
@@ -180,6 +188,10 @@ class AccountViewModel : ViewModel() {
                         displayName = auth.currentUser?.displayName ?: "N/A"
                     )
                 }
+        }
+
+        viewModelScope.launch {
+            Log.println(Log.INFO, "MoodRepoTest", moodRepository.fetchLatestMoodEntries().toString())
         }
     }
 
