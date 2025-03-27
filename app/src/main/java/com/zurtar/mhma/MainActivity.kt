@@ -224,6 +224,7 @@ fun MyApp() {
                             BiWeeklyEvaluationScreen(
                                 modifier = Modifier.padding(innerPadding),
                             )
+                            //AnalyticsTab()
                         }
                         composable<Journal> {
                             JournalingScreen(
