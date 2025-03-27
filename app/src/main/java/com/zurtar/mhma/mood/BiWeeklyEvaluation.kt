@@ -1,5 +1,8 @@
 package com.zurtar.mhma.mood
 
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,18 +45,31 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.zurtar.mhma.util.DefaultTopAppBar
 import com.zurtar.mhma.R
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 
+data class BiWeeklyEvalStat(
+        var depressionScore: Int,
+        var anxietyScore: Int,
+        var dateCompleted: LocalDate,
+        var depressionResults: String = "",
+        var anxietyResults: String = ""
+
+    )
 @Composable
 fun BiWeeklyEvaluationScreen(
     modifier: Modifier = Modifier,
@@ -402,8 +419,7 @@ fun BiWeeklyAnalyticsScreen() {
 
         Row(
             Modifier
-                .fillMaxWidth()
-                .background(Color.LightGray),
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.Start
         ) {
 
@@ -418,46 +434,130 @@ fun BiWeeklyAnalyticsScreen() {
                 colors = SuggestionChipDefaults.suggestionChipColors(MaterialTheme.colorScheme.secondaryContainer)
             )
         }
+        SummaryPage()
+    }
+}
 
-        Text(
-            text = "Today"
+fun makeCardInfo(): List<BiWeeklyEvalStat> {
+    var results = mutableListOf<BiWeeklyEvalStat>()
+
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val current = LocalDate.now()
+
+    val currentString = current.format(formatter)
+
+    for (i in 0..6) {
+
+        val date = current.minusDays(i.toLong())
+
+        results.add(
+            BiWeeklyEvalStat(
+                depressionScore = 5 + i,
+                anxietyScore = 2 + i,
+                dateCompleted = date
+            )
         )
-
-
     }
 
+    return results.toList()
+}
+
+
+@Composable
+fun SummaryPage() {
+    val results = makeCardInfo()
+
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val current = LocalDate.now()
+    val currentString = current.format(formatter)
+    val yesterday = current.minusDays(1).format(formatter)
+
+    val todays = results.filter {
+        it.dateCompleted.format(formatter) == currentString
+    }
+    val lastWeek = results.filter {
+        it.dateCompleted.format(formatter) == yesterday
+    }
+    val other = results.filter {
+        it.dateCompleted < current.minusDays(2)
+    }
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = "Current Week:",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+        todays.forEach { SummaryCards(it) }
+
+        Text(
+            text = "Last Week:",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+        lastWeek.forEach { SummaryCards(it) }
+
+    }
 }
 
 @Composable
-fun SummaryCards() {
-    ElevatedCard {
+fun SummaryCards(results: BiWeeklyEvalStat) {
+
+    val colour = MaterialTheme.colorScheme.primaryContainer
+
+    ElevatedCard(
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.SpaceEvenly,
+            horizontalAlignment = Alignment.Start
+        ) {
+            Text(
+                text = "Mood:",
+                style = MaterialTheme.typography.titleSmall
+            )
+
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                Text(
+                    text = "Moderate Depression",
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(20.dp)
+                        .drawBehind { drawCircle(
+                            color = colour,
+                            radius = this.size.maxDimension
+                        ) },
+                    text = "${results.depressionScore}"
+                )
+
+            }
+
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                Text(
+                    text = "Moderate Anxiety"
+                )
+                FilledTonalButton(onClick = {}, enabled = true, elevation = ButtonDefaults.buttonElevation(3.dp), content = {
+                    Text(
+                        text = "${results.anxietyScore}",
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+                )
+
+            }
+        }
+
 
     }
 }
 
-
-/*@Composable
-fun BiWeeklyEvaluationScreen(modifier: Modifier) {
-
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Bi-Weekly Evaluation:", style = MaterialTheme.typography.titleMedium
-        )
-        Spacer(Modifier.size(16.dp))
-        Text(
-            text = "The set of questions will help to evaluate your mood over the last 2 weeks based on your responses. " + "The questions used are taken from the PHQ-9, which helps ",
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center
-        )
-        Spacer(Modifier.size(16.dp))
-        ScoreChart()
-    }
-}*/
 
 @Composable
 fun ScoreChart(score: Int, scores: List<String>, severities: List<String>) {
