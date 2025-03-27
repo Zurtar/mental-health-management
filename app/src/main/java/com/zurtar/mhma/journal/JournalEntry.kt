@@ -5,10 +5,7 @@ package com.zurtar.mhma.journal
 and JournalViewModel
  */
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import java.time.Instant
-import java.time.LocalDateTime
 import java.util.Date
 
 data class JournalEntry(

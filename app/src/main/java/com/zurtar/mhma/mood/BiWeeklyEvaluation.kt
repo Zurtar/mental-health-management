@@ -1,46 +1,41 @@
 package com.zurtar.mhma.mood
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.material3.Tab
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material3.Icon
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -54,68 +49,51 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.zurtar.mhma.util.DefaultTopAppBar
 import com.zurtar.mhma.R
-import com.zurtar.mhma.models.BiWeeklyEvaluationViewModel
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
-class BiWeeklyEval {
-    private var completed = false
-    private var date = ""
-    val completedEvals: MutableMap<String, Array<String>> = mutableMapOf<String, Array<String>>()
-
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun setCompleted() {
-        val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val currentDate = LocalDateTime.now().format(dateFormat)
-        if (completed && date != currentDate) {
-            completed = false
-            return
-        }
-        if (!completed && date == "") {
-            completed = true
-            return
-        }
-    }
-
-    fun getCompleted(): Boolean {
-        return completed
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun setDate() {
-        if (getCompleted()) {
-            val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-            date = LocalDateTime.now().format(dateFormat)
-        }
-    }
-
-    fun getDate(): String {
-        return date
-    }
-
-    fun addCompletedEval(date: String, responses: Array<String>): Int {
-        if (date != "") {
-            completedEvals.put(date, responses)
-            return 1
-        }
-        return -1
-    }
-
-}
 
 @Composable
 fun BiWeeklyEvaluationScreen(
-    modifier: Modifier = Modifier, viewModel: BiWeeklyEvaluationViewModel = viewModel()
+    modifier: Modifier = Modifier,
+    viewModel: BiWeeklyEvaluationViewModel = viewModel(),
+    openDrawer: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    Scaffold(modifier = modifier.fillMaxSize(),
+        topBar = {
+            DefaultTopAppBar(openDrawer = openDrawer)
+        }
+    ) { innerPadding ->
+        BiWeeklyEvaluationScreenContent(
+            modifier = modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
+            page = uiState.page,
+            score = uiState.depressionScore,
+            questionResponses = uiState.questionResponse,
+            onSelect = viewModel::onSelect,
+            onBack = viewModel::onBack,
+            onNext = viewModel::onNext,
+        )
+    }
+}
+
+@Composable
+private fun BiWeeklyEvaluationScreenContent(
+    modifier: Modifier = Modifier,
+    page: Int,
+    score: Int,
+    questionResponses: List<Int>,
+    onSelect: (Int) -> Unit,
+    onBack: () -> Unit,
+    onNext: () -> Unit,
+) {
     val questions: Array<String> = stringArrayResource(R.array.phq_9_questions)
 
-    // val gadQuestions = Array<String> = stringArrayResource(R.array.gad_7_questions)
-
-    if (uiState.page == questions.size) {
-        // BiWeeklyResult(modifier = modifier, uiState.depresessionScore, uiState.anxietyScore)
+    if (page == questions.size) {
+//        BiWeeklyResult(modifier = modifier, score)
         AnalyticsTab()
         return
     }
@@ -133,22 +111,25 @@ fun BiWeeklyEvaluationScreen(
         )
 
         QuestionCard(
-            num = uiState.page,
-            question = questions[uiState.page],
-            selectedOption = uiState.questionResponse[uiState.page],
-            onSelect = viewModel::onSelect
+            num = page,
+            question = questions[page],
+            selectedOption = questionResponses[page],
+            onSelect = onSelect
         )
 
 
         Row(
-            Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceAround
         ) {
-            if (uiState.page > 0) FilledTonalButton(onClick = { viewModel.onBack() },
-                content = { Text("Back") })
+            if (page > 0)
+                FilledTonalButton(
+                    onClick = { onBack() },
+                    content = { Text("Back") })
 
             var text = "Next"
-            if (uiState.page == questions.size) text = "Submit";
-            FilledTonalButton(onClick = { viewModel.onNext() }, content = { Text(text) })
+            if (page == questions.size - 1) text = "Submit"
+            FilledTonalButton(onClick = { onNext() }, content = { Text(text) })
         }
     }
 }
@@ -246,11 +227,10 @@ fun BiWeeklyResult(
         "Severe depression"
     )
 
-    var text = ""
-    if (depressionScore < 10 || anxietyScore < 10) {
-        text = "unlikely"
+    val text = if (depressionScore < 10 || anxietyScore < 10) {
+        "unlikely"
     } else {
-        text = "likely"
+        "likely"
     }
 
 
@@ -368,7 +348,7 @@ fun BiWeeklyResultsPrev() {
 @Composable
 fun AnalyticsTab() {
 
-    var pagerState by remember { mutableStateOf(1) }
+    var pagerState by remember { mutableIntStateOf(1) }
 
     val tabs = listOf("Quick", "BiWeekly")
     Column(
@@ -444,64 +424,17 @@ fun BiWeeklyAnalyticsScreen() {
         )
 
 
-
     }
 
 }
 
 @Composable
 fun SummaryCards() {
-    ElevatedCard() {
-        
+    ElevatedCard {
+
     }
 }
 
-
-fun calcScore(list: List<String>): Int {
-    var total = 0
-
-    for (response: String in list) {
-        if (response == "Several days") {
-            total += 1
-        }
-        if (response == "More than half the days") {
-            total += 2
-        }
-        if (response == "Nearly everyday") {
-            total += 3
-        }
-    }
-    return total
-}
-
-@Composable
-fun AlertDialogExample(
-    onDismissRequest: () -> Unit,
-    onConfirmation: () -> Unit,
-    dialogTitle: String,
-    dialogText: String,
-    icon: Any
-) {
-    AlertDialog(title = {
-        Text(text = dialogTitle)
-    }, text = {
-        Text(text = dialogText)
-    }, onDismissRequest = {
-        onDismissRequest()
-    }, confirmButton = {
-        TextButton(onClick = {
-            onConfirmation()
-        }) {
-            Text("Continue to Analysis")
-        }
-    }, dismissButton = {
-        TextButton(onClick = {
-            onDismissRequest()
-        }) {
-            Text("Dismiss")
-        }
-    })
-}
 
 /*@Composable
 fun BiWeeklyEvaluationScreen(modifier: Modifier) {
@@ -525,7 +458,6 @@ fun BiWeeklyEvaluationScreen(modifier: Modifier) {
         ScoreChart()
     }
 }*/
-
 
 @Composable
 fun ScoreChart(score: Int, scores: List<String>, severities: List<String>) {

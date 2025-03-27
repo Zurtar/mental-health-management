@@ -1,11 +1,9 @@
 package com.zurtar.mhma.journal
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,8 +18,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.zurtar.mhma.util.DefaultTopAppBar
 import com.zurtar.mhma.R
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -47,11 +46,11 @@ entries currently in existence, which JournalingPage then displays to the user i
 a lazy column.
  */
 
-
 @Composable
 fun JournalingScreen(
     modifier: Modifier = Modifier,
     viewModel: JournalViewModel = viewModel(),
+    openDrawer: () -> Unit,
     onNavigateToEntryCreation: () -> Unit,
     onNavigateToEntryEdit: (Int) -> Unit
 ) {
@@ -63,57 +62,142 @@ fun JournalingScreen(
         viewModel.addEntry(entry)
     }
 
-    Scaffold(
-        modifier = modifier,
+    Scaffold(modifier = modifier.fillMaxSize(),
+        topBar = {
+            DefaultTopAppBar(openDrawer = openDrawer)
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = { onNavigateToEntryCreation() }) {
                 Icon(Icons.Filled.Add, "Add new entry")
             }
         }
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxHeight()
+        JournalingScreenContent(
+            modifier = modifier
                 .padding(innerPadding)
-                .padding(8.dp)
-        ) {
-            Text(
-                text = "Journal",
-                fontSize = 30.sp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-            )
-            entryList?.let {
-                LazyColumn(
-                    content = {
-                        itemsIndexed(it) { index: Int, item: JournalEntry ->
-                            EntryItem(
-                                item = item,
-                                onDelete = { viewModel.deleteEntry(item.id) },
-                                onEdit = { onNavigateToEntryEdit(item.id) })
-                        }
+                .fillMaxSize(),
+            entryList = entryList,
+            onNavigateToEntryEdit = onNavigateToEntryEdit,
+            deleteEntry = viewModel::deleteEntry
+        )
+    }
+
+
+}
+
+@Composable
+private fun JournalingScreenContent(
+    modifier: Modifier = Modifier,
+    entryList: List<JournalEntry>?,
+    onNavigateToEntryEdit: (Int) -> Unit,
+    deleteEntry: (Int) -> Unit
+) {
+    Column(
+        modifier = modifier
+    ) {
+        Text(
+            text = "Journal",
+            fontSize = 30.sp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+        )
+        entryList?.let {
+            LazyColumn(
+                content = {
+                    itemsIndexed(it) { index: Int, item: JournalEntry ->
+                        EntryItem(
+                            item = item,
+                            onDelete = { deleteEntry(item.id) },
+                            onEdit = { onNavigateToEntryEdit(item.id) })
                     }
-                )
-            } ?: Text(
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center,
-                text = "No entries found",
-                fontSize = 16.sp
+                }
             )
-        }
+        } ?: Text(
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            text = "No entries found",
+            fontSize = 16.sp
+        )
+
     }
 }
 
 @Composable
 fun EntryItem(item: JournalEntry, onDelete: () -> Unit, onEdit: () -> Unit) {
+
     var expanded by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.primary)
+            .background(MaterialTheme.colorScheme.onPrimary)
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(8.dp)
+        ) {
+            Text(
+                text = SimpleDateFormat("HH:mm:aa, dd/mm", Locale.ENGLISH).format(item.createdAt),
+                fontSize = 12.sp,
+                color = Color.LightGray
+            )
+            Text(
+                text = item.title,
+                fontSize = 20.sp,
+                color = Color.White
+            )
+            Text(
+                text = item.content.take(200),
+                fontSize = 10.sp,
+                color = Color.White
+            )
+        }
+        IconButton(onClick = { expanded = true }) {
+            Icon(
+                painter = painterResource(id = R.drawable.baseline_arrow_drop_down_circle_24),
+                contentDescription = "Options",
+                tint = Color.White
+            )
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text("Edit") },
+                    onClick = {
+                        onEdit()
+                        expanded = false
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Delete") },
+                    onClick = {
+                        onDelete()
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+
+}
+
+@Composable
+fun EntryItemAlt(item: JournalEntry, onDelete: () -> Unit, onEdit: () -> Unit) {
+
+    var expanded by remember { mutableStateOf(false) }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.onPrimary)
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
 
