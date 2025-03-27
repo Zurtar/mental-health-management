@@ -64,9 +64,10 @@ data class NavDrawerUiState(
 )
 
 data class BiWeeklyEvaluationUiState(
-    val score: Int = 0,
-    val page: Int = 9,
-    val questionResponse: List<Int> = listOf(0, 0, 0, 0, 0, 0, 0, 0, 0)
+    val depresessionScore: Int = 0,
+    val anxietyScore: Int = 0,
+    val page: Int = 0,
+    val questionResponse: List<Int> = listOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 )
 
 class LoginViewModel : ViewModel() {
@@ -256,7 +257,7 @@ class BiWeeklyEvaluationViewModel : ViewModel() {
             currentState.copy(page = currentState.page + 1)
         }
 
-        if (_uiState.value.page == 8)
+        if (_uiState.value.page == 15)
             debugScore()
     }
 
@@ -278,12 +279,12 @@ class BiWeeklyEvaluationViewModel : ViewModel() {
     }
 
     fun debugScore() {
-        val score = _uiState.value.questionResponse.sum()
+        val d_score = _uiState.value.questionResponse.sum()
         _uiState.update { currentState ->
-            currentState.copy(score = score)
+            currentState.copy(depresessionScore = d_score)
         }
 
-        Log.println(Log.DEBUG, "BiWeeklyEvalVM", "$score")
+        Log.println(Log.DEBUG, "BiWeeklyEvalVM", "$d_score")
     }
 
     fun resetPage() {

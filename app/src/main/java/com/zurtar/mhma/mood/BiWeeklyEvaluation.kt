@@ -1,7 +1,9 @@
 package com.zurtar.mhma.mood
 
 import android.os.Build
+import android.widget.Button
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,17 +16,30 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -48,6 +63,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.android.material.tabs.TabLayout
 import com.zurtar.mhma.R
 import com.zurtar.mhma.models.BiWeeklyEvaluationViewModel
 import java.time.LocalDateTime
@@ -101,14 +117,14 @@ class BiWeeklyEval {
 
 @Composable
 fun BiWeeklyEvaluationScreen(
-    modifier: Modifier = Modifier,
-    viewModel: BiWeeklyEvaluationViewModel = viewModel()
+    modifier: Modifier = Modifier, viewModel: BiWeeklyEvaluationViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val questions: Array<String> = stringArrayResource(R.array.phq_9_questions)
+   // val gadQuestions = Array<String> = stringArrayResource(R.array.gad_7_questions)
 
-    if (uiState.page == 9) {
-        BiWeeklyResult(modifier = modifier, uiState.score)
+    if (uiState.page == 16) {
+        BiWeeklyResult(modifier = modifier, uiState.depresessionScore, uiState.anxietyScore)
         return
     }
 
@@ -133,17 +149,13 @@ fun BiWeeklyEvaluationScreen(
 
 
         Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceAround
+            Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround
         ) {
-            if (uiState.page > 0)
-                FilledTonalButton(
-                    onClick = { viewModel.onBack() },
-                    content = { Text("Back") })
+            if (uiState.page > 0) FilledTonalButton(onClick = { viewModel.onBack() },
+                content = { Text("Back") })
 
             var text = "Next"
-            if (uiState.page == 8)
-                text = "Submit";
+            if (uiState.page == 8) text = "Submit";
             FilledTonalButton(onClick = { viewModel.onNext() }, content = { Text(text) })
         }
     }
@@ -213,10 +225,8 @@ fun QuestionResponse(radioOptions: List<String>, selectedOption: Int, onSelect: 
                         onSelect(index)
                     }
                     .background(
-                        if (index == selectedOption)
-                            MaterialTheme.colorScheme.inversePrimary
-                        else
-                            MaterialTheme.colorScheme.onSecondary
+                        if (index == selectedOption) MaterialTheme.colorScheme.inversePrimary
+                        else MaterialTheme.colorScheme.onSecondary
                     ),
             ) {
                 Text(
@@ -232,9 +242,9 @@ fun QuestionResponse(radioOptions: List<String>, selectedOption: Int, onSelect: 
 
 @Composable
 fun BiWeeklyResult(
-    modifier: Modifier = Modifier,
-    score: Int
+    modifier: Modifier = Modifier, depressionScore: Int, anxietyScore:Int
 ) {
+
     val scores = listOf("1-4", "5-9", "10-14", "15-19", "20-27")
     val severities = listOf(
         "Minimal depression",
@@ -245,7 +255,7 @@ fun BiWeeklyResult(
     )
 
     var text = ""
-    if (score < 10 ) {
+    if (depressionScore < 10 || anxietyScore < 10) {
         text = "unlikely"
     } else {
         text = "likely"
@@ -254,36 +264,167 @@ fun BiWeeklyResult(
 
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        ScoreChart(score, scores, severities)
+
+        Text(
+            text = "You have completed the Bi-Weekly evaluation!", 
+            style = MaterialTheme.typography.titleLarge,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(Modifier.height(25.dp))
+
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = "Depression Score:", 
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
+                )
+                FilledTonalButton(onClick = {}, enabled = true, content = { Text("0") })
+
+            }
+            Spacer(Modifier.width(15.dp))
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = "Anxiety Score",
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
+                )
+                FilledTonalButton(onClick = {}, enabled = true, content = { Text("0") })
+            }
+        }
+        ScoreChart(depressionScore, scores, severities)
 
         Spacer(Modifier.height(15.dp))
-        Text(
-            text = "Your Score:",
-            style = MaterialTheme.typography.labelLarge,
-            fontSize = 15.sp
-        )
-        Text(
-            text = "${score}",
-            style = MaterialTheme.typography.labelLarge,
-            fontSize = 15.sp
-        )
 
         Text(
-            text = "Based on your given score it is ${text} that you may be experiencing depression"
+            text = "Based on your given score it is ${text} that you may be experiencing depression",
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center
         )
+        Spacer(Modifier.height(15.dp))
+        
+        ProceedCard("Proceed to Evaluation Summary")
+        ProceedCard("Proceed to Evaluation Analytics")
+
+        FilledTonalButton(onClick = {}, 
+            enabled = true, 
+            colors = ButtonColors(
+                containerColor = MaterialTheme.colorScheme.inversePrimary,
+                contentColor =Color.Black,
+                disabledContainerColor = MaterialTheme.colorScheme.inversePrimary,
+                disabledContentColor = MaterialTheme.colorScheme.inversePrimary
+            ),
+            content = { Text("Exit") })
 
     }
+}
+
+@Composable
+fun ProceedCard(text:String) {
+
+    OutlinedCard (modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(
+        containerColor = MaterialTheme.colorScheme.surface
+    ),
+        border = BorderStroke(1.dp, Color.Black)
+    ) {
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly) {
+            Text(
+                text = text
+            )
+            FilledTonalButton(
+                onClick = {  },
+                colors = ButtonColors(
+                    containerColor = Color.Transparent,
+                    contentColor =Color.Black,
+                    disabledContainerColor =  Color.Transparent,
+                    disabledContentColor =  Color.Transparent
+                )
+            ) {
+
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = "Favorite",
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
+    }
+    
 }
 
 @Preview
 @Composable
 fun BiWeeklyResultsPrev() {
-    Column() {
-        BiWeeklyResult(modifier = Modifier.padding(1.dp), score = 13)
+    Column(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
+        BiWeeklyResult(modifier = Modifier.padding(1.dp), depressionScore = 13, anxietyScore = 12)
 
+    }
+}
+
+
+@Composable
+fun BiWeeklyAnalyticsScreen() {
+    Column (){
+
+    }
+
+}
+
+@Composable
+fun AnalyticsTab() {
+
+    val pagerState = rememberPagerState(pageCount = {
+        2
+    })
+
+    val tabData = listOf("Quick", "BiWeekly")
+
+    TabRow(
+        selectedTabIndex = pagerState.currentPage,
+        divider = {
+            Spacer(modifier = Modifier.height(5.dp))
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+    ) {
+        tabData.forEachIndexed{ index, s ->
+            TabLayout.Tab(
+                selected = pagerState.currentPage == index,
+                
+            )
+
+        }
+    }
+}
+
+@Composable
+fun QuickAnalyticsScreen() {
+    Text(
+        text = "Quick analytics",
+        textAlign = TextAlign.Center
+    )
+}
+
+
+@Composable
+fun TabContent(pagerState: PagerState) {
+    HorizontalPager(state = pagerState) { index ->
+        when (index) {
+            0 -> {
+                // Content for the first tab (e.g., HomeScreen)
+                QuickAnalyticsScreen()
+            }
+
+            1 -> {
+                // Content for the second tab (e.g., SearchScreen)
+                BiWeeklyAnalyticsScreen()
+            }
+        }
     }
 }
 
@@ -365,13 +506,11 @@ fun ScoreChart(score: Int, scores: List<String>, severities: List<String>) {
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 Text(
                     text = "SCORE",
@@ -411,7 +550,6 @@ fun ScoreChart(score: Int, scores: List<String>, severities: List<String>) {
 
     }
 }
-
 
 
 @Composable
