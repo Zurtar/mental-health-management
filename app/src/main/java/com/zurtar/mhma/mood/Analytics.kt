@@ -49,6 +49,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun AnalyticsScreen(
     modifier: Modifier = Modifier,
+    id: Int = 0,
     openDrawer: () -> Unit,
     onNavigateToSummaryDialog: () -> Unit
 ) {
@@ -59,6 +60,7 @@ fun AnalyticsScreen(
         }
     ) { innerPadding ->
         AnalyticsScreenContent(
+            id = id,
             modifier = modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
@@ -70,15 +72,18 @@ fun AnalyticsScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AnalyticsScreenContent(modifier: Modifier = Modifier, onNavigateToSummaryDialog: () -> Unit) {
+fun AnalyticsScreenContent(
+    modifier: Modifier = Modifier,
+    id: Int = 0,
+    onNavigateToSummaryDialog: () -> Unit
+) {
 
-    var pagerState by remember { mutableIntStateOf(0) }
+    var pagerState by remember { mutableIntStateOf(id) }
 
     val tabs = listOf("Quick", "BiWeekly")
     Column(
-        Modifier
-            .fillMaxWidth()
-            .padding(top = 90.dp),
+        modifier
+            .fillMaxWidth(),
         verticalArrangement = Arrangement.Top
     ) {
         PrimaryTabRow(selectedTabIndex = pagerState) {
@@ -358,36 +363,6 @@ fun SummaryPopupScreen() {
 }
 
 //HELPER FUNCTIONS
-
-@Composable
-fun findSeverity(score: Int, evalType: String): String {
-
-    val depressionScores: List<String> = stringArrayResource(R.array.depression_scores).toList()
-    val depressionSeverities: List<String> =
-        stringArrayResource(R.array.depression_severities).toList()
-
-    val anxietyScores: List<String> = stringArrayResource(R.array.anxiety_scores).toList()
-    val anxietySeverities: List<String> = stringArrayResource(R.array.anxiety_severities).toList()
-
-    if (evalType == "anxiety") {
-        for (i in anxietyScores.indices) {
-            val scoreRange = anxietyScores[i].split('-')
-
-            if (score >= scoreRange[0].toInt() && score <= scoreRange[1].toInt()) {
-                return anxietySeverities[i]
-            }
-        }
-    } else {
-        for (i in depressionScores.indices) {
-            val scoreRange = depressionScores[i].split('-')
-
-            if (score >= scoreRange[0].toInt() && score <= scoreRange[1].toInt()) {
-                return depressionSeverities[i]
-            }
-        }
-    }
-    return ""
-}
 
 @Composable
 fun makeCardInfo(): List<BiWeeklyEvalStat> {
