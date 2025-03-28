@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.test.isSelected
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -162,7 +163,7 @@ fun EmotionRating(emotionsList:List<String>, emotionIntensities:List<Float>, upd
         )
 
         repeat(emotionsList.size) { i ->
-            var sliderPosition by remember { mutableFloatStateOf(0f) }
+            var sliderPosition by remember { mutableStateOf(0f) }
 
             Column(modifier = Modifier.padding(all = 20.dp)) {
                 Text(
@@ -180,8 +181,8 @@ fun EmotionRating(emotionsList:List<String>, emotionIntensities:List<Float>, upd
                     onValueChangeFinished = { updateIntensity(sliderPosition, i)
 
                     },
-                    steps = 8,
-                    valueRange = 1f..10f
+                    steps = 9,
+                    valueRange = 0f..10f
                 )
                 Text(
                     text = sliderPosition.toString(),
@@ -239,6 +240,7 @@ private fun EmotionSelectionCard(
 
     )
 
+
     ElevatedCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         modifier = modifier
@@ -265,8 +267,10 @@ private fun EmotionSelectionCard(
                         color = color,
                         isSelected = selectedEmotions.contains(emotion),
                         onClick = {
+
                             selectedEmotion = emotion
                             emotionSelect(emotion)
+
                         }
                     )
                 }
