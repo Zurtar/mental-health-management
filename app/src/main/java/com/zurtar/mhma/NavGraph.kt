@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavArgument
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -80,7 +81,7 @@ fun NavGraph(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
                     onNavigateToMoodEvaluation = { navActions.navigateToMoodEvaluation() },
                     onNavigateToJournal = { navActions.navigateToJournal() },
-                    onNavigateToAnalytics = {navActions.navigateToAnalytics()}
+                    onNavigateToAnalytics = { navActions.navigateToAnalytics() }
                 )
             }
 
@@ -125,15 +126,24 @@ fun NavGraph(
             }
 
             //Added dialog navigation for biweekly summary page
-            dialog<SummaryDialog>{
+            dialog<SummaryDialog> {
                 SummaryPopupScreen()
             }
-            composable<Analytics> {
+
+
+            composable(
+                route = "${Analytics}/{id}",
+                arguments = listOf(
+                    navArgument("id") { type = NavType.IntType }
+                )
+            ) { backStackEntry ->
                 AnalyticsScreen(
+                    id = backStackEntry.arguments?.getInt("id") ?: 0,
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
                     onNavigateToSummaryDialog = { navActions.navigateToSummaryDialog() }
                 )
             }
+
 
             composable<Journal> {
                 JournalingScreen(

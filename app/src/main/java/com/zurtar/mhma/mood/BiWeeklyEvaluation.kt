@@ -25,7 +25,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.PrimaryTabRow
@@ -58,12 +60,13 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 
+
 @Composable
 fun BiWeeklyEvaluationScreen(
     modifier: Modifier = Modifier,
     viewModel: BiWeeklyEvaluationViewModel = viewModel(),
     openDrawer: () -> Unit,
-    onNavigateToAnalytics:() -> Unit
+    onNavigateToAnalytics: (Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -98,15 +101,24 @@ private fun BiWeeklyEvaluationScreenContent(
     onSelect: (Int) -> Unit,
     onBack: () -> Unit,
     onNext: () -> Unit,
-    onNavigateToAnalytics:() -> Unit
+    onNavigateToAnalytics: (Int) -> Unit
 ) {
     val questions: Array<String> = stringArrayResource(R.array.phq_9_questions)
 
     if (page == questions.size) {
-        BiWeeklyResult(
-            modifier = modifier,
+
+
+        val evaluation = BiWeeklyEvalStat(
             depressionScore = depressionScore,
             anxietyScore = anxietyScore,
+            depressionResults = findSeverity(depressionScore, "depression"),
+            anxietyResults = findSeverity(anxietyScore, "anxiety"),
+            dateCompleted = LocalDate.now()
+        )
+
+        BiWeeklyResult(
+            modifier = modifier,
+            evaluation = evaluation,
             onNavigateToAnalytics = onNavigateToAnalytics
         )
         return
@@ -131,7 +143,6 @@ private fun BiWeeklyEvaluationScreenContent(
             onSelect = onSelect
         )
 
-
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround
@@ -145,6 +156,11 @@ private fun BiWeeklyEvaluationScreenContent(
             if (page == questions.size - 1) text = "Submit"
             FilledTonalButton(onClick = { onNext() }, content = { Text(text) })
         }
+        Spacer(modifier = Modifier.height(20.dp))
+        LinearProgressIndicator(
+            progress = { page.toFloat() / questions.size },
+            modifier = Modifier.fillMaxWidth(.75f),
+        )
     }
 }
 
@@ -229,22 +245,17 @@ fun QuestionResponse(radioOptions: List<String>, selectedOption: Int, onSelect: 
 
 @Composable
 fun BiWeeklyResult(
-    modifier: Modifier = Modifier, depressionScore: Int, anxietyScore: Int, onNavigateToAnalytics:() -> Unit
+    modifier: Modifier = Modifier,
+    evaluation: BiWeeklyEvalStat,
+    onNavigateToAnalytics: (Int) -> Unit
 ) {
 
     val depressionScores: List<String> = stringArrayResource(R.array.depression_scores).toList()
     val depressionSeverities: List<String> =
         stringArrayResource(R.array.depression_severities).toList()
 
-    val anxietyScores = R.array.anxiety_scores
-    val anxietySeverities = R.array.anxiety_severities
-
-
-    val text = if (depressionScore < 10 || anxietyScore < 10) {
-        "unlikely"
-    } else {
-        "likely"
-    }
+    val anxietyScores = stringArrayResource(R.array.anxiety_scores).toList()
+    val anxietySeverities = stringArrayResource(R.array.anxiety_severities).toList()
 
 
     Column(
@@ -271,7 +282,7 @@ fun BiWeeklyResult(
                 FilledTonalButton(
                     onClick = {},
                     enabled = true,
-                    content = { Text("$depressionScore") })
+                    content = { Text("${evaluation.depressionScore}") })
 
             }
             Spacer(Modifier.width(15.dp))
@@ -281,36 +292,43 @@ fun BiWeeklyResult(
                     style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.Center
                 )
-                FilledTonalButton(onClick = {}, enabled = true, content = { Text("$anxietyScore") })
+                FilledTonalButton(
+                    onClick = {},
+                    enabled = true,
+                    content = { Text("${evaluation.anxietyScore}") })
             }
         }
+
         ScoreChart(
-            score = depressionScore,
+            score = evaluation.depressionScore,
             scores = depressionScores,
             severities = depressionSeverities
         )
-
         Spacer(Modifier.height(15.dp))
-
         Text(
-            text = "Based on your given score it is ${text} that you may be experiencing depression",
+            text = "Your answers to the PHQ-9 align with those with: ${evaluation.depressionResults}",
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(15.dp))
 
-        ProceedCard("Proceed to Evaluation Summary", onNavigateToAnalytics)
-        ProceedCard("Proceed to Evaluation Analytics",onNavigateToAnalytics)
+        ScoreChart(
+            score = evaluation.anxietyScore,
+            scores = anxietyScores,
+            severities = anxietySeverities
+        )
+        Spacer(Modifier.height(15.dp))
+        Text(
+            text = "Your answers to the GAD-7 align with those with: ${evaluation.anxietyResults}",
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.height(30.dp))
 
-        FilledTonalButton(onClick = {},
-            enabled = true,
-            colors = ButtonColors(
-                containerColor = MaterialTheme.colorScheme.inversePrimary,
-                contentColor = Color.Black,
-                disabledContainerColor = MaterialTheme.colorScheme.inversePrimary,
-                disabledContentColor = MaterialTheme.colorScheme.inversePrimary
-            ),
-            content = { Text("Exit") })
+        ProceedCard("Proceed to Evaluation Summary") { onNavigateToAnalytics(1) }
+        Spacer(Modifier.height(15.dp))
+        ProceedCard("Proceed to Evaluation Analytics") { onNavigateToAnalytics(1) }
+
 
     }
 }
@@ -436,3 +454,35 @@ fun RowChart(modifier: Modifier = Modifier, score: String, severity: String) {
     }
 }
 
+
+//HELPER FUNCTIONS
+
+@Composable
+fun findSeverity(score: Int, evalType: String): String {
+
+    val depressionScores: List<String> = stringArrayResource(R.array.depression_scores).toList()
+    val depressionSeverities: List<String> =
+        stringArrayResource(R.array.depression_severities).toList()
+
+    val anxietyScores: List<String> = stringArrayResource(R.array.anxiety_scores).toList()
+    val anxietySeverities: List<String> = stringArrayResource(R.array.anxiety_severities).toList()
+
+    if (evalType == "anxiety") {
+        for (i in anxietyScores.indices) {
+            val scoreRange = anxietyScores[i].split('-')
+
+            if (score >= scoreRange[0].toInt() && score <= scoreRange[1].toInt()) {
+                return anxietySeverities[i]
+            }
+        }
+    } else {
+        for (i in depressionScores.indices) {
+            val scoreRange = depressionScores[i].split('-')
+
+            if (score >= scoreRange[0].toInt() && score <= scoreRange[1].toInt()) {
+                return depressionSeverities[i]
+            }
+        }
+    }
+    return ""
+}

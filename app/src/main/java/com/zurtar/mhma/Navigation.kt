@@ -55,14 +55,14 @@ class Navigation(private val navController: NavHostController) {
     }
 
     //Added dialog navigation for biweekly summary page
-    fun navigateToSummaryDialog(){
-        navController.navigate(SummaryDialog){
+    fun navigateToSummaryDialog() {
+        navController.navigate(SummaryDialog) {
             restoreState = true
         }
     }
 
-    fun navigateToAnalytics(){
-        navController.navigate(Analytics){
+    fun navigateToAnalytics(id: Int = 0) {
+        navController.navigate(route = "${Analytics}/${id}") {
             restoreState = true
         }
     }
