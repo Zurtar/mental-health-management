@@ -60,14 +60,6 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 
-data class BiWeeklyEvalStat(
-    var depressionScore: Int,
-    var anxietyScore: Int,
-    var depressionResults: String,
-    var anxietyResults: String,
-    var dateCompleted: LocalDate
-)
-
 @Composable
 fun BiWeeklyEvaluationScreen(
     modifier: Modifier = Modifier,

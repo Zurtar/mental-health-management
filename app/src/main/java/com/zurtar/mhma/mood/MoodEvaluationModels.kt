@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import java.time.LocalDate
 
 data class BiWeeklyEvaluationUiState(
     val depressionScore: Int = 0,
@@ -18,10 +19,21 @@ data class BiWeeklyEvaluationUiState(
 )
 
 data class DailyEvaluationUiState(
-    val currentEmotion: String = "default_initial",
-    // val emotionResponse:List<String> = listOf(0, 0, 0, 0),
+  //  val currentEmotion: String = "default_initial",
+    val selectedEmotions:List<String> = listOf(),
+    val emotionIntensities:List<Float> = listOf(0f, 0f, 0f),
     val isSubmitted: Int = 0,
-    val strongestEmotion: String = "default_initial"
+    val strongestEmotion: String = "default_initial",
+    val page: Int = 0,
+
+
+)
+data class BiWeeklyEvalStat(
+    var depressionScore: Int,
+    var anxietyScore: Int,
+    var dateCompleted: LocalDate,
+    var depressionResults: String = "",
+    var anxietyResults: String = ""
 
 )
 
@@ -35,45 +47,63 @@ class DailyEvaluationViewModel : ViewModel() {
         }
     }
 
-    fun updateEmotion(emoji: ImageVector) {
-        if (emoji == EmojiFrown) {
-            _uiState.update { currentState ->
-                currentState.copy(currentEmotion = "Upset")
-            }
-        } else if (emoji == EmojiNeutral) {
-            _uiState.update { currentState ->
-                currentState.copy(currentEmotion = "Neutral")
-            }
-        } else {
-            _uiState.update { currentState ->
-                currentState.copy(currentEmotion = "Happy")
-            }
+    fun onNext() {
+        _uiState.update { currentState ->
+            currentState.copy(page = currentState.page + 1)
         }
     }
 
-    fun emotionSelect(emotion: String) {
-//
-//        val newList = _uiState.value.emotionResponse.toMutableList()
-//        var index = 0
-//        if(emotion == "Happy"){
-//            index = 1
-//        }else if(emotion == "Fearful") {
-//            index = 2
-//        } else if (emotion == "Angry") {
-//            index = 3
-//        } else {
-//            index = 0
-//        }
-//        newList[index] = _uiState.value.emotionResponse[index] +1
-//
-//        _uiState.update { currentState ->
-//            currentState.copy(
-//                emotionResponse = newList
-//            )
-//        }
+    fun onBack() {
         _uiState.update { currentState ->
-            currentState.copy(strongestEmotion = emotion)
+            currentState.copy(page = currentState.page - 1)
         }
+    }
+
+    fun updateEmotion(emoji: ImageVector) {
+//        if (emoji == EmojiFrown) {
+//            _uiState.update { currentState ->
+//                currentState.copy(currentEmotion = "Upset")
+//            }
+//        } else if (emoji == EmojiNeutral) {
+//            _uiState.update { currentState ->
+//                currentState.copy(currentEmotion = "Neutral")
+//            }
+//        } else {
+//            _uiState.update { currentState ->
+//                currentState.copy(currentEmotion = "Happy")
+//            }
+//        }
+    }
+
+    fun emotionSelect(emotion: String) {
+        Log.println(Log.DEBUG, "DailyEval:: ", "$emotion")
+
+        val emotionList = _uiState.value.selectedEmotions.toMutableList()
+        if (emotionList.contains(emotion))
+            emotionList.remove(emotion)
+        else if (emotionList.size < 3) {
+            emotionList.add(emotion)
+        }
+        Log.println(Log.DEBUG, "DailyEval:: ", "$emotionList")
+        _uiState.update { currentState ->
+            currentState.copy(
+                selectedEmotions  = emotionList
+            )
+        }
+    }
+
+    fun updateIntensity(value:Float, index:Int) {
+
+        val intensityList = _uiState.value.emotionIntensities.toMutableList()
+        intensityList[index] = value
+        Log.println(Log.DEBUG, "DailyEval:: ", "$value")
+
+        _uiState.update { currentState ->
+            currentState.copy(
+                emotionIntensities  = intensityList
+            )
+        }
+        Log.println(Log.DEBUG, "DailyEval:: ", "$intensityList")
     }
 
 }
