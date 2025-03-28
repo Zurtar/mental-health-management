@@ -23,9 +23,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -34,6 +37,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -98,19 +103,32 @@ private fun DailyMoodEvaluationScreenContent(
 
     val questions: Array<String> = stringArrayResource(R.array.quick_eval_questions)
 
+
     if (page == 9) {
         DailyResult(modifier = modifier, selectedEmotions = selectedEmotions)
         return
     }
+
+//    if (page == 1) {
+//        EmotionRating(selectedEmotions)
+//    }
+
     Column(
         modifier = modifier.background(MaterialTheme.colorScheme.background),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        MoodSelectionCard(updateEmotion = onUpdateEmotion)
-        EmotionSelectionCard(
+        //MoodSelectionCard(updateEmotion = onUpdateEmotion)
+
+//        EmotionSelectionCard(
+//            selectedEmotions = selectedEmotions,
+//            emotionSelect = onEmotionSelect
+//        )
+        DailyQuestions(
             selectedEmotions = selectedEmotions,
-            emotionSelect = onEmotionSelect
+            emotionSelect = onEmotionSelect,
+            num = page,
+            question = questions[page]
         )
 
         Row(
@@ -127,8 +145,79 @@ private fun DailyMoodEvaluationScreenContent(
             FilledTonalButton(onClick = { onNext() }, content = { Text(text) })
         }
     }
+
 }
 
+@Composable
+fun EmotionRating(emotionsList:List<String>) {
+
+    ElevatedCard(
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 10.dp, end= 10.dp)
+    ) {
+        Text(
+            text = "On a scale from 1-10, how strongly are you feeling these emotion",
+            style = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.Center
+        )
+
+        repeat(emotionsList.size) { i ->
+            var sliderPosition by remember { mutableFloatStateOf(0f) }
+
+            Column(modifier = Modifier.padding(all = 20.dp)) {
+                Text(
+                    text = emotionsList[i],
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Slider(
+                    value = sliderPosition,
+                    onValueChange = { sliderPosition = it },
+                    colors = SliderDefaults.colors(
+                        thumbColor = MaterialTheme.colorScheme.secondary,
+                        activeTrackColor = MaterialTheme.colorScheme.secondary,
+                        inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer,
+                    ),
+                    steps = 8,
+                    valueRange = 1f..10f
+                )
+                Text(
+                    text = sliderPosition.toString(),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun EmotionRatingPrev() {
+
+    val emotionsList = listOf("Happy", "Sad", "Angry")
+    EmotionRating(emotionsList)
+
+}
+
+@Composable
+fun DailyQuestions(
+    modifier: Modifier = Modifier,
+    selectedEmotions: List<String>,
+    emotionSelect: (String) -> Unit,
+    num: Int,
+    question: String
+) {
+    if (num == 0) {
+        EmotionSelectionCard(
+            selectedEmotions = selectedEmotions,
+            emotionSelect = emotionSelect
+        )
+    } else if (num == 1) {
+        EmotionRating(selectedEmotions)
+    }
+
+}
 
 @Composable
 private fun EmotionSelectionCard(

@@ -60,7 +60,6 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 
-
 @Composable
 fun BiWeeklyEvaluationScreen(
     modifier: Modifier = Modifier,

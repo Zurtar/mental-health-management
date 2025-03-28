@@ -19,8 +19,9 @@ data class BiWeeklyEvaluationUiState(
 )
 
 data class DailyEvaluationUiState(
-    val currentEmotion: String = "default_initial",
+  //  val currentEmotion: String = "default_initial",
     val selectedEmotions:List<String> = listOf(),
+    val
     val isSubmitted: Int = 0,
     val strongestEmotion: String = "default_initial",
     val page: Int = 0,
