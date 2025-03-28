@@ -63,13 +63,14 @@ import java.time.format.DateTimeFormatter
 
 
 data class BiWeeklyEvalStat(
-        var depressionScore: Int,
-        var anxietyScore: Int,
-        var dateCompleted: LocalDate,
-        var depressionResults: String = "",
-        var anxietyResults: String = ""
+    var depressionScore: Int,
+    var anxietyScore: Int,
+    var dateCompleted: LocalDate,
+    var depressionResults: String = "",
+    var anxietyResults: String = ""
 
-    )
+)
+
 @Composable
 fun BiWeeklyEvaluationScreen(
     modifier: Modifier = Modifier,
@@ -88,7 +89,8 @@ fun BiWeeklyEvaluationScreen(
                 .padding(innerPadding)
                 .fillMaxSize(),
             page = uiState.page,
-            score = uiState.depressionScore,
+            depressionScore = uiState.depressionScore,
+            anxietyScore = uiState.anxietyScore,
             questionResponses = uiState.questionResponse,
             onSelect = viewModel::onSelect,
             onBack = viewModel::onBack,
@@ -101,7 +103,8 @@ fun BiWeeklyEvaluationScreen(
 private fun BiWeeklyEvaluationScreenContent(
     modifier: Modifier = Modifier,
     page: Int,
-    score: Int,
+    depressionScore: Int,
+    anxietyScore: Int,
     questionResponses: List<Int>,
     onSelect: (Int) -> Unit,
     onBack: () -> Unit,
@@ -110,7 +113,11 @@ private fun BiWeeklyEvaluationScreenContent(
     val questions: Array<String> = stringArrayResource(R.array.phq_9_questions)
 
     if (page == questions.size) {
-//        BiWeeklyResult(modifier = modifier, score)
+//        BiWeeklyResult(
+//            modifier = modifier,
+//            depressionScore = depressionScore,
+//            anxietyScore = anxietyScore
+//        )
         AnalyticsTab()
         return
     }
@@ -268,11 +275,14 @@ fun BiWeeklyResult(
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    text = "Depression Score:",
+                    text = "Depression Score",
                     style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.Center
                 )
-                FilledTonalButton(onClick = {}, enabled = true, content = { Text("0") })
+                FilledTonalButton(
+                    onClick = {},
+                    enabled = true,
+                    content = { Text("$depressionScore") })
 
             }
             Spacer(Modifier.width(15.dp))
@@ -282,7 +292,7 @@ fun BiWeeklyResult(
                     style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.Center
                 )
-                FilledTonalButton(onClick = {}, enabled = true, content = { Text("0") })
+                FilledTonalButton(onClick = {}, enabled = true, content = { Text("$anxietyScore") })
             }
         }
         ScoreChart(depressionScore, scores, severities)
@@ -521,7 +531,10 @@ fun SummaryCards(results: BiWeeklyEvalStat) {
                 style = MaterialTheme.typography.titleSmall
             )
 
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
                 Text(
                     text = "Moderate Depression",
                     style = MaterialTheme.typography.bodyMedium,
@@ -529,26 +542,36 @@ fun SummaryCards(results: BiWeeklyEvalStat) {
                 )
                 Text(
                     style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(20.dp)
-                        .drawBehind { drawCircle(
-                            color = colour,
-                            radius = this.size.maxDimension
-                        ) },
+                    modifier = Modifier
+                        .padding(20.dp)
+                        .drawBehind {
+                            drawCircle(
+                                color = colour,
+                                radius = this.size.maxDimension
+                            )
+                        },
                     text = "${results.depressionScore}"
                 )
 
             }
 
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
                 Text(
                     text = "Moderate Anxiety"
                 )
-                FilledTonalButton(onClick = {}, enabled = true, elevation = ButtonDefaults.buttonElevation(3.dp), content = {
-                    Text(
-                        text = "${results.anxietyScore}",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
+                FilledTonalButton(
+                    onClick = {},
+                    enabled = true,
+                    elevation = ButtonDefaults.buttonElevation(3.dp),
+                    content = {
+                        Text(
+                            text = "${results.anxietyScore}",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
                 )
 
             }
