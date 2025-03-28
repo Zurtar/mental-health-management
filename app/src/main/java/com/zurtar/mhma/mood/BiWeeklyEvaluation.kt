@@ -84,7 +84,8 @@ fun BiWeeklyEvaluationScreen(
                 .padding(innerPadding)
                 .fillMaxSize(),
             page = uiState.page,
-            score = uiState.depressionScore,
+            depressionScore = uiState.depressionScore,
+            anxietyScore = uiState.anxietyScore,
             questionResponses = uiState.questionResponse,
             onSelect = viewModel::onSelect,
             onBack = viewModel::onBack,
@@ -97,7 +98,8 @@ fun BiWeeklyEvaluationScreen(
 private fun BiWeeklyEvaluationScreenContent(
     modifier: Modifier = Modifier,
     page: Int,
-    score: Int,
+    depressionScore: Int,
+    anxietyScore: Int,
     questionResponses: List<Int>,
     onSelect: (Int) -> Unit,
     onBack: () -> Unit,
@@ -106,7 +108,11 @@ private fun BiWeeklyEvaluationScreenContent(
     val questions: Array<String> = stringArrayResource(R.array.phq_9_questions)
 
     if (page == questions.size) {
-//        BiWeeklyResult(modifier = modifier, score)
+//        BiWeeklyResult(
+//            modifier = modifier,
+//            depressionScore = depressionScore,
+//            anxietyScore = anxietyScore
+//        )
         AnalyticsTab()
         return
     }
@@ -263,11 +269,14 @@ fun BiWeeklyResult(
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    text = "Depression Score:",
+                    text = "Depression Score",
                     style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.Center
                 )
-                FilledTonalButton(onClick = {}, enabled = true, content = { Text("0") })
+                FilledTonalButton(
+                    onClick = {},
+                    enabled = true,
+                    content = { Text("$depressionScore") })
 
             }
             Spacer(Modifier.width(15.dp))
@@ -277,7 +286,7 @@ fun BiWeeklyResult(
                     style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.Center
                 )
-                FilledTonalButton(onClick = {}, enabled = true, content = { Text("0") })
+                FilledTonalButton(onClick = {}, enabled = true, content = { Text("$anxietyScore") })
             }
         }
         ScoreChart(
