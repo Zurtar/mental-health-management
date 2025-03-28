@@ -16,6 +16,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.zurtar.mhma.auth.AccountScreen
@@ -27,6 +28,7 @@ import com.zurtar.mhma.journal.JournalingScreen
 import com.zurtar.mhma.mood.BiWeeklyEvaluationScreen
 import com.zurtar.mhma.mood.DailyMoodEvaluationScreen
 import com.zurtar.mhma.mood.MoodEvaluationScreen
+import com.zurtar.mhma.mood.SummaryPopupScreen
 import com.zurtar.mhma.util.AppModalDrawer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -110,6 +112,7 @@ fun NavGraph(
             composable<BiWeeklyEvaluation> {
                 BiWeeklyEvaluationScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
+                    onNavigateToSummaryDialog = { navActions.navigateToSummaryDialog() }
                 )
             }
 
@@ -117,6 +120,11 @@ fun NavGraph(
                 DailyMoodEvaluationScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
                 )
+            }
+
+            //Added dialog navigation for biweekly summary page
+            dialog<SummaryDialog>{
+                SummaryPopupScreen()
             }
 
             composable<Journal> {

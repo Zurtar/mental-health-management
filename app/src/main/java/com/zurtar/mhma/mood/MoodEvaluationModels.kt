@@ -123,8 +123,8 @@ class BiWeeklyEvaluationViewModel : ViewModel() {
             )
         }
 
-        Log.println(Log.DEBUG, "BiWeeklyEvalVM", "Depression Score: $depressionScore")
-        Log.println(Log.DEBUG, "BiWeeklyEvalVM", "Anxiety Score: $anxietyScore")
+       // Log.println(Log.DEBUG, "BiWeeklyEvalVM", "Depression Score: $depressionScore")
+        //Log.println(Log.DEBUG, "BiWeeklyEvalVM", "Anxiety Score: $anxietyScore")
     }
 
     fun resetPage() {

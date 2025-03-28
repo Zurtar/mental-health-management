@@ -1,5 +1,6 @@
 package com.zurtar.mhma.mood
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -70,7 +71,8 @@ data class BiWeeklyEvalStat(
 fun BiWeeklyEvaluationScreen(
     modifier: Modifier = Modifier,
     viewModel: BiWeeklyEvaluationViewModel = viewModel(),
-    openDrawer: () -> Unit
+    openDrawer: () -> Unit,
+    onNavigateToSummaryDialog:() -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -90,6 +92,7 @@ fun BiWeeklyEvaluationScreen(
             onSelect = viewModel::onSelect,
             onBack = viewModel::onBack,
             onNext = viewModel::onNext,
+            onNavigateToSummaryDialog = onNavigateToSummaryDialog
         )
     }
 }
@@ -104,6 +107,7 @@ private fun BiWeeklyEvaluationScreenContent(
     onSelect: (Int) -> Unit,
     onBack: () -> Unit,
     onNext: () -> Unit,
+    onNavigateToSummaryDialog:() -> Unit
 ) {
     val questions: Array<String> = stringArrayResource(R.array.phq_9_questions)
 
@@ -113,7 +117,7 @@ private fun BiWeeklyEvaluationScreenContent(
 //            depressionScore = depressionScore,
 //            anxietyScore = anxietyScore
 //        )
-        AnalyticsTab()
+        AnalyticsTab(onNavigateToSummaryDialog)
         return
     }
 
@@ -241,8 +245,8 @@ fun BiWeeklyResult(
     val depressionSeverities: List<String> =
         stringArrayResource(R.array.depression_severities).toList()
 
-    val a_scores = R.array.anxiety_scores
-    val a_severities = R.array.anxiety_severities
+    val anxietyScores = R.array.anxiety_scores
+    val anxietySeverities = R.array.anxiety_severities
 
 
     val text = if (depressionScore < 10 || anxietyScore < 10) {
@@ -370,7 +374,7 @@ fun BiWeeklyResultsPrev() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AnalyticsTab() {
+fun AnalyticsTab(onNavigateToSummaryDialog:() -> Unit) {
 
     var pagerState by remember { mutableIntStateOf(1) }
 
@@ -392,13 +396,13 @@ fun AnalyticsTab() {
         }
         when (pagerState) {
             0 -> {
-                // Content for the first tab (e.g., HomeScreen)
+
                 QuickAnalyticsScreen()
             }
 
             1 -> {
-                // Content for the second tab (e.g., SearchScreen)
-                BiWeeklyAnalyticsScreen()
+
+                BiWeeklyAnalyticsScreen(onNavigateToSummaryDialog)
             }
         }
     }
@@ -416,7 +420,7 @@ fun QuickAnalyticsScreen() {
 }
 
 @Composable
-fun BiWeeklyAnalyticsScreen() {
+fun BiWeeklyAnalyticsScreen(onNavigateToSummaryDialog:() -> Unit) {
     Column(
         Modifier
             .fillMaxWidth()
@@ -441,18 +445,14 @@ fun BiWeeklyAnalyticsScreen() {
                 colors = SuggestionChipDefaults.suggestionChipColors(MaterialTheme.colorScheme.secondaryContainer)
             )
         }
-        SummaryPage()
+        SummaryPage(onNavigateToSummaryDialog)
     }
 }
 
 fun makeCardInfo(): List<BiWeeklyEvalStat> {
-    var results = mutableListOf<BiWeeklyEvalStat>()
+    val results = mutableListOf<BiWeeklyEvalStat>()
 
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val current = LocalDate.now()
-
-    val currentString = current.format(formatter)
-
     for (i in 0..6) {
 
         val date = current.minusDays(i.toLong())
@@ -471,7 +471,7 @@ fun makeCardInfo(): List<BiWeeklyEvalStat> {
 
 
 @Composable
-fun SummaryPage() {
+fun SummaryPage(onNavigateToSummaryDialog:() -> Unit) {
     val results = makeCardInfo()
 
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -490,15 +490,16 @@ fun SummaryPage() {
     }
 
     Column(modifier = Modifier.fillMaxWidth()) {
+        //SummaryPopupPreview()
 
         WeekTitles("Current Week")
-        todays.forEach { SummaryCards(it) }
+        todays.forEach { SummaryCards(it, onNavigateToSummaryDialog) }
 
         WeekTitles("Last Week")
-        lastWeek.forEach { SummaryCards(it) }
+        lastWeek.forEach { SummaryCards(it,onNavigateToSummaryDialog) }
 
         WeekTitles("Previous Weeks")
-        other.forEach { SummaryCards(it) }
+        other.forEach { SummaryCards(it,onNavigateToSummaryDialog) }
     }
 }
 
@@ -514,7 +515,7 @@ fun WeekTitles(title: String) {
 }
 
 @Composable
-fun SummaryCards(results: BiWeeklyEvalStat) {
+fun SummaryCards(results: BiWeeklyEvalStat, onNavigateToSummaryDialog:() -> Unit) {
 
     val colour = MaterialTheme.colorScheme.primaryContainer
 
@@ -523,6 +524,7 @@ fun SummaryCards(results: BiWeeklyEvalStat) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
+            .clickable { onNavigateToSummaryDialog() }
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -592,43 +594,59 @@ fun SummaryCards(results: BiWeeklyEvalStat) {
 
 @Composable
 fun SummaryPopup(results: BiWeeklyEvalStat) {
-    val depressionScores: List<String> = stringArrayResource(R.array.depression_scores).toList()
-    val depressionSeverities: List<String> = stringArrayResource(R.array.depression_severities).toList()
 
-    val anxietyScores: List<String>  = stringArrayResource(R.array.anxiety_scores).toList()
-    val anxietySeverities: List<String>  = stringArrayResource( R.array.anxiety_severities).toList()
+    val depressionScores: List<String> = stringArrayResource(R.array.depression_scores).toList()
+    val depressionSeverities: List<String> =
+        stringArrayResource(R.array.depression_severities).toList()
+
+    val anxietyScores: List<String> = stringArrayResource(R.array.anxiety_scores).toList()
+    val anxietySeverities: List<String> = stringArrayResource(R.array.anxiety_severities).toList()
 
     ElevatedCard() {
         Column(
-            Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            Modifier.fillMaxWidth(),
+           // horizontalAlignment = Alignment.CenterHorizontally
         )
         {
+            Text(
+                modifier = Modifier.padding(vertical = 10.dp, horizontal = 5.dp),
+                text = "Evaluation: Completed ${results.dateCompleted}",
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Start
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = "Depression Score:",
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center
+                    modifier = Modifier.padding(vertical = 5.dp, horizontal = 15.dp),
+                    text = "Depression Score",
+                    style = MaterialTheme.typography.bodyMedium
                 )
                 FilledTonalButton(
                     onClick = {},
                     enabled = true,
                     content = { Text("${results.depressionScore}") })
-
+            }
 
             Spacer(Modifier.width(15.dp))
 
             ScoreChart(results.depressionScore, depressionScores, depressionSeverities)
 
-            Spacer(Modifier.width(15.dp))
-            Text(
-                text = "Anxiety Score",
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center
-            )
-            FilledTonalButton(
-                onClick = {},
-                enabled = true,
-                content = { Text("${results.anxietyScore}") })
+            Spacer(Modifier.width(30.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    modifier = Modifier.padding(vertical = 5.dp, horizontal = 15.dp),
+                    text = "Anxiety Score",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                FilledTonalButton(
+                    modifier = Modifier.padding(horizontal = 5.dp),
+                    onClick = {},
+                    enabled = true,
+                    content = { Text("${results.anxietyScore}") }
+                )
+            }
+
+
 
             ScoreChart(results.anxietyScore, anxietyScores, anxietySeverities)
         }
@@ -639,8 +657,9 @@ fun SummaryPopup(results: BiWeeklyEvalStat) {
 
 @Preview
 @Composable
-fun SummaryPopupPreview() {
-    var results = makeCardInfo()
+fun SummaryPopupScreen() {
+    val results = makeCardInfo()
+    Log.println(Log.DEBUG, "BiWeeklyEvalVM", "Depression Score: ${results[0].depressionScore}")
 
     SummaryPopup(results[0])
 }
@@ -650,52 +669,48 @@ fun ScoreChart(score: Int, scores: List<String>, severities: List<String>) {
 
     ElevatedCard(
         Modifier.padding(top = 15.dp),
+
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
+        Row(
+            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly
         ) {
+            Text(
+                text = "SCORE",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier
+                    .width(100.dp)
+                    .padding(end = 40.dp),
+                textAlign = TextAlign.Start
+            )
 
-            Row(
-                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                Text(
-                    text = "SCORE",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier
-                        .width(100.dp)
-                        .padding(end = 40.dp),
-                    textAlign = TextAlign.Start
-                )
-
-                Text(
-                    text = "SEVERITY",
-                    style = MaterialTheme.typography.titleMedium,
-                    textAlign = TextAlign.Right,
-                    modifier = Modifier
-                        .width(100.dp)
-                        .padding(end = 20.dp)
-                )
-            }
-
-            repeat(4) { i ->
-                val scoreRange = scores[i].split('-')
-
-                if (score > scoreRange[0].toInt() && score < scoreRange[1].toInt()) {
-                    RowChart(
-                        modifier = Modifier.background(MaterialTheme.colorScheme.inversePrimary),
-                        scores[i],
-                        severities[i]
-                    )
-                } else {
-                    RowChart(modifier = Modifier, scores[i], severities[i])
-                }
-
-
-            }
+            Text(
+                text = "SEVERITY",
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Right,
+                modifier = Modifier
+                    .width(100.dp)
+                    .padding(end = 20.dp)
+            )
         }
 
+        repeat(scores.size) { i ->
+            val scoreRange = scores[i].split('-')
+
+            if (score >= scoreRange[0].toInt() && score <= scoreRange[1].toInt()) {
+                RowChart(
+                    modifier = Modifier.background(MaterialTheme.colorScheme.inversePrimary),
+                    scores[i],
+                    severities[i]
+                )
+            } else {
+                RowChart(modifier = Modifier, scores[i], severities[i])
+            }
+
+
+        }
     }
+
 }
 
 

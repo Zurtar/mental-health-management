@@ -48,10 +48,10 @@
         <item>Severe anxiety</item>
     </string-array>
     <string-array name="anxiety_scores">
-        <item>0–4</item>
-        <item>5–9</item>
-        <item>10–14</item>
-        <item>15–21</item>
+        <item>0-4</item>
+        <item>5-9</item>
+        <item>10-14</item>
+        <item>15-21</item>
 
     </string-array>
 
