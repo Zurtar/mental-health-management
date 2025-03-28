@@ -25,7 +25,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.PrimaryTabRow
@@ -72,7 +74,7 @@ fun BiWeeklyEvaluationScreen(
     modifier: Modifier = Modifier,
     viewModel: BiWeeklyEvaluationViewModel = viewModel(),
     openDrawer: () -> Unit,
-    onNavigateToAnalytics:() -> Unit
+    onNavigateToAnalytics: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -107,7 +109,7 @@ private fun BiWeeklyEvaluationScreenContent(
     onSelect: (Int) -> Unit,
     onBack: () -> Unit,
     onNext: () -> Unit,
-    onNavigateToAnalytics:() -> Unit
+    onNavigateToAnalytics: () -> Unit
 ) {
     val questions: Array<String> = stringArrayResource(R.array.phq_9_questions)
 
@@ -118,7 +120,6 @@ private fun BiWeeklyEvaluationScreenContent(
             anxietyScore = anxietyScore,
             onNavigateToAnalytics = onNavigateToAnalytics
         )
-        //AnalyticsTab(onNavigateToSummaryDialog)
         return
     }
 
@@ -141,7 +142,6 @@ private fun BiWeeklyEvaluationScreenContent(
             onSelect = onSelect
         )
 
-
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround
@@ -155,6 +155,11 @@ private fun BiWeeklyEvaluationScreenContent(
             if (page == questions.size - 1) text = "Submit"
             FilledTonalButton(onClick = { onNext() }, content = { Text(text) })
         }
+        Spacer(modifier = Modifier.height(20.dp))
+        LinearProgressIndicator(
+            progress = { page.toFloat() / questions.size },
+            modifier = Modifier.fillMaxWidth(.75f),
+        )
     }
 }
 
@@ -239,7 +244,10 @@ fun QuestionResponse(radioOptions: List<String>, selectedOption: Int, onSelect: 
 
 @Composable
 fun BiWeeklyResult(
-    modifier: Modifier = Modifier, depressionScore: Int, anxietyScore: Int, onNavigateToAnalytics:() -> Unit
+    modifier: Modifier = Modifier,
+    depressionScore: Int,
+    anxietyScore: Int,
+    onNavigateToAnalytics: () -> Unit
 ) {
 
     val depressionScores: List<String> = stringArrayResource(R.array.depression_scores).toList()
@@ -310,7 +318,7 @@ fun BiWeeklyResult(
         Spacer(Modifier.height(15.dp))
 
         ProceedCard("Proceed to Evaluation Summary", onNavigateToAnalytics)
-        ProceedCard("Proceed to Evaluation Analytics",onNavigateToAnalytics)
+        ProceedCard("Proceed to Evaluation Analytics", onNavigateToAnalytics)
 
         FilledTonalButton(onClick = {},
             enabled = true,
