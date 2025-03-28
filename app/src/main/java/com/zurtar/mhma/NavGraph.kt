@@ -25,6 +25,7 @@ import com.zurtar.mhma.auth.SignUpScreen
 import com.zurtar.mhma.home.HomeScreen
 import com.zurtar.mhma.journal.EntryModificationScreen
 import com.zurtar.mhma.journal.JournalingScreen
+import com.zurtar.mhma.mood.AnalyticsTabScreen
 import com.zurtar.mhma.mood.BiWeeklyEvaluationScreen
 import com.zurtar.mhma.mood.DailyMoodEvaluationScreen
 import com.zurtar.mhma.mood.MoodEvaluationScreen
@@ -78,7 +79,8 @@ fun NavGraph(
                 HomeScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
                     onNavigateToMoodEvaluation = { navActions.navigateToMoodEvaluation() },
-                    onNavigateToJournal = { navActions.navigateToJournal() }
+                    onNavigateToJournal = { navActions.navigateToJournal() },
+                    onNavigateToAnalytics = {navActions.navigateToAnalytics()}
                 )
             }
 
@@ -125,6 +127,12 @@ fun NavGraph(
             //Added dialog navigation for biweekly summary page
             dialog<SummaryDialog>{
                 SummaryPopupScreen()
+            }
+            composable<Analytics> {
+                AnalyticsTabScreen(
+                    openDrawer = { coroutineScope.launch { drawerState.open() } },
+                    onNavigateToSummaryDialog = { navActions.navigateToSummaryDialog() }
+                )
             }
 
             composable<Journal> {

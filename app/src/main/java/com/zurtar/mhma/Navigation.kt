@@ -60,6 +60,12 @@ class Navigation(private val navController: NavHostController) {
             restoreState = true
         }
     }
+
+    fun navigateToAnalytics(){
+        navController.navigate(Analytics){
+            restoreState = true
+        }
+    }
 }
 
 /**
@@ -93,6 +99,10 @@ object Journal
 
 @Serializable
 object JournalEntryR
+
+//Added Anayltics for navigation
+@Serializable
+object Analytics
 
 //Added dialog navigation for biweekly summary page
 @Serializable
