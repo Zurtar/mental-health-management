@@ -27,4 +27,33 @@
         <item>Becoming easily annoyed or irritable</item>
         <item>Feeling afraid as if something awful might happen</item>
     </string-array>
+    <string-array name="depression_severities">
+        <item>Minimal depression</item>
+        <item>Mild depression</item>
+        <item>Moderate depression</item>
+        <item>"Moderately severe depression"</item>
+        <item>Severe depression</item>
+    </string-array>
+    <string-array name="depression_scores">
+        <item>1-4</item>
+        <item>5-9</item>
+        <item>10-14</item>
+        <item>15-19</item>
+        <item>20-27</item>
+    </string-array>
+    <string-array name="anxiety_severities">
+        <item>Minimal anxiety</item>
+        <item>Mild anxiety</item>
+        <item>Moderate anxiety</item>
+        <item>Severe anxiety</item>
+    </string-array>
+    <string-array name="anxiety_scores">
+        <item>0–4</item>
+        <item>5–9</item>
+        <item>10–14</item>
+        <item>15–21</item>
+
+    </string-array>
+
+
 </resources>

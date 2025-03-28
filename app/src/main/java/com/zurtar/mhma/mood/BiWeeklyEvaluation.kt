@@ -1,8 +1,5 @@
 package com.zurtar.mhma.mood
 
-import android.os.Build
-import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,19 +16,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
@@ -50,12 +44,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringArrayResource
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.zurtar.mhma.util.DefaultTopAppBar
@@ -65,13 +58,14 @@ import java.time.format.DateTimeFormatter
 
 
 data class BiWeeklyEvalStat(
-        var depressionScore: Int,
-        var anxietyScore: Int,
-        var dateCompleted: LocalDate,
-        var depressionResults: String = "",
-        var anxietyResults: String = ""
+    var depressionScore: Int,
+    var anxietyScore: Int,
+    var dateCompleted: LocalDate,
+    var depressionResults: String = "",
+    var anxietyResults: String = ""
 
-    )
+)
+
 @Composable
 fun BiWeeklyEvaluationScreen(
     modifier: Modifier = Modifier,
@@ -237,14 +231,13 @@ fun BiWeeklyResult(
     modifier: Modifier = Modifier, depressionScore: Int, anxietyScore: Int
 ) {
 
-    val scores = listOf("1-4", "5-9", "10-14", "15-19", "20-27")
-    val severities = listOf(
-        "Minimal depression",
-        "Mild depression",
-        "Moderate depression",
-        "Moderately severe depression",
-        "Severe depression"
-    )
+    val depressionScores: List<String> = stringArrayResource(R.array.depression_scores).toList()
+    val depressionSeverities: List<String> =
+        stringArrayResource(R.array.depression_severities).toList()
+
+    val a_scores = R.array.anxiety_scores
+    val a_severities = R.array.anxiety_severities
+
 
     val text = if (depressionScore < 10 || anxietyScore < 10) {
         "unlikely"
@@ -287,7 +280,11 @@ fun BiWeeklyResult(
                 FilledTonalButton(onClick = {}, enabled = true, content = { Text("0") })
             }
         }
-        ScoreChart(depressionScore, scores, severities)
+        ScoreChart(
+            score = depressionScore,
+            scores = depressionScores,
+            severities = depressionSeverities
+        )
 
         Spacer(Modifier.height(15.dp))
 
@@ -463,7 +460,7 @@ fun makeCardInfo(): List<BiWeeklyEvalStat> {
     return results.toList()
 }
 
-@Preview
+
 @Composable
 fun SummaryPage() {
     val results = makeCardInfo()
@@ -484,7 +481,7 @@ fun SummaryPage() {
     }
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        
+
         WeekTitles("Current Week")
         todays.forEach { SummaryCards(it) }
 
@@ -497,14 +494,14 @@ fun SummaryPage() {
 }
 
 @Composable
-fun WeekTitles(title:String) {
+fun WeekTitles(title: String) {
 
     Text(
-        text = "Last Week:",
+        text = title,
         style = MaterialTheme.typography.titleMedium,
         color = MaterialTheme.colorScheme.primary
     )
-    
+
 }
 
 @Composable
@@ -529,7 +526,10 @@ fun SummaryCards(results: BiWeeklyEvalStat) {
                 style = MaterialTheme.typography.titleMedium
             )
 
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 Text(
                     modifier = Modifier.padding(start = 15.dp),
                     text = "Moderate Depression",
@@ -538,17 +538,23 @@ fun SummaryCards(results: BiWeeklyEvalStat) {
                 )
                 Text(
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(end = 30.dp, bottom = 20.dp)
-                        .drawBehind { drawCircle(
-                            color = colour,
-                            radius = this.size.maxDimension
-                        ) },
+                    modifier = Modifier
+                        .padding(end = 30.dp, bottom = 20.dp)
+                        .drawBehind {
+                            drawCircle(
+                                color = colour,
+                                radius = this.size.maxDimension
+                            )
+                        },
                     text = "${results.depressionScore}"
                 )
 
             }
 
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 Text(
                     modifier = Modifier.padding(start = 15.dp),
                     text = "Moderate Anxiety",
@@ -557,11 +563,14 @@ fun SummaryCards(results: BiWeeklyEvalStat) {
                 )
                 Text(
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(end = 30.dp, top = 20.dp, bottom = 20.dp)
-                        .drawBehind { drawCircle(
-                            color = colour,
-                            radius = this.size.maxDimension
-                        ) },
+                    modifier = Modifier
+                        .padding(end = 30.dp, top = 20.dp, bottom = 20.dp)
+                        .drawBehind {
+                            drawCircle(
+                                color = colour,
+                                radius = this.size.maxDimension
+                            )
+                        },
                     text = "${results.anxietyScore}"
                 )
 
@@ -571,11 +580,61 @@ fun SummaryCards(results: BiWeeklyEvalStat) {
     }
 }
 
+
 @Composable
-fun SummaryPopup() {
-    
+fun SummaryPopup(results: BiWeeklyEvalStat) {
+    val depressionScores: List<String> = stringArrayResource(R.array.depression_scores).toList()
+    val depressionSeverities: List<String> = stringArrayResource(R.array.depression_severities).toList()
+
+    val anxietyScores: List<String>  = stringArrayResource(R.array.anxiety_scores).toList()
+    val anxietySeverities: List<String>  = stringArrayResource( R.array.anxiety_severities).toList()
+
+    ElevatedCard() {
+        Column(
+            Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        )
+        {
+                Text(
+                    text = "Depression Score:",
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
+                )
+                FilledTonalButton(
+                    onClick = {},
+                    enabled = true,
+                    content = { Text("${results.depressionScore}") })
+
+
+            Spacer(Modifier.width(15.dp))
+
+            ScoreChart(results.depressionScore, depressionScores, depressionSeverities)
+
+            Spacer(Modifier.width(15.dp))
+            Text(
+                text = "Anxiety Score",
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center
+            )
+            FilledTonalButton(
+                onClick = {},
+                enabled = true,
+                content = { Text("${results.anxietyScore}") })
+
+            ScoreChart(results.anxietyScore, anxietyScores, anxietySeverities)
+        }
+
+    }
+
 }
 
+@Preview
+@Composable
+fun SummaryPopupPreview() {
+    var results = makeCardInfo()
+
+    SummaryPopup(results[0])
+}
 
 @Composable
 fun ScoreChart(score: Int, scores: List<String>, severities: List<String>) {
