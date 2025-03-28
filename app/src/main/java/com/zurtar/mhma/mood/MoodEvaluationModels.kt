@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import java.time.LocalDate
 
 data class BiWeeklyEvaluationUiState(
     val depressionScore: Int = 0,
@@ -19,9 +20,19 @@ data class BiWeeklyEvaluationUiState(
 
 data class DailyEvaluationUiState(
     val currentEmotion: String = "default_initial",
-    // val emotionResponse:List<String> = listOf(0, 0, 0, 0),
+    val selectedEmotions:List<String> = listOf(),
     val isSubmitted: Int = 0,
-    val strongestEmotion: String = "default_initial"
+    val strongestEmotion: String = "default_initial",
+    val page: Int = 0,
+
+
+)
+data class BiWeeklyEvalStat(
+    var depressionScore: Int,
+    var anxietyScore: Int,
+    var dateCompleted: LocalDate,
+    var depressionResults: String = "",
+    var anxietyResults: String = ""
 
 )
 
@@ -32,6 +43,18 @@ class DailyEvaluationViewModel : ViewModel() {
     fun onSubmit() {
         _uiState.update { currentState ->
             currentState.copy(isSubmitted = 1)
+        }
+    }
+
+    fun onNext() {
+        _uiState.update { currentState ->
+            currentState.copy(page = currentState.page + 1)
+        }
+    }
+
+    fun onBack() {
+        _uiState.update { currentState ->
+            currentState.copy(page = currentState.page - 1)
         }
     }
 
@@ -52,27 +75,19 @@ class DailyEvaluationViewModel : ViewModel() {
     }
 
     fun emotionSelect(emotion: String) {
-//
-//        val newList = _uiState.value.emotionResponse.toMutableList()
-//        var index = 0
-//        if(emotion == "Happy"){
-//            index = 1
-//        }else if(emotion == "Fearful") {
-//            index = 2
-//        } else if (emotion == "Angry") {
-//            index = 3
-//        } else {
-//            index = 0
-//        }
-//        newList[index] = _uiState.value.emotionResponse[index] +1
-//
-//        _uiState.update { currentState ->
-//            currentState.copy(
-//                emotionResponse = newList
-//            )
-//        }
+        Log.println(Log.DEBUG, "DailyEval:: ", "$emotion")
+
+        val emotionList = _uiState.value.selectedEmotions.toMutableList()
+        if (emotionList.contains(emotion))
+            emotionList.remove(emotion)
+        else if (emotionList.size < 3) {
+            emotionList.add(emotion)
+        }
+        Log.println(Log.DEBUG, "DailyEval:: ", "$emotionList")
         _uiState.update { currentState ->
-            currentState.copy(strongestEmotion = emotion)
+            currentState.copy(
+                selectedEmotions  = emotionList
+            )
         }
     }
 

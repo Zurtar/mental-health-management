@@ -114,7 +114,6 @@ fun QuickAnalyticsScreenContent() {
 
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BiWeeklyAnalyticsScreenContent(onNavigateToSummaryDialog: () -> Unit) {
 

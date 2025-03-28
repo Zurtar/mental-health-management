@@ -58,15 +58,6 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 
-data class BiWeeklyEvalStat(
-    var depressionScore: Int,
-    var anxietyScore: Int,
-    var dateCompleted: LocalDate,
-    var depressionResults: String = "",
-    var anxietyResults: String = ""
-
-)
-
 @Composable
 fun BiWeeklyEvaluationScreen(
     modifier: Modifier = Modifier,
@@ -118,7 +109,6 @@ private fun BiWeeklyEvaluationScreenContent(
             anxietyScore = anxietyScore,
             onNavigateToAnalytics = onNavigateToAnalytics
         )
-        //AnalyticsTab(onNavigateToSummaryDialog)
         return
     }
 

@@ -52,7 +52,11 @@
         <item>5-9</item>
         <item>10-14</item>
         <item>15-21</item>
-
+    </string-array>
+    <string-array name="quick_eval_questions">
+        <item>What are you currently feeling?</item>
+        <item>On a scale from 1-10, how strongly are you feeling this emotion</item>
+        <item>Why do you believe you are feeling this emotion</item>
     </string-array>
 
 
