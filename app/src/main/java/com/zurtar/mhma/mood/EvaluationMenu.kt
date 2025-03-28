@@ -69,11 +69,12 @@ private fun MoodEvaluationScreenContent(
     }
 }
 
-@Preview
-@Composable
-fun EvalFormCardPreview() {
-
-}
+//@Preview
+//@Composable
+//fun EvalFormCardPreview() {
+//    val mod = Modifier.fillMaxWidth()
+//    EvaluationFormCard(mod, "Daily Evaluation") { }
+//}
 
 @Composable
 fun EvaluationFormCard(

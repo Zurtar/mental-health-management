@@ -21,7 +21,7 @@ data class BiWeeklyEvaluationUiState(
 data class DailyEvaluationUiState(
   //  val currentEmotion: String = "default_initial",
     val selectedEmotions:List<String> = listOf(),
-    val
+    val emotionIntensities:List<Float> = listOf(0f, 0f, 0f),
     val isSubmitted: Int = 0,
     val strongestEmotion: String = "default_initial",
     val page: Int = 0,
@@ -60,19 +60,19 @@ class DailyEvaluationViewModel : ViewModel() {
     }
 
     fun updateEmotion(emoji: ImageVector) {
-        if (emoji == EmojiFrown) {
-            _uiState.update { currentState ->
-                currentState.copy(currentEmotion = "Upset")
-            }
-        } else if (emoji == EmojiNeutral) {
-            _uiState.update { currentState ->
-                currentState.copy(currentEmotion = "Neutral")
-            }
-        } else {
-            _uiState.update { currentState ->
-                currentState.copy(currentEmotion = "Happy")
-            }
-        }
+//        if (emoji == EmojiFrown) {
+//            _uiState.update { currentState ->
+//                currentState.copy(currentEmotion = "Upset")
+//            }
+//        } else if (emoji == EmojiNeutral) {
+//            _uiState.update { currentState ->
+//                currentState.copy(currentEmotion = "Neutral")
+//            }
+//        } else {
+//            _uiState.update { currentState ->
+//                currentState.copy(currentEmotion = "Happy")
+//            }
+//        }
     }
 
     fun emotionSelect(emotion: String) {
@@ -90,6 +90,20 @@ class DailyEvaluationViewModel : ViewModel() {
                 selectedEmotions  = emotionList
             )
         }
+    }
+
+    fun updateIntensity(value:Float, index:Int) {
+
+        val intensityList = _uiState.value.emotionIntensities.toMutableList()
+        intensityList[index] = value
+        Log.println(Log.DEBUG, "DailyEval:: ", "$value")
+
+        _uiState.update { currentState ->
+            currentState.copy(
+                emotionIntensities  = intensityList
+            )
+        }
+        Log.println(Log.DEBUG, "DailyEval:: ", "$intensityList")
     }
 
 }
