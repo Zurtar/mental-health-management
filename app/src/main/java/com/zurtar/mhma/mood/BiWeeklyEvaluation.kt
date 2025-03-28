@@ -72,7 +72,7 @@ fun BiWeeklyEvaluationScreen(
     modifier: Modifier = Modifier,
     viewModel: BiWeeklyEvaluationViewModel = viewModel(),
     openDrawer: () -> Unit,
-    onNavigateToSummaryDialog:() -> Unit
+    onNavigateToAnalytics:() -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -92,7 +92,7 @@ fun BiWeeklyEvaluationScreen(
             onSelect = viewModel::onSelect,
             onBack = viewModel::onBack,
             onNext = viewModel::onNext,
-            onNavigateToSummaryDialog = onNavigateToSummaryDialog
+            onNavigateToAnalytics = onNavigateToAnalytics
         )
     }
 }
@@ -107,7 +107,7 @@ private fun BiWeeklyEvaluationScreenContent(
     onSelect: (Int) -> Unit,
     onBack: () -> Unit,
     onNext: () -> Unit,
-    onNavigateToSummaryDialog:() -> Unit
+    onNavigateToAnalytics:() -> Unit
 ) {
     val questions: Array<String> = stringArrayResource(R.array.phq_9_questions)
 
@@ -115,7 +115,8 @@ private fun BiWeeklyEvaluationScreenContent(
         BiWeeklyResult(
             modifier = modifier,
             depressionScore = depressionScore,
-            anxietyScore = anxietyScore
+            anxietyScore = anxietyScore,
+            onNavigateToAnalytics = onNavigateToAnalytics
         )
         //AnalyticsTab(onNavigateToSummaryDialog)
         return
@@ -238,7 +239,7 @@ fun QuestionResponse(radioOptions: List<String>, selectedOption: Int, onSelect: 
 
 @Composable
 fun BiWeeklyResult(
-    modifier: Modifier = Modifier, depressionScore: Int, anxietyScore: Int
+    modifier: Modifier = Modifier, depressionScore: Int, anxietyScore: Int, onNavigateToAnalytics:() -> Unit
 ) {
 
     val depressionScores: List<String> = stringArrayResource(R.array.depression_scores).toList()
@@ -308,8 +309,8 @@ fun BiWeeklyResult(
         )
         Spacer(Modifier.height(15.dp))
 
-        ProceedCard("Proceed to Evaluation Summary")
-        ProceedCard("Proceed to Evaluation Analytics")
+        ProceedCard("Proceed to Evaluation Summary", onNavigateToAnalytics)
+        ProceedCard("Proceed to Evaluation Analytics",onNavigateToAnalytics)
 
         FilledTonalButton(onClick = {},
             enabled = true,
@@ -325,7 +326,7 @@ fun BiWeeklyResult(
 }
 
 @Composable
-fun ProceedCard(text: String) {
+fun ProceedCard(text: String, navigate: () -> Unit) {
 
     OutlinedCard(
         modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(
@@ -342,7 +343,7 @@ fun ProceedCard(text: String) {
                 text = text
             )
             FilledTonalButton(
-                onClick = { },
+                onClick = { navigate() },
                 colors = ButtonColors(
                     containerColor = Color.Transparent,
                     contentColor = Color.Black,
@@ -358,16 +359,6 @@ fun ProceedCard(text: String) {
                 )
             }
         }
-    }
-
-}
-
-
-@Composable
-fun BiWeeklyResultsPrev() {
-    Column(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
-        BiWeeklyResult(modifier = Modifier.padding(1.dp), depressionScore = 13, anxietyScore = 12)
-
     }
 }
 

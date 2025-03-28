@@ -7,15 +7,20 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Tab
@@ -23,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -34,21 +40,46 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.zurtar.mhma.R
+import com.zurtar.mhma.util.DefaultTopAppBar
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AnalyticsTabScreen(openDrawer: () -> Unit, onNavigateToSummaryDialog:() -> Unit) {
+fun AnalyticsScreen(
+    modifier: Modifier = Modifier,
+    openDrawer: () -> Unit,
+    onNavigateToSummaryDialog: () -> Unit
+) {
 
-    var pagerState by remember { mutableIntStateOf(1) }
+    Scaffold(modifier = Modifier.fillMaxSize(),
+        topBar = {
+            DefaultTopAppBar(openDrawer = openDrawer)
+        }
+    ) { innerPadding ->
+        AnalyticsScreenContent(
+            modifier = modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
+            onNavigateToSummaryDialog = onNavigateToSummaryDialog
+        )
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AnalyticsScreenContent(modifier: Modifier = Modifier, onNavigateToSummaryDialog: () -> Unit) {
+
+    var pagerState by remember { mutableIntStateOf(0) }
 
     val tabs = listOf("Quick", "BiWeekly")
     Column(
         Modifier
             .fillMaxWidth()
-            .padding(top = 90.dp), verticalArrangement = Arrangement.Top
+            .padding(top = 90.dp),
+        verticalArrangement = Arrangement.Top
     ) {
         PrimaryTabRow(selectedTabIndex = pagerState) {
             tabs.forEachIndexed { index, tabs ->
@@ -62,18 +93,18 @@ fun AnalyticsTabScreen(openDrawer: () -> Unit, onNavigateToSummaryDialog:() -> U
         }
         when (pagerState) {
             0 -> {
-                QuickAnalyticsScreen()
+                QuickAnalyticsScreenContent()
             }
 
             1 -> {
-                BiWeeklyAnalyticsScreen(onNavigateToSummaryDialog)
+                BiWeeklyAnalyticsScreenContent(onNavigateToSummaryDialog)
             }
         }
     }
 }
 
 @Composable
-fun QuickAnalyticsScreen() {
+fun QuickAnalyticsScreenContent() {
     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center) {
         Text(
             text = "Quick analytics",
@@ -83,59 +114,66 @@ fun QuickAnalyticsScreen() {
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BiWeeklyAnalyticsScreen(onNavigateToSummaryDialog:() -> Unit) {
+fun BiWeeklyAnalyticsScreenContent(onNavigateToSummaryDialog: () -> Unit) {
+
+    var state by remember { mutableStateOf(0) }
+    val tabLabels = listOf("Mood Graph", "Insights", "History")
+
     Column(
         Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background),
         verticalArrangement = Arrangement.Center
     ) {
-
-        Row(
-            Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start
-        ) {
-
-            SuggestionChip(
-                onClick = {},
-                label = { Text("Mood Graph") },
-                colors = SuggestionChipDefaults.suggestionChipColors(MaterialTheme.colorScheme.secondaryContainer)
-            )
-            SuggestionChip(
-                onClick = {},
-                label = { Text("Summary") },
-                colors = SuggestionChipDefaults.suggestionChipColors(MaterialTheme.colorScheme.secondaryContainer)
-            )
+        Row() {
+            tabLabels.forEachIndexed { index, label ->
+                CustomTab(
+                    onClick = { state = index },
+                    text = label
+                )
+            }
         }
-        BiWeeklySummaryPage(onNavigateToSummaryDialog)
+        when (state) {
+            0 -> {
+                MoodGraphScreen()
+            }
+
+            1 -> {
+                InsightsScreen()
+            }
+
+            2 -> {
+                BiWeeklySummaryPage(onNavigateToSummaryDialog)
+            }
+        }
     }
 }
 
-fun makeCardInfo(): List<BiWeeklyEvalStat> {
-    val results = mutableListOf<BiWeeklyEvalStat>()
+@Composable
+fun CustomTab(text: String, onClick: () -> Unit) {
 
-    val current = LocalDate.now()
-    for (i in 0..6) {
+    SuggestionChip(
+        onClick = onClick,
+        label = { Text("${text}") },
+        colors = SuggestionChipDefaults.suggestionChipColors(MaterialTheme.colorScheme.secondaryContainer)
+    )
+}
 
-        val date = current.minusDays(i.toLong())
+@Composable
+fun MoodGraphScreen() {
+    Text("Mood Graph")
+}
 
-        results.add(
-            BiWeeklyEvalStat(
-                depressionScore = 5 + i,
-                anxietyScore = 2 + i,
-                dateCompleted = date
-            )
-        )
-    }
-
-    return results.toList()
+@Composable
+fun InsightsScreen() {
+    Text("Insights")
 }
 
 
 @Composable
-fun BiWeeklySummaryPage(onNavigateToSummaryDialog:() -> Unit) {
+fun BiWeeklySummaryPage(onNavigateToSummaryDialog: () -> Unit) {
     val results = makeCardInfo()
 
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -152,34 +190,28 @@ fun BiWeeklySummaryPage(onNavigateToSummaryDialog:() -> Unit) {
     val other = results.filter {
         it.dateCompleted < current.minusDays(2)
     }
-
-    Column(modifier = Modifier.fillMaxWidth()) {
+    val state = rememberScrollState()
+    Column(modifier = Modifier.verticalScroll(state)) {
         //SummaryPopupPreview()
 
         WeekTitles("Current Week")
         todays.forEach { SummaryCards(it, onNavigateToSummaryDialog) }
 
         WeekTitles("Last Week")
-        lastWeek.forEach { SummaryCards(it,onNavigateToSummaryDialog) }
+        lastWeek.forEach { SummaryCards(it, onNavigateToSummaryDialog) }
 
         WeekTitles("Previous Weeks")
-        other.forEach { SummaryCards(it,onNavigateToSummaryDialog) }
+        other.forEach { SummaryCards(it, onNavigateToSummaryDialog) }
     }
 }
 
-@Composable
-fun WeekTitles(title: String) {
 
-    Text(
-        text = title,
-        style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.primary
-    )
+fun onSummaryCard(results: BiWeeklyEvalStat, onNavigateToSummaryDialog: () -> Unit) {
 
 }
 
 @Composable
-fun SummaryCards(results: BiWeeklyEvalStat, onNavigateToSummaryDialog:() -> Unit) {
+fun SummaryCards(results: BiWeeklyEvalStat, onNavigateToSummaryDialog: () -> Unit) {
 
     val colour = MaterialTheme.colorScheme.primaryContainer
 
@@ -207,7 +239,7 @@ fun SummaryCards(results: BiWeeklyEvalStat, onNavigateToSummaryDialog:() -> Unit
             ) {
                 Text(
                     modifier = Modifier.padding(start = 15.dp),
-                    text = "Moderate Depression",
+                    text = results.depressionResults,
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center
                 )
@@ -232,7 +264,7 @@ fun SummaryCards(results: BiWeeklyEvalStat, onNavigateToSummaryDialog:() -> Unit
             ) {
                 Text(
                     modifier = Modifier.padding(start = 15.dp),
-                    text = "Moderate Anxiety",
+                    text = results.anxietyResults,
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center
                 )
@@ -309,9 +341,6 @@ fun SummaryPopup(results: BiWeeklyEvalStat) {
                     content = { Text("${results.anxietyScore}") }
                 )
             }
-
-
-
             ScoreChart(results.anxietyScore, anxietyScores, anxietySeverities)
         }
 
@@ -326,4 +355,72 @@ fun SummaryPopupScreen() {
     Log.println(Log.DEBUG, "BiWeeklyEvalVM", "Depression Score: ${results[0].depressionScore}")
 
     SummaryPopup(results[0])
+}
+
+//HELPER FUNCTIONS
+
+@Composable
+fun findSeverity(score: Int, evalType: String): String {
+
+    val depressionScores: List<String> = stringArrayResource(R.array.depression_scores).toList()
+    val depressionSeverities: List<String> =
+        stringArrayResource(R.array.depression_severities).toList()
+
+    val anxietyScores: List<String> = stringArrayResource(R.array.anxiety_scores).toList()
+    val anxietySeverities: List<String> = stringArrayResource(R.array.anxiety_severities).toList()
+
+    if (evalType == "anxiety") {
+        for (i in anxietyScores.indices) {
+            val scoreRange = anxietyScores[i].split('-')
+
+            if (score >= scoreRange[0].toInt() && score <= scoreRange[1].toInt()) {
+                return anxietySeverities[i]
+            }
+        }
+    } else {
+        for (i in depressionScores.indices) {
+            val scoreRange = depressionScores[i].split('-')
+
+            if (score >= scoreRange[0].toInt() && score <= scoreRange[1].toInt()) {
+                return depressionSeverities[i]
+            }
+        }
+    }
+    return ""
+}
+
+@Composable
+fun makeCardInfo(): List<BiWeeklyEvalStat> {
+    val results = mutableListOf<BiWeeklyEvalStat>()
+
+    val current = LocalDate.now()
+    for (i in 0..8) {
+
+        val date = current.minusDays(i.toLong())
+        val depressionResult = findSeverity(5 + i, "depression")
+        val anxietyResult = findSeverity(2 + i, "anxiety")
+
+        results.add(
+            BiWeeklyEvalStat(
+                depressionScore = 5 + i,
+                anxietyScore = 2 + i,
+                depressionResults = depressionResult,
+                anxietyResults = anxietyResult,
+                dateCompleted = date
+            )
+        )
+    }
+
+    return results.toList()
+}
+
+@Composable
+fun WeekTitles(title: String) {
+
+    Text(
+        text = title,
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.primary
+    )
+
 }
