@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.google.services)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.google.hilt.android)
-    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.google.ksp)
 }
 
 android {
@@ -50,7 +50,7 @@ dependencies {
 
     // Hilt & Dagger
     implementation(libs.google.hilt.android)
-    kapt(libs.hilt.android.compiler)
+    ksp(libs.hilt.android.compiler)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

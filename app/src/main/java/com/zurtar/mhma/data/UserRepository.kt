@@ -1,8 +1,8 @@
 package com.zurtar.mhma.data
 
-class UserRepository(userRemoteDataSource: UserRemoteDataSource) {
+//class UserRepository(userRemoteDataSource: UserRemoteDataSource) {
 
-}
+//}
 
 
 
