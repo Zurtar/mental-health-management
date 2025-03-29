@@ -23,11 +23,10 @@ import androidx.compose.foundation.layout.height
 import com.zurtar.mhma.util.DefaultTopAppBar
 
 /*
-EntryModification page can be called upon in two different ways: a version where it is
-given an id number, and one where it is not given an id number. If it is not given an
-id, then title anc content boxes will be empty: this is used for new entry creation. If
-it is given an id, then title and content boxes will be filled from the associated
-entry's data: this is used for entry editing.
+The entry view screen is navigated to by the drop down menu on the journal item buttons
+from the journaling screen. From this screen, there will be two buttons at the bottom, "Back"
+and "Edit", back will popback to the journaling screen. Edit will navigate to the appropriate
+Entry modification screen.
  */
 @Composable
 fun EntryViewScreen(
