@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -37,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,7 +43,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.zurtar.mhma.R
 import com.zurtar.mhma.util.DefaultTopAppBar
 import com.zurtar.mhma.theme.EmojiFrown
 import com.zurtar.mhma.theme.EmojiNeutral
@@ -99,7 +96,7 @@ private fun DailyMoodEvaluationScreenContent(
     Column(
         modifier = modifier.background(MaterialTheme.colorScheme.background),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
+        verticalArrangement = Arrangement.Center
     ) {
 
         if (dailyEntry.page == 0)
@@ -145,7 +142,7 @@ fun EmotionRating(
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 10.dp, end = 10.dp)
+            .padding(start = 20.dp, end = 10.dp)
     ) {
         Text(
             text = "On a scale from 1-10, how strongly are you feeling these emotion",
@@ -340,10 +337,12 @@ fun DailyResultPrev() {
     val emotions = listOf("Happy", "Angry")
     val intensities = listOf(3.0f, 7.0f)
 
+    val emotionsMap: Map<String, Float> = emotions.zip(intensities).toMap()
+
     val dEntry = DailyEvaluationEntry(
         selectedEmotions = emotions,
         emotionIntensities = intensities,
-
+        emotionsMap = emotionsMap
         )
 
     DailyResult(dailyEntry = dEntry, onNavigateToAnalytics = {})
@@ -370,34 +369,14 @@ private fun DailyResult(
                 textAlign = TextAlign.Center
             )
 
-            Text(
-                modifier = Modifier.padding(bottom = 20.dp),
-                text = "Strongest Emotion:",
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center
-            )
+//            Text(
+//                modifier = Modifier.padding(bottom = 20.dp),
+//                text = "Strongest Emotion:",
+//                style = MaterialTheme.typography.bodyLarge,
+//                textAlign = TextAlign.Center
+//            )
 
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Button(
-                    onClick = {  },
-                    shape = RoundedCornerShape(50), // Oval shape
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor =  MaterialTheme.colorScheme.secondaryContainer,
-                        contentColor = Color.Black
-                    ),
-                ) {
-                    Text(
-                        text = "Happy",
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
-
-                Text(
-                    text = "5",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-
-            }
+            EmotionSummaryTable(dailyEntry)
 
             ProceedCard("Proceed to Evaluation Analytics") { onNavigateToAnalytics(0) }
             ProceedCard("Proceed to Journal") { onNavigateToAnalytics(0) }
@@ -412,21 +391,25 @@ private fun DailyResult(
 }
 
 @Composable
-fun EmotionSummaryTable() {
-    ElevatedCard(
-        Modifier.padding(top = 15.dp),
+fun EmotionSummaryTable(dailyEntry: DailyEvaluationEntry) {
+    
+    var foo = dailyEntry.emotionsMap
+    foo = foo.toList().sortedByDescending {
+        (_, intensity) -> intensity
+    }.toMap()
 
+    ElevatedCard(
+        Modifier.padding(top = 5.dp, bottom = 60.dp).fillMaxWidth(0.85f),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly
+            modifier = Modifier.fillMaxWidth().padding(top = 10.dp), horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Text(
                 text = "EMOTION",
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier
-                    .width(100.dp)
-                    .padding(end = 40.dp),
+                    .width(90.dp),
                 textAlign = TextAlign.Start
             )
 
@@ -435,10 +418,37 @@ fun EmotionSummaryTable() {
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Right,
                 modifier = Modifier
-                    .width(100.dp)
-                    .padding(end = 20.dp)
+                    .width(60.dp)
             )
         }
+
+        dailyEntry.emotionsMap.toList().sortedByDescending {
+                (_, intensity) -> intensity
+        }.toMap().forEach{
+            EmotionsChart(emotion = it.key, score = it.value.toString())
+        }
+    }
+}
+
+
+@Composable
+fun EmotionsChart(modifier: Modifier = Modifier, emotion: String, score: String) {
+
+    Row(modifier = modifier.fillMaxWidth().padding(bottom = 5.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+        Text(
+            text = emotion,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier
+                .padding(start = 5.dp),
+            textAlign = TextAlign.Left
+        )
+        Text(
+            text = score,
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier
+                .padding(start = 5.dp),
+            textAlign = TextAlign.Left
+        )
     }
 }
 
@@ -459,60 +469,6 @@ private fun CurrentMoodResult(currentEmotion: String) {
             Text(
                 text = currentEmotion,
                 fontSize = 20.sp
-            )
-        }
-    }
-}
-
-fun makeMap(intensities: List<Float>, emotion: List<String>): MutableMap<String, Float> {
-    val emotionsMap = mutableMapOf<String, Float>()
-
-    for (i in 0..emotion.size) {
-        emotionsMap[emotion[i]] = intensities[i]
-    }
-
-    return emotionsMap
-}
-
-
-@Composable
-fun StrongestEmotionResult(dailyEntry: DailyEvaluationEntry) {
-//
-//    val emotions = listOf(
-//        "Sad" to Color(0xFF1E88E5), // Blue
-//        "Happy" to Color(0xFF4CAF50), // Yellow
-//        "Fearful" to Color(0xFF8E24AA), // Purple
-//        "Angry" to Color(0xBAD32F2F), // Red
-//
-//    )
-//
-//    val emotionsMap = makeMap(dailyEntry.emotionIntensities, dailyEntry.selectedEmotions)
-//
-//    // val strongestEmotion = emotionsMap.filter { it.value == emotionsMap.values.max()}
-//
-//    val strongestEmotion = "Happy"
-//
-////    var buttColor = Color.White
-////    emotions.forEach { (emotion, color) ->
-////        if (strongestEmotion.containsKey(emotion)) {
-////            buttColor = color
-////        }
-////    }
-//    var buttColor = Color.White
-//    emotions.forEach { (emotion, color) ->
-//        if (strongestEmotion == emotion) {
-//            buttColor = color
-//        }
-//    }
-
-
-    ElevatedCard(elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)) {
-        Row() {
-            Text(
-                text = "The strongest emotions you have felt today were: ",
-                //modifier = Modifier.padding(bottom = 10.dp),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 25.dp)
             )
         }
     }

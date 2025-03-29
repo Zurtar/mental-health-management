@@ -21,7 +21,7 @@ data class BiWeeklyEvaluationEntry(
 data class DailyEvaluationEntry(
     val selectedEmotions: List<String> = listOf(),
     val emotionIntensities: List<Float> = listOf(0f, 0f, 0f),
-    val emotionsMap:Map<String, Float>
+    val emotionsMap:Map<String, Float> = mapOf(),
     val isSubmitted: Int = 0,
     val strongestEmotion: String = "default_initial",
     val page: Int = 0,
@@ -120,11 +120,14 @@ class DailyEvaluationViewModel : ViewModel() {
         intensityList[index] = value
         Log.println(Log.DEBUG, "DailyEval:: ", "$value")
 
+        val newMap:Map<String, Float> = _uiState.value.dailyEntry.selectedEmotions.zip(intensityList).toMap()
+
         _uiState.update { currentState ->
             currentState.copy(
                 dailyEntry = DailyEvaluationEntry(
                     selectedEmotions = currentState.dailyEntry.selectedEmotions,
                     emotionIntensities = intensityList,
+                    emotionsMap = newMap,
                     page = currentState.dailyEntry.page
                 )
             )
@@ -132,7 +135,7 @@ class DailyEvaluationViewModel : ViewModel() {
         Log.println(Log.DEBUG, "DailyEval:: ", "$intensityList")
     }
 
-    fun makeMap( selectedEmotions: List<String>, intensities: List<Float>): MutableMap<String, Float> {
+    fun emotionsMap( selectedEmotions: List<String>, intensities: List<Float>): MutableMap<String, Float> {
         val emotionsMap = mutableMapOf<String, Float>()
 
         for (i in 0..selectedEmotions.size) {
