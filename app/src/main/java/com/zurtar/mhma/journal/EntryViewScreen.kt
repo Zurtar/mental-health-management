@@ -72,8 +72,9 @@ private fun EntryViewScreenContent(
     onNavigateBack: () -> Unit,
     onNavigateToEntryEdit: (Int) -> Unit
 ) {
-    var title = onGetEntry(id)?.title ?: ""
-    var content = onGetEntry(id)?.content ?: ""
+    val entry = onGetEntry(id)
+    var title by remember { mutableStateOf(entry?.title ?: "") }
+    var content by remember { mutableStateOf(entry?.content ?: "") }
 
     Column(
         modifier = modifier
@@ -95,6 +96,7 @@ private fun EntryViewScreenContent(
                 .padding(bottom = 8.dp),
             horizontalArrangement = Arrangement
                 .spacedBy(8.dp)
+
         ) {
             Button(
                 onClick = onNavigateBack,
