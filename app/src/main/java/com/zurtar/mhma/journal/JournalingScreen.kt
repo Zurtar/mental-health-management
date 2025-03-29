@@ -52,22 +52,28 @@ fun JournalingScreen(
     viewModel: JournalViewModel = viewModel(),
     openDrawer: () -> Unit,
     onNavigateToEntryCreation: () -> Unit,
-    onNavigateToEntryEdit: (Int) -> Unit
+    onNavigateToEntryView: (Int) -> Unit
 ) {
     val entryList by viewModel.entryList.observeAsState()
+    viewModel.getAllEntries()
 
     //This should be removed in the final version. Only here for
     //demo purposes
-    for (entry in getExampleEntry()) {
-        viewModel.addEntry(entry)
+    if (entryList == null) {
+        for (entry in getExampleEntry()) {
+            viewModel.addEntry(entry)
+        }
     }
 
-    Scaffold(modifier = modifier.fillMaxSize(),
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
         topBar = {
             DefaultTopAppBar(openDrawer = openDrawer)
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { onNavigateToEntryCreation() }) {
+            FloatingActionButton(
+                onClick = { onNavigateToEntryCreation() }
+            ) {
                 Icon(Icons.Filled.Add, "Add new entry")
             }
         }
@@ -77,7 +83,7 @@ fun JournalingScreen(
                 .padding(innerPadding)
                 .fillMaxSize(),
             entryList = entryList,
-            onNavigateToEntryEdit = onNavigateToEntryEdit,
+            onNavigateToEntryView = onNavigateToEntryView,
             deleteEntry = viewModel::deleteEntry
         )
     }
@@ -89,7 +95,7 @@ fun JournalingScreen(
 private fun JournalingScreenContent(
     modifier: Modifier = Modifier,
     entryList: List<JournalEntry>?,
-    onNavigateToEntryEdit: (Int) -> Unit,
+    onNavigateToEntryView: (Int) -> Unit,
     deleteEntry: (Int) -> Unit
 ) {
     Column(
@@ -109,7 +115,7 @@ private fun JournalingScreenContent(
                         EntryItem(
                             item = item,
                             onDelete = { deleteEntry(item.id) },
-                            onEdit = { onNavigateToEntryEdit(item.id) })
+                            onView = { onNavigateToEntryView(item.id) })
                     }
                 }
             )
@@ -124,7 +130,10 @@ private fun JournalingScreenContent(
 }
 
 @Composable
-fun EntryItem(item: JournalEntry, onDelete: () -> Unit, onEdit: () -> Unit) {
+fun EntryItem(
+    item: JournalEntry,
+    onDelete: () -> Unit,
+    onView: () -> Unit) {
 
     var expanded by remember { mutableStateOf(false) }
     Row(
@@ -169,9 +178,9 @@ fun EntryItem(item: JournalEntry, onDelete: () -> Unit, onEdit: () -> Unit) {
                 onDismissRequest = { expanded = false }
             ) {
                 DropdownMenuItem(
-                    text = { Text("Edit") },
+                    text = { Text("View") },
                     onClick = {
-                        onEdit()
+                        onView()
                         expanded = false
                     }
                 )
@@ -189,7 +198,10 @@ fun EntryItem(item: JournalEntry, onDelete: () -> Unit, onEdit: () -> Unit) {
 }
 
 @Composable
-fun EntryItemAlt(item: JournalEntry, onDelete: () -> Unit, onEdit: () -> Unit) {
+fun EntryItemAlt(
+    item: JournalEntry,
+    onDelete: () -> Unit,
+    onView: () -> Unit) {
 
     var expanded by remember { mutableStateOf(false) }
     Row(
@@ -234,9 +246,9 @@ fun EntryItemAlt(item: JournalEntry, onDelete: () -> Unit, onEdit: () -> Unit) {
                 onDismissRequest = { expanded = false }
             ) {
                 DropdownMenuItem(
-                    text = { Text("Edit") },
+                    text = { Text("View") },
                     onClick = {
-                        onEdit()
+                        onView()
                         expanded = false
                     }
                 )

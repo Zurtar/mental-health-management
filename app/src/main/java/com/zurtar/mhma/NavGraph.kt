@@ -23,6 +23,7 @@ import com.zurtar.mhma.auth.LoginScreen
 import com.zurtar.mhma.auth.SignUpScreen
 import com.zurtar.mhma.home.HomeScreen
 import com.zurtar.mhma.journal.EntryModificationScreen
+import com.zurtar.mhma.journal.EntryViewScreen
 import com.zurtar.mhma.journal.JournalingScreen
 import com.zurtar.mhma.mood.BiWeeklyEvaluationScreen
 import com.zurtar.mhma.mood.DailyMoodEvaluationScreen
@@ -119,11 +120,25 @@ fun NavGraph(
                 )
             }
 
+            /**
+             *  Original code for  Journal navigation
+             */
+            /*
             composable<Journal> {
+
                 JournalingScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
                     onNavigateToEntryCreation = { navController.navigate(JournalEntryR) },
                     onNavigateToEntryEdit = { id -> navController.navigate("entryEdit/$id") }
+                )
+            }
+            */
+
+            composable<Journal> {
+                JournalingScreen(
+                    openDrawer = { coroutineScope.launch { drawerState.open() } },
+                    onNavigateToEntryCreation = { navActions.navigateToJournalEntryR() },
+                    onNavigateToEntryView = { id -> navActions.navigateToEntryView(id) },
                 )
             }
 
@@ -136,10 +151,24 @@ fun NavGraph(
             }
 
             composable(
+                route = "entryView/{entryId}",
+                arguments = listOf(navArgument("entryId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val entryId = backStackEntry.arguments?.getInt("entryId") ?: -1
+
+                EntryViewScreen(
+                    openDrawer = { coroutineScope.launch { drawerState.open() } },
+                    id = entryId,
+                    onNavigateToEntryEdit = { id -> navActions.navigateToEntryEdit(id) },
+                    onNavigateBack = { navController.popBackStack() },
+                )
+            }
+
+            composable(
                 route = "entryEdit/{entryId}",
                 arguments = listOf(navArgument("entryId") {
                     type = NavType.IntType
-                }) // Added this line
+                })
             ) { backStackEntry ->
                 val entryId = backStackEntry.arguments?.getInt("entryId") ?: -1
 
@@ -149,6 +178,8 @@ fun NavGraph(
                     onNavigateBack = { navController.popBackStack() },
                 )
             }
+
+
         }
     }
 }

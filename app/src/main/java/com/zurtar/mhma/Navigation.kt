@@ -35,6 +35,18 @@ class Navigation(private val navController: NavHostController) {
         }
     }
 
+    fun navigateToEntryView(id: Int) {
+        navController.navigate("entryView/$id")
+    }
+
+    fun navigateToEntryEdit(id: Int) {
+        navController.navigate("entryEdit/$id")
+    }
+
+    fun navigateToJournalEntryR(){
+        navController.navigate(JournalEntryR)
+    }
+
     fun navigateToMoodEvaluation() {
         navController.navigate(MoodEvaluation) {
             restoreState = true
