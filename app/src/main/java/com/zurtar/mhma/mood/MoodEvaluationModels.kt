@@ -3,6 +3,8 @@ package com.zurtar.mhma.mood
 import android.util.Log
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
+import com.zurtar.mhma.theme.EmojiFrown
+import com.zurtar.mhma.theme.EmojiNeutral
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,7 +38,7 @@ data class BiWeeklyEvaluationUiState(
 )
 
 data class DailyEvaluationUiState(
-    //  val currentEmotion: String = "default_initial",
+    val currentEmotion: String = "default_initial",
     val dailyEntry: DailyEvaluationEntry = DailyEvaluationEntry(),
     val isSubmitted: Int = 0,
 )
@@ -76,19 +78,19 @@ class DailyEvaluationViewModel : ViewModel() {
     }
 
     fun updateEmotion(emoji: ImageVector) {
-//        if (emoji == EmojiFrown) {
-//            _uiState.update { currentState ->
-//                currentState.copy(currentEmotion = "Upset")
-//            }
-//        } else if (emoji == EmojiNeutral) {
-//            _uiState.update { currentState ->
-//                currentState.copy(currentEmotion = "Neutral")
-//            }
-//        } else {
-//            _uiState.update { currentState ->
-//                currentState.copy(currentEmotion = "Happy")
-//            }
-//        }
+        if (emoji == EmojiFrown) {
+            _uiState.update { currentState ->
+                currentState.copy(currentEmotion = "Upset")
+            }
+        } else if (emoji == EmojiNeutral) {
+            _uiState.update { currentState ->
+                currentState.copy(currentEmotion = "Neutral")
+            }
+        } else {
+            _uiState.update { currentState ->
+                currentState.copy(currentEmotion = "Happy")
+            }
+        }
     }
 
     fun emotionSelect(emotion: String) {
