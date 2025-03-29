@@ -337,13 +337,11 @@ fun DailyResultPrev() {
     val emotions = listOf("Happy", "Angry")
     val intensities = listOf(3.0f, 7.0f)
 
-    val emotionsMap: Map<String, Float> = emotions.zip(intensities).toMap()
-
     val dEntry = DailyEvaluationEntry(
         selectedEmotions = emotions,
         emotionIntensities = intensities,
-        emotionsMap = emotionsMap
-        )
+        emotionsMap = emotions.zip(intensities).toMap()
+    )
 
     DailyResult(dailyEntry = dEntry, onNavigateToAnalytics = {})
 }
@@ -355,19 +353,19 @@ private fun DailyResult(
     onNavigateToAnalytics: (Int) -> Unit
 ) {
 
-        Column(
-            modifier
-                .padding(5.dp)
-                .background(MaterialTheme.colorScheme.background),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                modifier = Modifier.padding(bottom = 30.dp),
-                text = "You have completed the Quick evaluation!",
-                style = MaterialTheme.typography.titleLarge,
-                textAlign = TextAlign.Center
-            )
+    Column(
+        modifier
+            .padding(5.dp)
+            .background(MaterialTheme.colorScheme.background),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            modifier = Modifier.padding(bottom = 30.dp),
+            text = "You have completed the Quick evaluation!",
+            style = MaterialTheme.typography.titleLarge,
+            textAlign = TextAlign.Center
+        )
 
 //            Text(
 //                modifier = Modifier.padding(bottom = 20.dp),
@@ -378,21 +376,21 @@ private fun DailyResult(
 
             EmotionSummaryTable(dailyEntry)
 
-            ProceedCard("Proceed to Evaluation Analytics") { onNavigateToAnalytics(0) }
-            ProceedCard("Proceed to Journal") { onNavigateToAnalytics(0) }
+        ProceedCard("Proceed to Evaluation Analytics") { onNavigateToAnalytics(0) }
+        ProceedCard("Proceed to Journal") { onNavigateToAnalytics(0) }
 
-            Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-            FilledTonalButton(
-                onClick = { },
-                content = { Text("Exit") })
-        }
+        FilledTonalButton(
+            onClick = { },
+            content = { Text("Exit") })
+    }
 
 }
 
 @Composable
 fun EmotionSummaryTable(dailyEntry: DailyEvaluationEntry) {
-    
+
     var foo = dailyEntry.emotionsMap
     foo = foo.toList().sortedByDescending {
         (_, intensity) -> intensity
