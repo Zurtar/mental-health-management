@@ -56,8 +56,10 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.ui.text.google.fonts)
 
+    implementation(libs.kizitonwose.calendar.compose)
+
 //    From Journal
-    implementation (libs.androidx.runtime.livedata)
+    implementation(libs.androidx.runtime.livedata)
 
 
     implementation(platform(libs.firebase.bom))
@@ -72,7 +74,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
     implementation(libs.androidx.navigation.compose)
-
+//    implementation(libs.androidx.ui.test.android)
 
 
     testImplementation(libs.junit)

@@ -16,6 +16,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.zurtar.mhma.auth.AccountScreen
@@ -24,9 +25,11 @@ import com.zurtar.mhma.auth.SignUpScreen
 import com.zurtar.mhma.home.HomeScreen
 import com.zurtar.mhma.journal.EntryModificationScreen
 import com.zurtar.mhma.journal.JournalingScreen
+import com.zurtar.mhma.analytics.AnalyticsScreen
 import com.zurtar.mhma.mood.BiWeeklyEvaluationScreen
 import com.zurtar.mhma.mood.DailyMoodEvaluationScreen
 import com.zurtar.mhma.mood.MoodEvaluationScreen
+import com.zurtar.mhma.analytics.SummaryPopupScreen
 import com.zurtar.mhma.util.AppModalDrawer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -76,7 +79,8 @@ fun NavGraph(
                 HomeScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
                     onNavigateToMoodEvaluation = { navActions.navigateToMoodEvaluation() },
-                    onNavigateToJournal = { navActions.navigateToJournal() }
+                    onNavigateToJournal = { navActions.navigateToJournal() },
+                    onNavigateToAnalytics = { navActions.navigateToAnalytics() }
                 )
             }
 
@@ -110,14 +114,36 @@ fun NavGraph(
             composable<BiWeeklyEvaluation> {
                 BiWeeklyEvaluationScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
+                    onNavigateToAnalytics = { navActions.navigateToAnalytics() }
                 )
             }
 
             composable<DailyEvaluation> {
                 DailyMoodEvaluationScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
+                    onNavigateToAnalytics = {navActions.navigateToAnalytics(0)}
                 )
             }
+
+            //Added dialog navigation for biweekly summary page
+            dialog<SummaryDialog> {
+                SummaryPopupScreen()
+            }
+
+
+            composable(
+                route = "${Analytics}/{id}",
+                arguments = listOf(
+                    navArgument("id") { type = NavType.IntType }
+                )
+            ) { backStackEntry ->
+                AnalyticsScreen(
+                    id = backStackEntry.arguments?.getInt("id") ?: 0,
+                    openDrawer = { coroutineScope.launch { drawerState.open() } },
+                    onNavigateToSummaryDialog = { navActions.navigateToSummaryDialog() }
+                )
+            }
+
 
             composable<Journal> {
                 JournalingScreen(
