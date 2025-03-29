@@ -28,17 +28,40 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.zurtar.mhma.util.DefaultTopAppBar
 import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.text.isNotBlank
 
 
 
-
+@Composable
+fun ChatbotPage(
+    modifier: Modifier = Modifier,
+    viewModel: ChatbotViewModel = viewModel(),
+    onNavigateToChatList: () -> Unit,
+    openDrawer: () -> Unit
+) {
+    Scaffold(modifier = modifier.fillMaxSize(),
+        topBar = {
+            DefaultTopAppBar(openDrawer = openDrawer)
+        }
+    ) { innerPadding ->
+        ChatbotPageContent(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            viewModel = viewModel,
+            onNavigateToChatList = onNavigateToChatList,
+            openDrawer = openDrawer,
+        )
+    }
+}
 
 
 
@@ -56,7 +79,7 @@ a lazy column, and are called on based on the Sender (Bot or User) parameter of 
  */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ChatbotPage(
+fun ChatbotPageContent(
     modifier: Modifier = Modifier,
     viewModel: ChatbotViewModel = viewModel(),
     onNavigateToChatList: () -> Unit,

@@ -140,47 +140,6 @@ fun NavGraph(
             }
             */
 
-            /*
-            fun ChatBotNavigation(
-    viewModel: ChatbotViewModel,
-    modifier: Modifier = Modifier
-) {
-    val navController = rememberNavController()
-    NavHost(
-        navController = navController,
-        startDestination = "chatbot",
-        modifier = modifier
-    ) {
-        composable("chatbot") {
-            ChatbotPage(
-                viewModel = viewModel,
-                onNavigateToChatList = { navController.navigate("chatlist") }
-            )
-        }
-        composable("chatlist") {
-            ChatListPage(
-                viewModel = viewModel,
-                onNavigateToChatbot = { navController.navigate("chatbot")},
-                onNavigateToChatLog = { logId -> navController.navigate("chatlog/$logId") }
-            )
-        }
-        //Destination log to display is determined from {logId}
-        composable(
-            "chatlog/{logId}",
-            arguments = listOf(navArgument("logId") { type = NavType.IntType })
-        ) { backStackEntry ->
-            val logId = backStackEntry.arguments?.getInt("logId") ?: 0
-            ChatLogPage(
-                logId = logId,
-                onNavigateBack = {
-                    navController.popBackStack()
-                }
-            )
-        }
-    }
-}
-             */
-
             //Attempting to add in Chatbot navigation
             composable<Chatbot> {
                 ChatbotPage(

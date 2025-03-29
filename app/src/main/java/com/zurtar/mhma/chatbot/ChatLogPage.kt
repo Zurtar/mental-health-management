@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,9 +24,37 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.zurtar.mhma.util.DefaultTopAppBar
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+
+@Composable
+fun ChatLogPage(
+    logId: Int,
+    onNavigateBack: () -> Unit,
+    viewModel: ChatbotViewModel = viewModel(),
+    openDrawer: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Scaffold(modifier = modifier.fillMaxSize(),
+        topBar = {
+            DefaultTopAppBar(openDrawer = openDrawer)
+        }
+    ) { innerPadding ->
+        ChatbotPageContent(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            viewModel = viewModel,
+            onNavigateToChatList = onNavigateBack,
+            openDrawer = openDrawer,
+        )
+    }
+}
+
+
+
 
 /*
 Composable function used to display previously saved/completed cognitive behavioural
@@ -42,7 +71,7 @@ tandem with various other handle..Branch functions
  */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ChatLogPage(
+fun ChatLogPageContent(
     logId: Int,
     onNavigateBack: () -> Unit,
     viewModel: ChatbotViewModel = viewModel(),
