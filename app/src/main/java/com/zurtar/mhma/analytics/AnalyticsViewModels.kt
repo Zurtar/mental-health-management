@@ -15,7 +15,4 @@ class MoodCalendarViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(MoodCalendarUIState(""))
     val uiState: StateFlow<MoodCalendarUIState> = _uiState.asStateFlow()
 
-
-
-
 }

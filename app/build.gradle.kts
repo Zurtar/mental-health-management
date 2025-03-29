@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.services)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.google.hilt.android)
+    alias(libs.plugins.kotlin.kapt)
 }
 
 android {
@@ -46,6 +48,10 @@ dependencies {
 
     implementation(libs.kotlinx.serialization.json)
 
+    // Hilt & Dagger
+    implementation(libs.google.hilt.android)
+    kapt(libs.hilt.android.compiler)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -58,7 +64,7 @@ dependencies {
 
     implementation(libs.kizitonwose.calendar.compose)
 
-//    From Journal
+    //    From Journal
     implementation(libs.androidx.runtime.livedata)
 
 
