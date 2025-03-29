@@ -3,13 +3,29 @@ package com.zurtar.mhma.mood
 import android.util.Log
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
-import com.zurtar.mhma.theme.EmojiFrown
-import com.zurtar.mhma.theme.EmojiNeutral
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.time.LocalDate
+
+data class BiWeeklyEvaluationEntry(
+    var depressionScore: Int,
+    var anxietyScore: Int,
+    var dateCompleted: LocalDate,
+    var depressionResults: String = "",
+    var anxietyResults: String = ""
+
+)
+
+data class DailyEvaluationEntry(
+    val selectedEmotions: List<String> = listOf(),
+    val emotionIntensities: List<Float> = listOf(0f, 0f, 0f),
+    val isSubmitted: Int = 0,
+    val strongestEmotion: String = "default_initial",
+    val page: Int = 0,
+
+    )
 
 data class BiWeeklyEvaluationUiState(
     val depressionScore: Int = 0,
@@ -19,23 +35,11 @@ data class BiWeeklyEvaluationUiState(
 )
 
 data class DailyEvaluationUiState(
-  //  val currentEmotion: String = "default_initial",
-    val selectedEmotions:List<String> = listOf(),
-    val emotionIntensities:List<Float> = listOf(0f, 0f, 0f),
+    //  val currentEmotion: String = "default_initial",
+    val dailyEntry: DailyEvaluationEntry = DailyEvaluationEntry(),
     val isSubmitted: Int = 0,
-    val strongestEmotion: String = "default_initial",
-    val page: Int = 0,
-
-
 )
-data class BiWeeklyEvalStat(
-    var depressionScore: Int,
-    var anxietyScore: Int,
-    var dateCompleted: LocalDate,
-    var depressionResults: String = "",
-    var anxietyResults: String = ""
 
-)
 
 class DailyEvaluationViewModel : ViewModel() {
         private val _uiState = MutableStateFlow(DailyEvaluationUiState())
@@ -48,14 +52,25 @@ class DailyEvaluationViewModel : ViewModel() {
     }
 
     fun onNext() {
+
         _uiState.update { currentState ->
-            currentState.copy(page = currentState.page + 1)
+            val d_entry = DailyEvaluationEntry(
+                selectedEmotions = currentState.dailyEntry.selectedEmotions,
+                emotionIntensities = currentState.dailyEntry.emotionIntensities,
+                page = currentState.dailyEntry.page + 1
+            )
+            currentState.copy(dailyEntry = d_entry)
         }
     }
 
     fun onBack() {
         _uiState.update { currentState ->
-            currentState.copy(page = currentState.page - 1)
+            val d_entry = DailyEvaluationEntry(
+                selectedEmotions = currentState.dailyEntry.selectedEmotions,
+                emotionIntensities = currentState.dailyEntry.emotionIntensities,
+                page = currentState.dailyEntry.page - 1
+            )
+            currentState.copy(dailyEntry = d_entry)
         }
     }
 
@@ -78,33 +93,54 @@ class DailyEvaluationViewModel : ViewModel() {
     fun emotionSelect(emotion: String) {
         Log.println(Log.DEBUG, "DailyEval:: ", "$emotion")
 
-        val emotionList = _uiState.value.selectedEmotions.toMutableList()
+        val emotionList = _uiState.value.dailyEntry.selectedEmotions.toMutableList()
+
         if (emotionList.contains(emotion))
             emotionList.remove(emotion)
         else if (emotionList.size < 3) {
             emotionList.add(emotion)
         }
         Log.println(Log.DEBUG, "DailyEval:: ", "$emotionList")
+
         _uiState.update { currentState ->
-            currentState.copy(
-                selectedEmotions  = emotionList
+            val d_entry = DailyEvaluationEntry(
+                selectedEmotions = emotionList,
+                emotionIntensities = currentState.dailyEntry.emotionIntensities,
+                page = currentState.dailyEntry.page
             )
+
+            currentState.copy(dailyEntry = d_entry)
         }
     }
 
-    fun updateIntensity(value:Float, index:Int) {
+    fun updateIntensity(value: Float, index: Int) {
 
-        val intensityList = _uiState.value.emotionIntensities.toMutableList()
+        val intensityList = _uiState.value.dailyEntry.emotionIntensities.toMutableList()
         intensityList[index] = value
         Log.println(Log.DEBUG, "DailyEval:: ", "$value")
 
         _uiState.update { currentState ->
             currentState.copy(
-                emotionIntensities  = intensityList
+                dailyEntry = DailyEvaluationEntry(
+                    selectedEmotions = currentState.dailyEntry.selectedEmotions,
+                    emotionIntensities = intensityList,
+                    page = currentState.dailyEntry.page
+                )
             )
         }
         Log.println(Log.DEBUG, "DailyEval:: ", "$intensityList")
     }
+
+    fun makeMap(intensities: List<Float>, emotion: List<String>): MutableMap<String, Float> {
+        val emotionsMap = mutableMapOf<String, Float>()
+
+        for (i in 0..emotion.size) {
+            emotionsMap[emotion[i]] = intensities[i]
+        }
+
+        return emotionsMap
+    }
+
 
 }
 
@@ -153,7 +189,7 @@ class BiWeeklyEvaluationViewModel : ViewModel() {
             )
         }
 
-       // Log.println(Log.DEBUG, "BiWeeklyEvalVM", "Depression Score: $depressionScore")
+        // Log.println(Log.DEBUG, "BiWeeklyEvalVM", "Depression Score: $depressionScore")
         //Log.println(Log.DEBUG, "BiWeeklyEvalVM", "Anxiety Score: $anxietyScore")
     }
 

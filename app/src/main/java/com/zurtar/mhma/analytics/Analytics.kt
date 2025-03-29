@@ -47,6 +47,7 @@ import com.kizitonwose.calendar.core.daysOfWeek
 import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
 import com.zurtar.mhma.R
 import com.zurtar.mhma.mood.BiWeeklyEvalStat
+import com.zurtar.mhma.mood.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.mood.ScoreChart
 import com.zurtar.mhma.mood.findSeverity
 import com.zurtar.mhma.theme.AppTypography
@@ -266,12 +267,12 @@ fun BiWeeklySummaryPage(onNavigateToSummaryDialog: () -> Unit) {
     }
 }
 
-fun onSummaryCard(results: BiWeeklyEvalStat, onNavigateToSummaryDialog: () -> Unit) {
+fun onSummaryCard(results: BiWeeklyEvaluationEntry, onNavigateToSummaryDialog: () -> Unit) {
 
 }
 
 @Composable
-fun SummaryCards(results: BiWeeklyEvalStat, onNavigateToSummaryDialog: () -> Unit) {
+fun SummaryCards(results: BiWeeklyEvaluationEntry, onNavigateToSummaryDialog: () -> Unit) {
 
     val colour = MaterialTheme.colorScheme.primaryContainer
 
@@ -349,7 +350,7 @@ fun SummaryCards(results: BiWeeklyEvalStat, onNavigateToSummaryDialog: () -> Uni
 
 
 @Composable
-fun SummaryPopup(results: BiWeeklyEvalStat) {
+fun SummaryPopup(results: BiWeeklyEvaluationEntry) {
 
     val depressionScores: List<String> = stringArrayResource(R.array.depression_scores).toList()
     val depressionSeverities: List<String> =
@@ -420,8 +421,8 @@ fun SummaryPopupScreen() {
 //HELPER FUNCTIONS
 
 @Composable
-fun makeCardInfo(): List<BiWeeklyEvalStat> {
-    val results = mutableListOf<BiWeeklyEvalStat>()
+fun makeCardInfo(): List<BiWeeklyEvaluationEntry> {
+    val results = mutableListOf<BiWeeklyEvaluationEntry>()
 
     val current = LocalDate.now()
     for (i in 0..8) {
@@ -431,7 +432,7 @@ fun makeCardInfo(): List<BiWeeklyEvalStat> {
         val anxietyResult = findSeverity(2 + i, "anxiety")
 
         results.add(
-            BiWeeklyEvalStat(
+            BiWeeklyEvaluationEntry(
                 depressionScore = 5 + i,
                 anxietyScore = 2 + i,
                 depressionResults = depressionResult,
