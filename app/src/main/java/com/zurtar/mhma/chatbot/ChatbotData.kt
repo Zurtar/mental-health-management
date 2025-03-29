@@ -1,4 +1,4 @@
-package com.zurtar.mhma
+package com.zurtar.mhma.chatbot
 
 import java.util.Date
 

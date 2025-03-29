@@ -28,7 +28,13 @@ import com.zurtar.mhma.journal.JournalingScreen
 import com.zurtar.mhma.mood.BiWeeklyEvaluationScreen
 import com.zurtar.mhma.mood.DailyMoodEvaluationScreen
 import com.zurtar.mhma.mood.MoodEvaluationScreen
+
+import com.zurtar.mhma.chatbot.ChatbotPage
+import com.zurtar.mhma.chatbot.ChatListPage
+import com.zurtar.mhma.chatbot.ChatLogPage
+
 import com.zurtar.mhma.util.AppModalDrawer
+
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -133,6 +139,74 @@ fun NavGraph(
                 )
             }
             */
+
+            /*
+            fun ChatBotNavigation(
+    viewModel: ChatbotViewModel,
+    modifier: Modifier = Modifier
+) {
+    val navController = rememberNavController()
+    NavHost(
+        navController = navController,
+        startDestination = "chatbot",
+        modifier = modifier
+    ) {
+        composable("chatbot") {
+            ChatbotPage(
+                viewModel = viewModel,
+                onNavigateToChatList = { navController.navigate("chatlist") }
+            )
+        }
+        composable("chatlist") {
+            ChatListPage(
+                viewModel = viewModel,
+                onNavigateToChatbot = { navController.navigate("chatbot")},
+                onNavigateToChatLog = { logId -> navController.navigate("chatlog/$logId") }
+            )
+        }
+        //Destination log to display is determined from {logId}
+        composable(
+            "chatlog/{logId}",
+            arguments = listOf(navArgument("logId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val logId = backStackEntry.arguments?.getInt("logId") ?: 0
+            ChatLogPage(
+                logId = logId,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+    }
+}
+             */
+
+            //Attempting to add in Chatbot navigation
+            composable<Chatbot> {
+                ChatbotPage(
+                    openDrawer = { coroutineScope.launch { drawerState.open() } },
+                    onNavigateToChatList = { navController.navigate("chatlist") }
+                )
+            }
+            composable("Chatlist") {
+                ChatListPage(
+                    onNavigateToChatbot = { navController.navigate("chatbot")},
+                    onNavigateToChatLog = { logId -> navController.navigate("chatlog/$logId") }
+                )
+            }
+            composable(
+                route = "ChatLog/{logId}",
+                arguments = listOf(navArgument("logId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val logId = backStackEntry.arguments?.getInt("logId") ?: 0
+                ChatLogPage(
+                    logId = logId,
+                    onNavigateBack = {
+                        navController.popBackStack()
+                    }
+                )
+            }
+
 
             composable<Journal> {
                 JournalingScreen(

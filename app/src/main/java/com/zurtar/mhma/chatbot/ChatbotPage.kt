@@ -1,4 +1,4 @@
-package com.zurtar.mhma
+package com.zurtar.mhma.chatbot
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -36,6 +36,17 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.text.isNotBlank
 
+
+
+
+
+
+
+
+
+
+
+
 /*
 Composable function for the main Chatbot page. It relies on two additional composables and
 a helper function.
@@ -49,6 +60,7 @@ fun ChatbotPage(
     modifier: Modifier = Modifier,
     viewModel: ChatbotViewModel = viewModel(),
     onNavigateToChatList: () -> Unit,
+    openDrawer: () -> Unit
 ) {
     var userMessage by remember { mutableStateOf("") }
     val messages by viewModel.allMessages.observeAsState(initial = emptyList())

@@ -1,4 +1,4 @@
-package com.zurtar.mhma
+package com.zurtar.mhma.chatbot
 
 import android.os.Build
 import androidx.annotation.RequiresApi

@@ -1,4 +1,4 @@
-package com.zurtar.mhma
+package com.zurtar.mhma.chatbot
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -35,7 +35,10 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
+import androidx.compose.material3.Scaffold
 import androidx.compose.ui.text.style.TextAlign
+import com.zurtar.mhma.R
+import com.zurtar.mhma.util.DefaultTopAppBar
 
 /*
 Main function for the ChatListPage, which is used to display a list of previously completed
@@ -51,9 +54,41 @@ fun ChatListPage(
     modifier: Modifier = Modifier,
     viewModel: ChatbotViewModel = viewModel(),
     onNavigateToChatbot: () -> Unit,
-    onNavigateToChatLog: (Int) -> Unit
+    onNavigateToChatLog: (Int) -> Unit,
+    openDrawer: () -> Unit
 ) {
     val logList by viewModel.logList.observeAsState()
+
+    Scaffold(modifier = modifier.fillMaxSize(),
+        topBar = {
+            DefaultTopAppBar(openDrawer = openDrawer)
+        }
+    ) { innerPadding ->
+        ChatListPageContent(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            logList = logList,
+            deleteLog = viewModel::deleteLog,
+            onNavigateToChatLog = onNavigateToChatLog,
+            onNavigateToChatbot = onNavigateToChatbot
+        )
+    }
+
+
+}
+
+/*
+Composable function used to display the contents of the ChatListPage.
+ */
+@Composable
+private fun ChatListPageContent(
+    modifier: Modifier = Modifier,
+    logList: List<ChatLog>?,
+    deleteLog: (Int) -> Unit,
+    onNavigateToChatbot: () -> Unit,
+    onNavigateToChatLog: (Int) -> Unit
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -78,49 +113,29 @@ fun ChatListPage(
             }
         }
 
-        ChatListPageContent(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxSize(),
-            logList = logList,
-            deleteLog = viewModel::deleteLog,
-            onNavigateToChatLog = onNavigateToChatLog
-        )
-    }
-}
-
-/*
-Composable function used to display the contents of the ChatListPage.
- */
-@Composable
-private fun ChatListPageContent(
-    modifier: Modifier = Modifier,
-    logList: List<ChatLog>?,
-    deleteLog: (Int) -> Unit,
-    onNavigateToChatLog: (Int) -> Unit
-) {
-    Column(
-        modifier = modifier
-    ) {
-        logList?.let {
-            LazyColumn(
-                content = {
-                    itemsIndexed(it) { _: Int, item: ChatLog ->
-                        LogItem(
-                            item = item,
-                            onDelete = { deleteLog(item.id) },
-                            onNavigateToChatLog = onNavigateToChatLog
-                        )
+        Column(
+            modifier = modifier
+        ) {
+            logList?.let {
+                LazyColumn(
+                    content = {
+                        itemsIndexed(it) { _: Int, item: ChatLog ->
+                            LogItem(
+                                item = item,
+                                onDelete = { deleteLog(item.id) },
+                                onNavigateToChatLog = onNavigateToChatLog
+                            )
+                        }
                     }
-                }
+                )
+            } ?: Text(
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                text = "No entries found",
+                fontSize = 16.sp
             )
-        } ?: Text(
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            text = "No entries found",
-            fontSize = 16.sp
-        )
 
+        }
     }
 }
 

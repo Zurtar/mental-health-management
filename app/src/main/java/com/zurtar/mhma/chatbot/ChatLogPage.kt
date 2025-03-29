@@ -1,4 +1,4 @@
-package com.zurtar.mhma
+package com.zurtar.mhma.chatbot
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -46,6 +46,7 @@ fun ChatLogPage(
     logId: Int,
     onNavigateBack: () -> Unit,
     viewModel: ChatbotViewModel = viewModel(),
+    openDrawer: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val chatLog = viewModel.getLog(logId)
