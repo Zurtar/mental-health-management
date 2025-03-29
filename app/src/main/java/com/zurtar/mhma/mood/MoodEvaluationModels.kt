@@ -37,6 +37,11 @@ data class BiWeeklyEvaluationUiState(
     val questionResponse: List<Int> = listOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 )
 
+data class EvaluationMenuUiState(
+    val biWeeklyCompleted:Boolean = false,
+    val dailyCompleted:Boolean = true
+)
+
 data class DailyEvaluationUiState(
     val dailyEntry: DailyEvaluationEntry = DailyEvaluationEntry(),
     val isSubmitted: Int = 0,
@@ -214,4 +219,36 @@ class BiWeeklyEvaluationViewModel : ViewModel() {
             currentState.copy(page = 0)
         }
     }
+}
+
+class EvaluationMenuViewModel : ViewModel() {
+    private val _uiState = MutableStateFlow(EvaluationMenuUiState())
+    val uiState: StateFlow<EvaluationMenuUiState> = _uiState.asStateFlow()
+
+    fun updateDaily() {
+        if(!_uiState.value.dailyCompleted) {
+            _uiState.update{currentState ->
+                currentState.copy(dailyCompleted = true)
+            }
+        } else {
+            _uiState.update{currentState ->
+                currentState.copy(dailyCompleted = false)
+            }
+        }
+
+    }
+
+    fun updateBiWeekly() {
+        if(!_uiState.value.biWeeklyCompleted) {
+            _uiState.update{currentState ->
+                currentState.copy(biWeeklyCompleted = true)
+            }
+        } else {
+            _uiState.update{currentState ->
+                currentState.copy(biWeeklyCompleted = false)
+            }
+        }
+
+    }
+
 }

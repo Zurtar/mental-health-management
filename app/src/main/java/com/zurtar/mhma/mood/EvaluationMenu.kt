@@ -1,5 +1,6 @@
 package com.zurtar.mhma.mood
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -8,9 +9,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -69,12 +72,36 @@ private fun MoodEvaluationScreenContent(
     }
 }
 
-//@Preview
-//@Composable
-//fun EvalFormCardPreview() {
-//    val mod = Modifier.fillMaxWidth()
-//    EvaluationFormCard(mod, "Daily Evaluation") { }
-//}
+@Preview
+@Composable
+fun EvalFormCardPreview() {
+    val mod = Modifier.fillMaxWidth()
+    EvaluationCard(mod, "Quick Evaluation")
+    EvaluationCard(mod, "Bi-Weekly Evaluation")
+}
+
+@Composable
+fun EvaluationCard(
+    modifier: Modifier = Modifier,
+    title: String
+
+) {
+    ElevatedCard(
+        modifier = modifier
+            .padding(bottom = 15.dp)
+            .background(MaterialTheme.colorScheme.background)
+            .fillMaxWidth(0.75f)
+           // .fillMaxHeight(0.2f),
+        // onClick = onNavigate
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium
+        )
+        HorizontalDivider()
+        //Text(text = desc)
+    }
+}
 
 @Composable
 fun EvaluationFormCard(
