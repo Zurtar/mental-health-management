@@ -12,11 +12,13 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.zurtar.mhma.data.MoodRemoteDataSource
 import com.zurtar.mhma.data.MoodRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * This file will hold no UI logic!! This is a ViewModel/Buisness Logic Class only!
@@ -64,9 +66,11 @@ data class AccountUiState(
     val displayName: String = "default_initial"
 )
 
-class LoginViewModel : ViewModel() {
-    private val accountService: AccountServiceImplementation = AccountServiceImplementation()
-
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    private val accountService: AccountService
+) : ViewModel() {
+    
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
@@ -103,8 +107,11 @@ class LoginViewModel : ViewModel() {
     }
 }
 
-class SignupViewModel : ViewModel() {
-    private val accountService: AccountServiceImplementation = AccountServiceImplementation()
+@HiltViewModel
+class SignupViewModel @Inject constructor(
+    private val accountService: AccountService
+) : ViewModel() {
+//    private val accountService: AccountServiceImplementation = AccountServiceImplementation()
 
     private val _uiState = MutableStateFlow(SignupUiState())
     val uiState: StateFlow<SignupUiState> = _uiState.asStateFlow()
@@ -146,11 +153,12 @@ class SignupViewModel : ViewModel() {
     }
 }
 
-class AccountViewModel : ViewModel() {
+@HiltViewModel
+class AccountViewModel @Inject constructor(
+    private val accountService: AccountService
+) : ViewModel() {
     private val _uiState = MutableStateFlow(AccountUiState())
     val uiState: StateFlow<AccountUiState> = _uiState.asStateFlow()
-
-    private val accountService: AccountServiceImplementation = AccountServiceImplementation()
 
     // debug to check
     private val moodRepository: MoodRepository = MoodRepository(MoodRemoteDataSource())
@@ -191,7 +199,11 @@ class AccountViewModel : ViewModel() {
         }
 
         viewModelScope.launch {
-            Log.println(Log.INFO, "MoodRepoTest", moodRepository.fetchLatestMoodEntries().toString())
+            Log.println(
+                Log.INFO,
+                "MoodRepoTest",
+                moodRepository.fetchLatestMoodEntries().toString()
+            )
         }
     }
 

@@ -24,6 +24,7 @@ lifecycleViewmodelKtx = "2.8.7"
 kotlinSerialization = "2.0.21"
 kotlinxSerializationJson = "1.7.3"
 navigationCompose = "2.8.9"
+hiltNavigationCompose = "1.2.0"
 calendarLibrary = "2.6.2"
 hiltAndroid = "2.53.1"
 googleKsp = "2.1.10-1.0.30"
@@ -64,6 +65,7 @@ kizitonwose-calendar-compose = { module = "com.kizitonwose.calendar:compose", ve
 
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 google-hilt-android = { module = "com.google.dagger:hilt-android",  version.ref = "hiltAndroid" }
 
 

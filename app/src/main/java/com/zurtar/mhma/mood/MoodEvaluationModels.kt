@@ -9,6 +9,7 @@ import com.zurtar.mhma.data.MoodRemoteDataSource
 import com.zurtar.mhma.data.MoodRepository
 import com.zurtar.mhma.theme.EmojiFrown
 import com.zurtar.mhma.theme.EmojiNeutral
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -48,7 +49,6 @@ data class DailyEvaluationUiState(
     val dailyEntry: DailyEvaluationEntry = DailyEvaluationEntry(),
     val isSubmitted: Int = 0,
 )
-
 
 class DailyEvaluationViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(DailyEvaluationUiState())
@@ -156,7 +156,6 @@ class DailyEvaluationViewModel : ViewModel() {
 }
 
 class BiWeeklyEvaluationViewModel : ViewModel() {
-
     private val moodRepository = MoodRepository(moodRemoteDataSource = MoodRemoteDataSource())
 
     private val _uiState = MutableStateFlow(BiWeeklyEvaluationUiState())

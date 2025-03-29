@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,6 +14,7 @@ data class NavDrawerUiState(
     val isLoggedIn: Boolean = false
 )
 
+//@HiltViewModel
 class ModalDrawerViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(NavDrawerUiState())
     val uiState: StateFlow<NavDrawerUiState> = _uiState.asStateFlow()

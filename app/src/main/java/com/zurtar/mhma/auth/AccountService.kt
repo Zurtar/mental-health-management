@@ -5,11 +5,20 @@ import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.firestore
+import dagger.Binds
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.components.SingletonComponent
 import java.time.Instant
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Let me ask you a question, you don't look like a dancer but would be make an exception?
  */
+
 
 interface AccountService {
     fun createAnonymousAccount(onResult: (Throwable?) -> Unit)
@@ -19,7 +28,8 @@ interface AccountService {
     fun logout(onResult: (Throwable?) -> Unit)
 }
 
-class AccountServiceImplementation : AccountService {
+class AccountServiceImplementation @Inject constructor(
+) : AccountService {
     override fun createAnonymousAccount(onResult: (Throwable?) -> Unit) {
         Firebase.auth.signInAnonymously()
             .addOnCompleteListener { onResult(it.exception) }
@@ -64,3 +74,26 @@ class AccountServiceImplementation : AccountService {
         onResult(null)
     }
 }
+
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class AccountServiceModule {
+    @Binds
+    @Singleton
+    abstract fun bindAccountService(
+        accountServiceImplementation: AccountServiceImplementation
+    ): AccountService
+}
+
+/*
+@Module
+@InstallIn(ActivityComponent::class)
+object AccountServiceModule {
+    @Provides
+    fun provideAccountService(
+        // Potential dependencies of this type
+    ): AccountService {
+        return AccountServiceImplementation()
+    }
+}*/
