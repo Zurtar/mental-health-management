@@ -343,8 +343,8 @@ fun DailyResultPrev() {
     val dEntry = DailyEvaluationEntry(
         selectedEmotions = emotions,
         emotionIntensities = intensities,
-
-        )
+        emotionsMap = emotions.zip(intensities).toMap()
+    )
 
     DailyResult(dailyEntry = dEntry, onNavigateToAnalytics = {})
 }
@@ -356,58 +356,58 @@ private fun DailyResult(
     onNavigateToAnalytics: (Int) -> Unit
 ) {
 
-        Column(
-            modifier
-                .padding(5.dp)
-                .background(MaterialTheme.colorScheme.background),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                modifier = Modifier.padding(bottom = 30.dp),
-                text = "You have completed the Quick evaluation!",
-                style = MaterialTheme.typography.titleLarge,
-                textAlign = TextAlign.Center
-            )
+    Column(
+        modifier
+            .padding(5.dp)
+            .background(MaterialTheme.colorScheme.background),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            modifier = Modifier.padding(bottom = 30.dp),
+            text = "You have completed the Quick evaluation!",
+            style = MaterialTheme.typography.titleLarge,
+            textAlign = TextAlign.Center
+        )
 
-            Text(
-                modifier = Modifier.padding(bottom = 20.dp),
-                text = "Strongest Emotion:",
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center
-            )
+        Text(
+            modifier = Modifier.padding(bottom = 20.dp),
+            text = "Strongest Emotion:",
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center
+        )
 
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Button(
-                    onClick = {  },
-                    shape = RoundedCornerShape(50), // Oval shape
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor =  MaterialTheme.colorScheme.secondaryContainer,
-                        contentColor = Color.Black
-                    ),
-                ) {
-                    Text(
-                        text = "Happy",
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
-
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Button(
+                onClick = { },
+                shape = RoundedCornerShape(50), // Oval shape
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = Color.Black
+                ),
+            ) {
                 Text(
-                    text = "5",
+                    text = "Happy",
                     style = MaterialTheme.typography.bodyMedium,
                 )
-
             }
 
-            ProceedCard("Proceed to Evaluation Analytics") { onNavigateToAnalytics(0) }
-            ProceedCard("Proceed to Journal") { onNavigateToAnalytics(0) }
+            Text(
+                text = "5",
+                style = MaterialTheme.typography.bodyMedium,
+            )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            FilledTonalButton(
-                onClick = { },
-                content = { Text("Exit") })
         }
+
+        ProceedCard("Proceed to Evaluation Analytics") { onNavigateToAnalytics(0) }
+        ProceedCard("Proceed to Journal") { onNavigateToAnalytics(0) }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        FilledTonalButton(
+            onClick = { },
+            content = { Text("Exit") })
+    }
 
 }
 
