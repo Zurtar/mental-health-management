@@ -2,6 +2,7 @@ package com.zurtar.mhma.analytics
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,8 +22,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,11 +62,16 @@ fun AppHorizontalCalendar() {
         firstDayOfWeek = firstDayOfWeek,
     )
 
-    val scope = rememberCoroutineScope()
+    var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
 
     HorizontalCalendar(
         state = state,
-        dayContent = { Day(it) },
+        dayContent = {
+            Day(
+                it,
+                isSelected = it.date == selectedDate,
+                onClick = { d -> selectedDate = d.date })
+        },
         monthHeader = { month ->
             val daysOfWeek = remember { month.weekDays.first().map { it.date.dayOfWeek } }
             MonthHeader(
@@ -153,25 +162,28 @@ fun MonthHeader(
 }
 
 @Composable
-fun Day(day: CalendarDay) {
+fun Day(day: CalendarDay, isSelected: Boolean, onClick: (CalendarDay) -> Unit) {
     val isToday = day.date == LocalDate.now()
     val color = when {
-        day.position != DayPosition.MonthDate -> Color.Gray
+        day.position != DayPosition.MonthDate && !isSelected -> Color.Gray
         isToday -> MaterialTheme.colorScheme.primary
         else -> MaterialTheme.colorScheme.onBackground
+    }
+
+    val background_color = when {
+        isToday -> MaterialTheme.colorScheme.secondaryContainer
+        isSelected -> MaterialTheme.colorScheme.primaryContainer
+        else -> Color.Transparent
     }
 
     Box(
         modifier = Modifier
             .aspectRatio(1f) // Keeps all cells square
-            .then(
-                if (isToday) Modifier
-                    .background(
-                        color = MaterialTheme.colorScheme.primaryContainer,
-                        shape = CircleShape
-                    )
-                    .clip(CircleShape)
-                else Modifier
+            .clip(CircleShape)
+            .clickable { onClick(day) }
+            .background(
+                color = background_color,
+                shape = CircleShape
             ),
         contentAlignment = Alignment.Center
     ) {
