@@ -41,7 +41,6 @@ fun HomeScreen(
     }
 }
 
-
 @Composable
 private fun HomeScreenContent(
     modifier: Modifier = Modifier,

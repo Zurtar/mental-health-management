@@ -57,7 +57,7 @@ fun ChatbotPage(
                 .fillMaxSize()
                 .padding(innerPadding),
             viewModel = viewModel,
-            onNavigateToChatList = onNavigateToChatList,
+            onNavigateToChatList = onNavigateToChatList
         )
     }
 }
@@ -74,7 +74,7 @@ a lazy column, and are called on based on the Sender (Bot or User) parameter of 
 fun ChatbotPageContent(
     modifier: Modifier = Modifier,
     viewModel: ChatbotViewModel = viewModel(),
-    onNavigateToChatList: () -> Unit,
+    onNavigateToChatList: () -> Unit
 ) {
     var userMessage by remember { mutableStateOf("") }
     val messages by viewModel.allMessages.observeAsState(initial = emptyList())

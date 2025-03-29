@@ -42,12 +42,13 @@ fun ChatLogPage(
             DefaultTopAppBar(openDrawer = openDrawer)
         }
     ) { innerPadding ->
-        ChatbotPageContent(
+        ChatLogPageContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
             viewModel = viewModel,
-            onNavigateToChatList = onNavigateBack,
+            logId = logId,
+            onNavigateBack = onNavigateBack,
         )
     }
 }
@@ -74,7 +75,6 @@ fun ChatLogPageContent(
     logId: Int,
     onNavigateBack: () -> Unit,
     viewModel: ChatbotViewModel = viewModel(),
-    openDrawer: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val chatLog = viewModel.getLog(logId)

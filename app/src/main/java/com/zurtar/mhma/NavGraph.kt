@@ -148,6 +148,7 @@ fun NavGraph(
                     onNavigateToChatList = { navActions.navigateToChatList() }
                 )
             }
+
             composable("Chatlist") {
                 ChatListPage(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
@@ -155,6 +156,7 @@ fun NavGraph(
                     onNavigateToChatLog = { logId -> navActions.navigateToChatLog(logId) }
                 )
             }
+
             composable(
                 route = "ChatLog/{logId}",
                 arguments = listOf(navArgument("logId") { type = NavType.IntType })
@@ -214,8 +216,6 @@ fun NavGraph(
                     onNavigateBack = { navController.popBackStack() },
                 )
             }
-
-
         }
     }
 }
