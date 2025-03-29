@@ -1,12 +1,14 @@
-package com.zurtar.mhma.mood
+package com.zurtar.mhma.analytics
 
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -38,9 +40,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kizitonwose.calendar.compose.HorizontalCalendar
+import com.kizitonwose.calendar.compose.rememberCalendarState
+import com.kizitonwose.calendar.core.CalendarDay
+import com.kizitonwose.calendar.core.daysOfWeek
+import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
 import com.zurtar.mhma.R
+import com.zurtar.mhma.mood.BiWeeklyEvalStat
+import com.zurtar.mhma.mood.BiWeeklyEvaluationEntry
+import com.zurtar.mhma.mood.ScoreChart
+import com.zurtar.mhma.mood.findSeverity
+import com.zurtar.mhma.theme.AppTypography
 import com.zurtar.mhma.util.DefaultTopAppBar
 import java.time.LocalDate
+import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
 
@@ -78,19 +91,26 @@ fun AnalyticsScreenContent(
 ) {
 
     var pagerState by remember { mutableIntStateOf(id) }
-
     val tabs = listOf("Quick", "BiWeekly")
+
+
     Column(
         modifier
             .fillMaxWidth(),
-        verticalArrangement = Arrangement.Top
+        verticalArrangement = Arrangement.Top,
     ) {
         PrimaryTabRow(selectedTabIndex = pagerState) {
             tabs.forEachIndexed { index, tabs ->
                 Tab(
                     selected = pagerState == index,
                     onClick = { pagerState = index },
-                    text = { Text(text = tabs, maxLines = 2, overflow = TextOverflow.Ellipsis) },
+                    text = {
+                        Text(
+                            text = tabs,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
                     //modifier = Modifier.background(Color.LightGray)
                 )
             }
@@ -108,60 +128,101 @@ fun AnalyticsScreenContent(
 }
 
 @Composable
-fun QuickAnalyticsScreenContent() {
-    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center) {
-        Text(
-            text = "Quick analytics",
-            textAlign = TextAlign.Center
-        )
-    }
-
-}
-
-@Composable
-fun BiWeeklyAnalyticsScreenContent(onNavigateToSummaryDialog: () -> Unit) {
-
-    var state by remember { mutableStateOf(0) }
-    val tabLabels = listOf("Mood Graph", "Insights", "History")
+fun TabbedContent(
+    modifier: Modifier = Modifier,
+    key: String = "",
+    labelToContent: Map<String, @Composable () -> Unit>,
+    wrapperComposable: (@Composable () -> Unit)? = null
+) {
+    var state by remember { mutableStateOf(key) }
 
     Column(
-        Modifier
+        modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background),
         verticalArrangement = Arrangement.Center
     ) {
-        Row() {
-            tabLabels.forEachIndexed { index, label ->
-                CustomTab(
-                    onClick = { state = index },
-                    text = label
-                )
+        Row(modifier = Modifier.padding(start = 5.dp, top = 5.dp)) {
+            labelToContent.keys.forEach { key ->
+
+                if (wrapperComposable == null)
+                    SuggestionChip(
+                        onClick = { state = key },
+                        label = { Text(key) },
+                        colors = SuggestionChipDefaults.suggestionChipColors(MaterialTheme.colorScheme.secondaryContainer)
+                    )
+                else {
+                    wrapperComposable()
+                }
             }
         }
-        when (state) {
-            0 -> {
-                MoodGraphScreen()
+
+        labelToContent[state]?.invoke() ?: Text("INVALID_STATE")
+    }
+}
+
+
+@Composable
+fun QuickAnalyticsScreenContent() {
+    val labelToContent: Map<String, @Composable () -> Unit> = mapOf(
+        "Mood Calendar" to { QuickEvaluationCalendar() },
+        "History" to { }
+    )
+    TabbedContent(labelToContent = labelToContent, key = labelToContent.keys.first())
+    /*    Column(
+            Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.background),
+            verticalArrangement = Arrangement.Center
+        ) {
+            Row(modifier = Modifier.padding(start = 5.dp, top = 5.dp)) {
+                tabLabels.forEachIndexed { index, label ->
+                    SuggestionChip(
+                        onClick = { state = index },
+                        label = { Text(label) },
+                        colors = SuggestionChipDefaults.suggestionChipColors(MaterialTheme.colorScheme.secondaryContainer)
+                    )
+                }
             }
 
-            1 -> {
-                InsightsScreen()
-            }
+            when (state) {
+                0 -> {
+                    QuickEvaluationCalendar()
+                }
 
-            2 -> {
-                BiWeeklySummaryPage(onNavigateToSummaryDialog)
+                1 -> {}
             }
-        }
+        }*/
+}
+
+@Composable
+fun QuickEvaluationCalendar(
+    modifier: Modifier = Modifier
+) {
+
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.Start
+    ) {
+        AppHorizontalCalendar()
+
+        Text(
+            modifier = Modifier.padding(start = 10.dp),
+            text = "Selected Date:",
+            style = MaterialTheme.typography.headlineSmall
+        )
     }
 }
 
 @Composable
-fun CustomTab(text: String, onClick: () -> Unit) {
-
-    SuggestionChip(
-        onClick = onClick,
-        label = { Text("${text}") },
-        colors = SuggestionChipDefaults.suggestionChipColors(MaterialTheme.colorScheme.secondaryContainer)
+fun BiWeeklyAnalyticsScreenContent(onNavigateToSummaryDialog: () -> Unit) {
+    val labelToContent: Map<String, @Composable () -> Unit> = mapOf(
+        "Mood Graph" to { MoodGraphScreen() },
+        "History" to { InsightsScreen() },
+        "Insights" to { }
     )
+
+    TabbedContent(labelToContent = labelToContent, key = labelToContent.keys.first())
 }
 
 @Composable
@@ -173,7 +234,6 @@ fun MoodGraphScreen() {
 fun InsightsScreen() {
     Text("Insights")
 }
-
 
 @Composable
 fun BiWeeklySummaryPage(onNavigateToSummaryDialog: () -> Unit) {
@@ -207,7 +267,6 @@ fun BiWeeklySummaryPage(onNavigateToSummaryDialog: () -> Unit) {
         other.forEach { SummaryCards(it, onNavigateToSummaryDialog) }
     }
 }
-
 
 fun onSummaryCard(results: BiWeeklyEvaluationEntry, onNavigateToSummaryDialog: () -> Unit) {
 

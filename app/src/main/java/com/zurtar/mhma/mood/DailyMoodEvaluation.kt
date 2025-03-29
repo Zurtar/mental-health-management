@@ -37,6 +37,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.test.isSelected
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.zurtar.mhma.R
 import com.zurtar.mhma.util.DefaultTopAppBar
 import com.zurtar.mhma.theme.EmojiFrown
 import com.zurtar.mhma.theme.EmojiNeutral
@@ -198,6 +201,7 @@ private fun EmotionSelectionCard(
         "Angry" to Color(0xBAD32F2F), // Red
 
     )
+
 
     ElevatedCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
@@ -393,7 +397,7 @@ private fun DailyResult(
                     text = "5",
                     style = MaterialTheme.typography.bodyMedium,
                 )
-                
+
             }
 
             ProceedCard("Proceed to Evaluation Analytics") { onNavigateToAnalytics(0) }
