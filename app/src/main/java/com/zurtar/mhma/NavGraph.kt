@@ -121,7 +121,8 @@ fun NavGraph(
             composable<DailyEvaluation> {
                 DailyMoodEvaluationScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
-                    onNavigateToAnalytics = {navActions.navigateToAnalytics(0)}
+                    onNavigateToAnalytics = {navActions.navigateToAnalytics(0)},
+                    onNavigateToJournal = {navActions.navigateToJournal()}
                 )
             }
 

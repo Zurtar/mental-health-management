@@ -320,7 +320,7 @@ fun BiWeeklyResult(
 fun ProceedCard(text: String, navigate: () -> Unit) {
 
     OutlinedCard(
-        modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(
+        modifier = Modifier.fillMaxWidth().clickable{navigate()}, colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
         border = BorderStroke(1.dp, Color.Black)
