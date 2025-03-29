@@ -46,7 +46,6 @@ import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.daysOfWeek
 import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
 import com.zurtar.mhma.R
-import com.zurtar.mhma.mood.BiWeeklyEvalStat
 import com.zurtar.mhma.mood.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.mood.ScoreChart
 import com.zurtar.mhma.mood.findSeverity
