@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Date
 import java.time.LocalDate
+import javax.inject.Inject
 
 data class BiWeeklyEvaluationEntry(
     var depressionScore: Int,
@@ -155,8 +156,10 @@ class DailyEvaluationViewModel : ViewModel() {
 
 }
 
-class BiWeeklyEvaluationViewModel : ViewModel() {
-    private val moodRepository = MoodRepository(moodRemoteDataSource = MoodRemoteDataSource())
+@HiltViewModel
+class BiWeeklyEvaluationViewModel @Inject constructor(
+    private val moodRepository: MoodRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BiWeeklyEvaluationUiState())
     val uiState: StateFlow<BiWeeklyEvaluationUiState> = _uiState.asStateFlow()

@@ -6,57 +6,65 @@ import kotlinx.serialization.Serializable
 class Navigation(private val navController: NavHostController) {
 
     fun navigateToHome() {
-        navController.navigate(Home) {
+//        navController.navigate(Home) {
+        navController.navigate("Home") {
             restoreState = true
         }
     }
 
     fun navigateToAccount() {
-        navController.navigate(Account) {
+//        navController.navigate(Account) {
+        navController.navigate("Account") {
             restoreState = true
         }
     }
 
     fun navigateToLogin() {
-        navController.navigate(Login) {
+//
+        navController.navigate("Login") {
             restoreState = true
         }
     }
 
     fun navigateToSignup() {
-        navController.navigate(SignUp) {
+//        navController.navigate(SignUp) {
+        navController.navigate("SignUp") {
             restoreState = true
         }
     }
 
     fun navigateToJournal() {
-        navController.navigate(Journal) {
+//        navController.navigate(Journal) {
+        navController.navigate("Journal") {
             restoreState = true
         }
     }
 
     fun navigateToMoodEvaluation() {
-        navController.navigate(MoodEvaluation) {
+//        navController.navigate(MoodEvaluation) {
+        navController.navigate("MoodEvaluation") {
             restoreState = true
         }
     }
 
-
     fun navigateToDailyEvaluation() {
-        navController.navigate(DailyEvaluation) {
+//        navController.navigate(DailyEvaluation) {
+        navController.navigate("DailyEvaluation") {
             restoreState = true
         }
     }
 
     fun navigateToBiWeeklyEvaluation() {
-        navController.navigate(BiWeeklyEvaluation) {
+//        navController.navigate(BiWeeklyEvaluation) {
+        navController.navigate("BiWeeklyEvaluation") {
             restoreState = true
         }
     }
 
     //Added dialog navigation for biweekly summary page
     fun navigateToSummaryDialog() {
-        navController.navigate(SummaryDialog) {
+//        navController.navigate(SummaryDialog) {
+        navController.navigate("SummaryDialog") {
             restoreState = true
         }
     }

@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.zurtar.mhma.Navigation
@@ -53,7 +54,7 @@ fun AppModalDrawer(
 @Composable
 private fun AppDrawer(
     currentRoute: Any,
-    viewModel: ModalDrawerViewModel = viewModel(),
+    viewModel: NavigationViewModel = hiltViewModel(),
     navigateToHome: () -> Unit,
     navigateToAccount: () -> Unit,
     navigateToLogin: () -> Unit,
@@ -61,22 +62,24 @@ private fun AppDrawer(
     closeDrawer: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val navDrawerUiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val navViewModelState by viewModel.uiState.collectAsStateWithLifecycle()
 
     ModalDrawerSheet(modifier = modifier, drawerShape = customDrawerShape()) {
         Text("Navigation", modifier = Modifier.padding(16.dp))
         HorizontalDivider()
-        NavigationDrawerItem(
-            label = { Text(text = "Home") },
-            selected = false,
-            onClick = {
-                Log.println(Log.INFO, "NavDrawer", "Home OnClick Fired!")
-                navigateToHome()
-                closeDrawer()
-            }
-        )
 
-        if (navDrawerUiState.isLoggedIn)
+        if (navViewModelState.isLoggedIn) {
+            NavigationDrawerItem(
+                label = { Text(text = "Home") },
+                selected = false,
+                onClick = {
+                    Log.println(Log.INFO, "NavDrawer", "Home OnClick Fired!")
+                    navigateToHome()
+                    closeDrawer()
+                }
+            )
+
             NavigationDrawerItem(
                 label = { Text(text = "Account") },
                 selected = false,
@@ -85,7 +88,7 @@ private fun AppDrawer(
                     navigateToAccount()
                     closeDrawer()
                 })
-        else {
+        } else {
             NavigationDrawerItem(
                 label = { Text(text = "Login") },
                 selected = false,

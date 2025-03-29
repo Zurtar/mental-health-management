@@ -2,16 +2,17 @@ package com.zurtar.mhma.auth
 
 import com.google.firebase.Firebase
 import com.google.firebase.auth.EmailAuthProvider
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.components.SingletonComponent
-import java.time.Instant
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -28,22 +29,36 @@ interface AccountService {
     fun logout(onResult: (Throwable?) -> Unit)
 }
 
+/*
+interface AccountService {
+    fun createAnonymousAccount()
+    suspend fun createAccount(email: String, password: String): Result<Unit>
+    suspend fun authenticate(email: String, password: String): Result<FirebaseUser>
+    suspend fun linkAccount(email: String, password: String): Result<Unit>
+    suspend fun signOut(): Result<Unit>
+}*/
+
+@Singleton
 class AccountServiceImplementation @Inject constructor(
+    private val firebaseAuth: FirebaseAuth,
+    private val firestore: FirebaseFirestore
 ) : AccountService {
+
     override fun createAnonymousAccount(onResult: (Throwable?) -> Unit) {
-        Firebase.auth.signInAnonymously()
+        firebaseAuth.signInAnonymously()
             .addOnCompleteListener { onResult(it.exception) }
+
     }
 
     override fun createAccount(email: String, password: String, onResult: (Throwable?) -> Unit) {
-        Firebase.auth.createUserWithEmailAndPassword(email, password)
+        firebaseAuth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener {
                 onResult(it.exception)
             }
     }
 
     override fun authenticate(email: String, password: String, onResult: (Throwable?) -> Unit) {
-        Firebase.auth.signInWithEmailAndPassword(email, password)
+        firebaseAuth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener {
                 onResult(it.exception)
                 val uid = it.result.user?.uid ?: return@addOnCompleteListener
@@ -55,7 +70,7 @@ class AccountServiceImplementation @Inject constructor(
                     "last_login" to FieldValue.serverTimestamp()
                 )
 
-                Firebase.firestore.collection("users").document(uid)
+                firestore.collection("users").document(uid)
                     .set(updates)
             }
     }
@@ -63,14 +78,12 @@ class AccountServiceImplementation @Inject constructor(
     override fun linkAccount(email: String, password: String, onResult: (Throwable?) -> Unit) {
         val credential = EmailAuthProvider.getCredential(email, password)
 
-        Firebase.auth.currentUser!!.linkWithCredential(credential)
+        firebaseAuth.currentUser!!.linkWithCredential(credential)
             .addOnCompleteListener { onResult(it.exception) }
     }
 
     override fun logout(onResult: (Throwable?) -> Unit) {
-        Firebase.auth.signOut()
-
-        // this cant detect errors, but signOut doesnt have an onComplete, because no external network call is needed.
+        firebaseAuth.signOut()
         onResult(null)
     }
 }
@@ -84,6 +97,31 @@ abstract class AccountServiceModule {
     abstract fun bindAccountService(
         accountServiceImplementation: AccountServiceImplementation
     ): AccountService
+}
+
+
+@Module
+@InstallIn(SingletonComponent::class)
+object FireBaseModule {
+    @Provides
+    fun provideFirebaseAuthService(
+        // Potential dependencies of this type
+    ): FirebaseAuth {
+        return Firebase.auth
+    }
+
+    @Provides
+    fun providesFireStoreService(
+        // Potential dependencies of this type
+    ): FirebaseFirestore {
+        return Firebase.firestore
+    }
+}
+
+
+sealed class AuthState {
+    object Unauthenticated : AuthState()
+    data class Authenticated(val user: FirebaseUser) : AuthState()
 }
 
 /*

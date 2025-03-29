@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.zurtar.mhma.util.DefaultTopAppBar
@@ -48,7 +49,7 @@ import java.time.LocalDate
 @Composable
 fun BiWeeklyEvaluationScreen(
     modifier: Modifier = Modifier,
-    viewModel: BiWeeklyEvaluationViewModel = viewModel(),
+    viewModel: BiWeeklyEvaluationViewModel = hiltViewModel(),
     openDrawer: () -> Unit,
     onNavigateToAnalytics: (Int) -> Unit
 ) {
