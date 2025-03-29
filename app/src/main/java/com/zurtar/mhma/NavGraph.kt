@@ -149,7 +149,7 @@ fun NavGraph(
                 )
             }
 
-            composable("Chatlist") {
+            composable<ChatList> {
                 ChatListPage(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
                     onNavigateToChatbot = { navActions.navigateToChatbot()},

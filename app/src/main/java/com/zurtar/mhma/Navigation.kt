@@ -73,7 +73,7 @@ class Navigation(private val navController: NavHostController) {
     }
 
     fun navigateToChatList() {
-        navController.navigate(ChatListPage) {
+        navController.navigate(ChatList) {
             restoreState = true
         }
     }
@@ -119,7 +119,7 @@ object JournalEntryR
 object Chatbot
 
 @Serializable
-object ChatListPage
+object ChatList
 
 @Serializable
-object ChatLogPage
+object ChatLog
