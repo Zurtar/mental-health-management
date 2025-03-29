@@ -16,7 +16,6 @@ class JournalViewModel : ViewModel() {
     }
 
     //adds an entry given its title and content
-    @RequiresApi(Build.VERSION_CODES.O)
     fun addEntry(title : String, content : String) {
         JournalEntryManager.addEntry(title, content)
         getAllEntries()

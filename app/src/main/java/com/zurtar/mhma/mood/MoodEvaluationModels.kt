@@ -38,8 +38,8 @@ data class BiWeeklyEvalStat(
 )
 
 class DailyEvaluationViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(DailyEvaluationUiState())
-    val uiState: StateFlow<DailyEvaluationUiState> = _uiState.asStateFlow()
+        private val _uiState = MutableStateFlow(DailyEvaluationUiState())
+        val uiState: StateFlow<DailyEvaluationUiState> = _uiState.asStateFlow()
 
     fun onSubmit() {
         _uiState.update { currentState ->

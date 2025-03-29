@@ -155,7 +155,6 @@ fun TabbedContent(
                 }
             }
         }
-
         labelToContent[state]?.invoke() ?: Text("INVALID_STATE")
     }
 }
