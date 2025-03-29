@@ -31,11 +31,11 @@ import java.util.Locale
 
 @Composable
 fun ChatLogPage(
+    modifier: Modifier = Modifier,
     logId: Int,
     onNavigateBack: () -> Unit,
     viewModel: ChatbotViewModel = viewModel(),
     openDrawer: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     Scaffold(modifier = modifier.fillMaxSize(),
         topBar = {
@@ -72,10 +72,10 @@ tandem with various other handle..Branch functions
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ChatLogPageContent(
+    modifier: Modifier = Modifier,
     logId: Int,
     onNavigateBack: () -> Unit,
     viewModel: ChatbotViewModel = viewModel(),
-    modifier: Modifier = Modifier
 ) {
     val chatLog = viewModel.getLog(logId)
 

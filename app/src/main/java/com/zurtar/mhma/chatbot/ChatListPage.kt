@@ -112,10 +112,8 @@ private fun ChatListPageContent(
                 Text(text = "Chatbot")
             }
         }
-
         Column(
-            modifier = modifier
-        ) {
+        ){
             logList?.let {
                 LazyColumn(
                     content = {
