@@ -59,7 +59,7 @@ dependencies {
     implementation(libs.kizitonwose.calendar.compose)
 
 //    From Journal
-    implementation (libs.androidx.runtime.livedata)
+    implementation(libs.androidx.runtime.livedata)
 
 
     implementation(platform(libs.firebase.bom))
@@ -74,8 +74,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.ui.test.android)
-
+//    implementation(libs.androidx.ui.test.android)
 
 
     testImplementation(libs.junit)
