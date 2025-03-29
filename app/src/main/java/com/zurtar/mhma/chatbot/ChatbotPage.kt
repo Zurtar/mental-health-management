@@ -58,17 +58,9 @@ fun ChatbotPage(
                 .padding(innerPadding),
             viewModel = viewModel,
             onNavigateToChatList = onNavigateToChatList,
-            openDrawer = openDrawer,
         )
     }
 }
-
-
-
-
-
-
-
 
 /*
 Composable function for the main Chatbot page. It relies on two additional composables and
@@ -83,7 +75,6 @@ fun ChatbotPageContent(
     modifier: Modifier = Modifier,
     viewModel: ChatbotViewModel = viewModel(),
     onNavigateToChatList: () -> Unit,
-    openDrawer: () -> Unit
 ) {
     var userMessage by remember { mutableStateOf("") }
     val messages by viewModel.allMessages.observeAsState(initial = emptyList())
@@ -99,8 +90,7 @@ fun ChatbotPageContent(
     }
     Column(
         modifier = modifier
-            .fillMaxSize()
-            .imePadding(),
+            .fillMaxSize(),
     ) {
         Row(
             modifier = Modifier
@@ -121,7 +111,7 @@ fun ChatbotPageContent(
                 onClick = onNavigateToChatList
             ) {
                 Text(text = "Chat Log",
-                color = Color.Black
+                    color = Color.Black
                 )
             }
         }
@@ -205,7 +195,8 @@ fun ChatbotPageContent(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 16.dp),
+                        .padding(top = 16.dp)
+                        .imePadding(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     OutlinedTextField(

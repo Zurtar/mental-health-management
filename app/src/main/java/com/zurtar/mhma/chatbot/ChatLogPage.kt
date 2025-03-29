@@ -48,7 +48,6 @@ fun ChatLogPage(
                 .padding(innerPadding),
             viewModel = viewModel,
             onNavigateToChatList = onNavigateBack,
-            openDrawer = openDrawer,
         )
     }
 }

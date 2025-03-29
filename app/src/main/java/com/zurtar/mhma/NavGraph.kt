@@ -145,14 +145,14 @@ fun NavGraph(
             composable<Chatbot> {
                 ChatbotPage(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
-                    onNavigateToChatList = { navController.navigate("chatlist") }
+                    onNavigateToChatList = { navActions.navigateToChatList() }
                 )
             }
             composable("Chatlist") {
                 ChatListPage(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
-                    onNavigateToChatbot = { navController.navigate("chatbot")},
-                    onNavigateToChatLog = { logId -> navController.navigate("chatlog/$logId") }
+                    onNavigateToChatbot = { navActions.navigateToChatbot()},
+                    onNavigateToChatLog = { logId -> navActions.navigateToChatLog(logId) }
                 )
             }
             composable(
