@@ -53,6 +53,19 @@ class Navigation(private val navController: NavHostController) {
             restoreState = true
         }
     }
+
+    //Added dialog navigation for biweekly summary page
+    fun navigateToSummaryDialog() {
+        navController.navigate(SummaryDialog) {
+            restoreState = true
+        }
+    }
+
+    fun navigateToAnalytics(id: Int = 0) {
+        navController.navigate(route = "${Analytics}/${id}") {
+            restoreState = true
+        }
+    }
 }
 
 /**
@@ -86,3 +99,11 @@ object Journal
 
 @Serializable
 object JournalEntryR
+
+//Added Anayltics for navigation
+@Serializable
+object Analytics
+
+//Added dialog navigation for biweekly summary page
+@Serializable
+object SummaryDialog
