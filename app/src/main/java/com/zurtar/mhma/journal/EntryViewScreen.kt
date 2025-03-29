@@ -73,6 +73,7 @@ private fun EntryViewScreenContent(
     onNavigateToEntryEdit: (Int) -> Unit
 ) {
     val entry = onGetEntry(id)
+
     var title by remember { mutableStateOf(entry?.title ?: "") }
     var content by remember { mutableStateOf(entry?.content ?: "") }
 
