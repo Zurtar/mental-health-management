@@ -65,6 +65,22 @@ class Navigation(private val navController: NavHostController) {
             restoreState = true
         }
     }
+
+    fun navigateToChatbot() {
+        navController.navigate(Chatbot) {
+            restoreState = true
+        }
+    }
+
+    fun navigateToChatList() {
+        navController.navigate(ChatListPage) {
+            restoreState = true
+        }
+    }
+
+    fun navigateToChatLog(logId: Int) {
+        navController.navigate("chatlog/$logId")
+    }
 }
 
 /**
@@ -98,3 +114,12 @@ object Journal
 
 @Serializable
 object JournalEntryR
+
+@Serializable
+object Chatbot
+
+@Serializable
+object ChatListPage
+
+@Serializable
+object ChatLogPage

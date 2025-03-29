@@ -83,7 +83,8 @@ fun NavGraph(
                 HomeScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
                     onNavigateToMoodEvaluation = { navActions.navigateToMoodEvaluation() },
-                    onNavigateToJournal = { navActions.navigateToJournal() }
+                    onNavigateToJournal = { navActions.navigateToJournal() },
+                    onNavigateToChatbot = { navActions.navigateToChatbot() }
                 )
             }
 
@@ -149,6 +150,7 @@ fun NavGraph(
             }
             composable("Chatlist") {
                 ChatListPage(
+                    openDrawer = { coroutineScope.launch { drawerState.open() } },
                     onNavigateToChatbot = { navController.navigate("chatbot")},
                     onNavigateToChatLog = { logId -> navController.navigate("chatlog/$logId") }
                 )
@@ -159,6 +161,7 @@ fun NavGraph(
             ) { backStackEntry ->
                 val logId = backStackEntry.arguments?.getInt("logId") ?: 0
                 ChatLogPage(
+                    openDrawer = { coroutineScope.launch { drawerState.open() } },
                     logId = logId,
                     onNavigateBack = {
                         navController.popBackStack()

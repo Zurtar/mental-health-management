@@ -24,7 +24,8 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     openDrawer: () -> Unit,
     onNavigateToMoodEvaluation: () -> Unit,
-    onNavigateToJournal: () -> Unit
+    onNavigateToJournal: () -> Unit,
+    onNavigateToChatbot: () -> Unit
 ) {
     Scaffold(modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -34,7 +35,8 @@ fun HomeScreen(
         HomeScreenContent(
             modifier = modifier.padding(innerPadding).fillMaxSize(),
             onNavigateToMoodEvaluation = onNavigateToMoodEvaluation,
-            onNavigateToJournal = onNavigateToJournal
+            onNavigateToJournal = onNavigateToJournal,
+            onNavigateToChatbot = onNavigateToChatbot
         )
     }
 }
@@ -44,7 +46,8 @@ fun HomeScreen(
 private fun HomeScreenContent(
     modifier: Modifier = Modifier,
     onNavigateToMoodEvaluation: () -> Unit,
-    onNavigateToJournal: () -> Unit
+    onNavigateToJournal: () -> Unit,
+    onNavigateToChatbot: () -> Unit
 ) {
     Column(
         modifier = modifier.fillMaxWidth(0.5f), horizontalAlignment = Alignment.CenterHorizontally
@@ -84,6 +87,25 @@ private fun HomeScreenContent(
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.headlineMedium,
                 text = "Journal"
+            )
+        }
+
+        ElevatedCard(
+            modifier = Modifier
+                .padding(top = 20.dp)
+                .fillMaxWidth(0.75f)
+                .fillMaxHeight(0.2f)
+                .background(color = MaterialTheme.colorScheme.background),
+            onClick = { onNavigateToChatbot() }
+        ) {
+            Text(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .height(150.dp)
+                    .wrapContentHeight(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.headlineMedium,
+                text = "Chatbot"
             )
         }
     }
