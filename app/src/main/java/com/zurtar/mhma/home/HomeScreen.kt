@@ -104,12 +104,51 @@ private fun HomeScreenContent(
                 .padding(horizontal = 20.dp, vertical = 25.dp),
         )
 
+        ElevatedCard(
+            modifier = Modifier
+                .padding(horizontal = 10.dp, vertical = 10.dp)
+                .width(300.dp)
+                .height(150.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(10.dp),
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.Top
+            ) {
+                Text(
+                    textAlign = TextAlign.Start,
+                    style = MaterialTheme.typography.headlineSmall,
+                    text = "To-do:"
+                )
+                Text(
+                    modifier = Modifier.padding(horizontal = 15.dp),
+                    textAlign = TextAlign.Start,
+                    style = MaterialTheme.typography.bodyMedium,
+                    text = getToDo()
+                )
+                Text(
+                    textAlign = TextAlign.Start,
+                    style = MaterialTheme.typography.headlineSmall,
+                    text = "Upcoming:"
+                )
+                Text(
+                    modifier = Modifier.padding(horizontal = 15.dp),
+                    textAlign = TextAlign.Start,
+                    style = MaterialTheme.typography.bodyMedium,
+                    text = getUpcoming()
+                )
+            }
+
+        }
+
 
         val cardModifier = Modifier
             .padding(horizontal = 10.dp, vertical = 10.dp)
             .aspectRatio(1f)
-            .width(160.dp)
-            .height(150.dp)
+            .width(100.dp)
+            .height(100.dp)
             .weight(1f)
             .then(Modifier.align(Alignment.Start))
 
@@ -125,11 +164,11 @@ private fun HomeScreenContent(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(10.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Top
                 ) {
                     Text(
-                        textAlign = TextAlign.Center,
+                        textAlign = TextAlign.Start,
                         style = MaterialTheme.typography.headlineSmall,
                         text = "Mood Evaluation"
                     )
@@ -145,11 +184,11 @@ private fun HomeScreenContent(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(10.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Top
                 ) {
                     Text(
-                        textAlign = TextAlign.Center,
+                        textAlign = TextAlign.Start,
                         style = MaterialTheme.typography.headlineSmall,
                         text = "Journal"
                     )
@@ -168,11 +207,12 @@ private fun HomeScreenContent(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(10.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Top
                 ) {
                     Text(
-                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(5.dp),
+                        textAlign = TextAlign.Start,
                         style = MaterialTheme.typography.headlineSmall,
                         text = "Chatbot"
                     )
@@ -200,6 +240,14 @@ fun getGreetingFromDate(date: java.util.Date): String {
         in 12..17 -> "Good Afternoon!"
         else -> "Good Evening!"
     }
+}
+
+fun getToDo(): String {
+    return "• Quick Evaluation"
+}
+
+fun getUpcoming(): String {
+    return "• Bi-Weekly Evaluation"
 }
 
 @Preview(showBackground = true)
