@@ -71,6 +71,7 @@ fun DailyMoodEvaluationScreen(
                 .fillMaxSize(),
             dailyEntry = uiState.dailyEntry,
             isSubmitted = uiState.isSubmitted,
+            page = uiState.page,
             onEmotionSelect = viewModel::emotionSelect,
             onSubmit = { viewModel.onSubmit() },
             onBack = { viewModel.onBack() },
@@ -88,6 +89,7 @@ private fun DailyMoodEvaluationScreenContent(
     modifier: Modifier = Modifier,
     dailyEntry: DailyEvaluationEntry,
     isSubmitted: Int,
+    page:Int,
     onEmotionSelect: (String) -> Unit,
     onSubmit: () -> Unit,
     onBack: () -> Unit,
@@ -110,14 +112,14 @@ private fun DailyMoodEvaluationScreenContent(
         }
 
 
-        if (dailyEntry.page == 0)
+        if (page == 0)
             MoodSelectionQuestionPage(
                 dailyEntry = dailyEntry,
                 emotionSelect = onEmotionSelect,
                 updateEmotion = updateEmotion
             )
 
-        if (dailyEntry.page == 1) {
+        if (page == 1) {
             if (dailyEntry.selectedEmotions.isEmpty()) {
                 DailyResult(modifier = modifier, dailyEntry, onNavigateToAnalytics, onNavigateToJournal = onNavigateToJournal)
                 return
@@ -129,13 +131,13 @@ private fun DailyMoodEvaluationScreenContent(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
-            if (dailyEntry.page > 0)
+            if (page > 0)
                 FilledTonalButton(
                     onClick = { onBack() },
                     content = { Text("Back") })
 
             var text = "Next"
-            if (dailyEntry.page == 1) {
+            if (page == 1) {
                 text = "Submit"
                 FilledTonalButton(onClick = { onSubmit() }, content = { Text(text) })
 
@@ -365,23 +367,6 @@ fun EmotionRating(
     }
 }
 
-
-//RESULTS
-@Preview
-@Composable
-fun DailyResultPrev() {
-
-    val emotions = listOf("Happy", "Angry")
-    val intensities = listOf(3.0f, 7.0f)
-
-    val dEntry = DailyEvaluationEntry(
-        selectedEmotions = emotions,
-        emotionIntensities = intensities,
-        emotionsMap = emotions.zip(intensities).toMap()
-    )
-
-    DailyResult(dailyEntry = dEntry, onNavigateToAnalytics = {}, onNavigateToJournal = {})
-}
 
 @Composable
 private fun DailyResult(

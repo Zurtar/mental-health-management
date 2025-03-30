@@ -54,8 +54,8 @@ fun MoodEvaluationScreen(
             modifier = modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
-            dailyCompleted = uiState.dailyCompleted,
-            biWeeklyCompleted = uiState.biWeeklyCompleted,
+            dailyCompleted = uiState.isDailyEntry,
+            biWeeklyCompleted = uiState.isBiWeeklyCompleted,
             onNavigateToDaily = onNavigateToDaily,
             onNavigateToBiWeekly = onNavigateToBiWeekly
         )
@@ -79,33 +79,45 @@ private fun MoodEvaluationScreenContent(
         Spacer(Modifier.height(10.dp))
         EvaluationCard(
             title = "Daily Evaluation",
+            desc = "",
            completed = dailyCompleted,
             onNavigate = { onNavigateToDaily() }
 
         )
         EvaluationCard(
             title = "Bi-Weekly Evaluation",
+            desc = "",
             completed = biWeeklyCompleted,
+            onNavigate = { onNavigateToBiWeekly() }
+        )
+
+        EvaluationCard(
+            title = "Analytics",
+            desc = "",
+            checkMark = 0,
             onNavigate = { onNavigateToBiWeekly() }
         )
     }
 }
-
-@Preview
-@Composable
-fun EvalFormCardPreview() {
-    val mod = Modifier.fillMaxWidth()
-    val dailyCompleted = false
-    val biweeklyCompleted = false
-
-    Column() {
-        EvaluationCard(mod, "Quick Evaluation", dailyCompleted, onNavigate = {})
-        EvaluationCard(mod, "Bi-Weekly Evaluation", biweeklyCompleted,  onNavigate = {})
-        EvaluationCard(mod, "Analytics", biweeklyCompleted, 0, onNavigate = {})
-
-    }
-
-}
+//
+//@Preview
+//@Composable
+//fun EvalFormCardPreview() {
+//    val mod = Modifier.fillMaxWidth()
+//    val dailyCompleted = false
+//    val biweeklyCompleted = false
+//
+//    Column() {
+//        EvaluationCard(modifier = mod,
+//            title = "Quick Evaluation",
+//            completed = dailyCompleted,
+//            onNavigate = {})
+//        EvaluationCard(mod, "Bi-Weekly Evaluation", biweeklyCompleted,  onNavigate = {})
+//        EvaluationCard(mod, "Analytics", biweeklyCompleted, 0, onNavigate = {})
+//
+//    }
+//
+//}
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -113,7 +125,8 @@ fun EvalFormCardPreview() {
 fun EvaluationCard(
     modifier: Modifier = Modifier,
     title: String,
-    completed:Boolean,
+    desc:String,
+    completed:Boolean = false,
     checkMark:Int = 1,
     onNavigate: () -> Unit
 

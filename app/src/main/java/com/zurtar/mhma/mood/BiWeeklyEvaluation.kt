@@ -64,9 +64,7 @@ fun BiWeeklyEvaluationScreen(
                 .padding(innerPadding)
                 .fillMaxSize(),
             page = uiState.page,
-            depressionScore = uiState.depressionScore,
-            anxietyScore = uiState.anxietyScore,
-            questionResponses = uiState.questionResponse,
+            biWeeklyEntry = uiState.biWeeklyEntry,
             onSelect = viewModel::onSelect,
             onBack = viewModel::onBack,
             onNext = viewModel::onNext,
@@ -79,9 +77,7 @@ fun BiWeeklyEvaluationScreen(
 private fun BiWeeklyEvaluationScreenContent(
     modifier: Modifier = Modifier,
     page: Int,
-    depressionScore: Int,
-    anxietyScore: Int,
-    questionResponses: List<Int>,
+    biWeeklyEntry:BiWeeklyEvaluationEntry,
     onSelect: (Int) -> Unit,
     onBack: () -> Unit,
     onNext: () -> Unit,
@@ -91,17 +87,9 @@ private fun BiWeeklyEvaluationScreenContent(
 
     if (page == questions.size) {
 
-        val evaluation = BiWeeklyEvaluationEntry(
-            depressionScore = depressionScore,
-            anxietyScore = anxietyScore,
-            depressionResults = findSeverity(depressionScore, "depression"),
-            anxietyResults = findSeverity(anxietyScore, "anxiety"),
-            dateCompleted = LocalDate.now()
-        )
-
         BiWeeklyResult(
             modifier = modifier,
-            evaluation = evaluation,
+            evaluation = biWeeklyEntry,
             onNavigateToAnalytics = onNavigateToAnalytics
         )
         return
@@ -122,7 +110,7 @@ private fun BiWeeklyEvaluationScreenContent(
         QuestionCard(
             num = page,
             question = questions[page],
-            selectedOption = questionResponses[page],
+            selectedOption = biWeeklyEntry.questionResponse[page],
             onSelect = onSelect
         )
 
