@@ -38,7 +38,7 @@ fun ChatLogPage(
 ) {
     Scaffold(modifier = modifier.fillMaxSize(),
         topBar = {
-            ChatLogTopAppBar(openDrawer = openDrawer)
+            ChatLogTopAppBar(openDrawer = openDrawer, onNavigateBack)
         }
     ) { innerPadding ->
         ChatLogPageContent(

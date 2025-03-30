@@ -99,6 +99,7 @@ fun ChatListTopAppBar(
 @Composable
 fun ChatLogTopAppBar(
     openDrawer: () -> Unit,
+    onNavigateBack: () -> Unit
 ) {
     TopAppBar(
         title = { Text("Chat Log") },
@@ -109,6 +110,15 @@ fun ChatLogTopAppBar(
         navigationIcon = {
             IconButton(onClick = openDrawer) {
                 Icon(Icons.Default.Menu, contentDescription = "Menu")
+            }
+        },
+        actions = {
+            Button(
+                onClick = onNavigateBack
+            ) {
+                Text(text = "Chat Bot",
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
             }
         },
         modifier = Modifier.fillMaxWidth()
