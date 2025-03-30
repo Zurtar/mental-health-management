@@ -196,16 +196,6 @@ fun BiWeeklyAnalyticsScreenContent(
 }
 
 @Composable
-fun MoodGraphScreen() {
-    Text("Mood Graph")
-}
-
-@Composable
-fun InsightsScreen() {
-    Text("Insights")
-}
-
-@Composable
 fun BiWeeklyHistoricalAnalytics(
     biWeeklyEvaluations: List<BiWeeklyEvaluationEntry>,
     onNavigateToSummaryDialog: (BiWeeklyEvaluationEntry?) -> Unit

@@ -52,8 +52,8 @@ class Navigation(private val navController: NavHostController) {
         navController.navigate("entryEdit/$id")
     }
 
-    fun navigateToJournalEntryR(){
-        navController.navigate(JournalEntryR)
+    fun navigateToJournalEntryModification(id: Int = -1) {
+        navController.navigate("entryEdit/$id")
     }
 
     fun navigateToMoodEvaluation() {
@@ -99,13 +99,13 @@ class Navigation(private val navController: NavHostController) {
     }
 
     fun navigateToChatbot() {
-        navController.navigate(Chatbot) {
+        navController.navigate("Chatbot") {
             restoreState = true
         }
     }
 
     fun navigateToChatList() {
-        navController.navigate(ChatList) {
+        navController.navigate("ChatList") {
             restoreState = true
         }
     }

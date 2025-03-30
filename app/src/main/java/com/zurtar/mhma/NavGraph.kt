@@ -1,8 +1,6 @@
 package com.zurtar.mhma
 
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
@@ -13,7 +11,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -22,32 +19,27 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.zurtar.mhma.analytics.AnalyticsScreen
+import com.zurtar.mhma.analytics.SummaryPopup
 import com.zurtar.mhma.auth.AccountScreen
 import com.zurtar.mhma.auth.LoginScreen
 import com.zurtar.mhma.auth.SignUpScreen
+import com.zurtar.mhma.chatbot.ChatListPage
+import com.zurtar.mhma.chatbot.ChatLogPage
+import com.zurtar.mhma.chatbot.ChatbotPage
+import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.home.HomeScreen
 import com.zurtar.mhma.journal.EntryModificationScreen
 import com.zurtar.mhma.journal.EntryViewScreen
 import com.zurtar.mhma.journal.JournalingScreen
-import com.zurtar.mhma.analytics.AnalyticsScreen
-import com.zurtar.mhma.analytics.SummaryPopup
 import com.zurtar.mhma.mood.BiWeeklyEvaluationScreen
 import com.zurtar.mhma.mood.DailyMoodEvaluationScreen
 import com.zurtar.mhma.mood.MoodEvaluationScreen
-import com.zurtar.mhma.analytics.SummaryPopupScreen
-import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
-
-import com.zurtar.mhma.chatbot.ChatbotPage
-import com.zurtar.mhma.chatbot.ChatListPage
-import com.zurtar.mhma.chatbot.ChatLogPage
-
 import com.zurtar.mhma.util.AppModalDrawer
 import com.zurtar.mhma.util.NavigationViewModel
-
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromJsonElement
 
 @Composable
 fun NavGraph(
@@ -86,22 +78,15 @@ fun NavGraph(
             navController = navController,
             startDestination = start,
             modifier = modifier,
-            /*       enterTransition = {
-                       fadeIn(animationSpec = tween(100))
-                   },
-                   exitTransition = {
-                       fadeOut(animationSpec = tween(100))
-                   }*/
         ) {
 
 //            composable<Home> {
-
             composable("Home") {
                 HomeScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
                     onNavigateToMoodEvaluation = { navActions.navigateToMoodEvaluation() },
                     onNavigateToJournal = { navActions.navigateToJournal() },
-                    onNavigateToChatbot = { navActions.navigateToChatbot() }
+                    onNavigateToChatbot = { navActions.navigateToChatbot() },
                     onNavigateToAnalytics = { navActions.navigateToAnalytics() }
                 )
             }
@@ -148,7 +133,7 @@ fun NavGraph(
             composable("DailyEvaluation") {
                 DailyMoodEvaluationScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
-                    onNavigateToAnalytics = { navActions.navigateToAnalytics(0) } ,
+                    onNavigateToAnalytics = { navActions.navigateToAnalytics(0) },
                     onNavigateToJournal = { navActions.navigateToJournal() }
                 )
             }
@@ -172,8 +157,15 @@ fun NavGraph(
             }
 
 
-            composable(
-                route = "${Analytics}/{id}",
+            composable("Journal") {
+                JournalingScreen(
+                    openDrawer = { coroutineScope.launch { drawerState.open() } },
+                    onNavigateToEntryCreation = { navActions.navigateToJournalEntryModification(-1) },
+                    onNavigateToEntryView = { id -> navActions.navigateToEntryView(id) },
+                )
+            }
+
+            composable(route = "${Analytics}/{id}",
                 arguments = listOf(
                     navArgument("id") { type = NavType.IntType }
                 )
@@ -185,28 +177,19 @@ fun NavGraph(
                 )
             }
 
-//            composable<Journal> {
-            composable("Journal") {
-                JournalingScreen(
-                    openDrawer = { coroutineScope.launch { drawerState.open() } },
-                    onNavigateToEntryCreation = { navController.navigate("JournalEntryR") },
-                    onNavigateToEntryEdit = { id -> navController.navigate("entryEdit/$id") }
-                )
-            }
-
 
             //Attempting to add in Chatbot navigation
-            composable<Chatbot> {
+            composable("ChatBot") {
                 ChatbotPage(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
                     onNavigateToChatList = { navActions.navigateToChatList() }
                 )
             }
 
-            composable<ChatList> {
+            composable("ChatList") {
                 ChatListPage(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
-                    onNavigateToChatbot = { navActions.navigateToChatbot()},
+                    onNavigateToChatbot = { navActions.navigateToChatbot() },
                     onNavigateToChatLog = { logId -> navActions.navigateToChatLog(logId) }
                 )
             }
@@ -226,22 +209,8 @@ fun NavGraph(
             }
 
 
-            composable<Journal> {
-                JournalingScreen(
-                    openDrawer = { coroutineScope.launch { drawerState.open() } },
-                    onNavigateToEntryCreation = { navActions.navigateToJournalEntryR() },
-                    onNavigateToEntryView = { id -> navActions.navigateToEntryView(id) },
-                )
-            }
-
             // Directly copied from Journal branch, which is why its different
-//            composable<JournalEntryR> {
-            composable("JournalEntryR") {
-                EntryModificationScreen(
-                    openDrawer = { coroutineScope.launch { drawerState.open() } },
-                    onNavigateBack = { navController.popBackStack() }
-                )
-            }
+//
 
             composable(
                 route = "entryView/{entryId}",
