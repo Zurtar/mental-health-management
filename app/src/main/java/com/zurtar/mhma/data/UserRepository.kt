@@ -36,7 +36,6 @@ class UserRepository @Inject constructor(
         firebaseAuth.addAuthStateListener(authStateListener)
         awaitClose { firebaseAuth.removeAuthStateListener(authStateListener) }
     }
-
 }
 
 

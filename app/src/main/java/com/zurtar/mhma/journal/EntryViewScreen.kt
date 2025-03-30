@@ -20,6 +20,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.key
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zurtar.mhma.data.JournalEntry
 import com.zurtar.mhma.util.DefaultTopAppBar
 
 /*
@@ -31,62 +35,61 @@ Entry modification screen.
 @Composable
 fun EntryViewScreen(
     modifier: Modifier = Modifier,
-    viewModel: JournalViewModel = viewModel(),
-    id: Int? = null,
+    viewModel: JournalViewModel = hiltViewModel(),
+    id: String? = null,
     openDrawer: () -> Unit,
     onNavigateBack: () -> Unit,
-    onNavigateToEntryEdit: (Int) -> Unit
+    onNavigateToEntryEdit: (String) -> Unit
 
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val list = uiState.entryList
+
+    val entry = list.find {
+        it.id == id
+    }
+
     Scaffold(modifier = modifier.fillMaxSize(),
         topBar = {
             DefaultTopAppBar(openDrawer = openDrawer)
         }
     ) { innerPadding ->
-        if (id != null) {
-            EntryViewScreenContent(
-                modifier = modifier
-                    .padding(innerPadding)
-                    .fillMaxSize(),
-                id = id,
-                onGetEntry = viewModel::getEntry,
-                onEditEntry = viewModel::editEntry,
-                onNavigateBack = onNavigateBack,
-                onNavigateToEntryEdit = onNavigateToEntryEdit
-            )
-        }
-        else {
+        if (id == null) {
             Text("Error retrieving entry")
             return@Scaffold
         }
+
+        EntryViewScreenContent(
+            modifier = modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
+            entry = entry,
+            onNavigateBack = onNavigateBack,
+            onNavigateToEntryEdit = onNavigateToEntryEdit
+        )
     }
 }
+
 
 @Composable
 private fun EntryViewScreenContent(
     modifier: Modifier = Modifier,
-    id: Int,
-    onGetEntry: (Int) -> JournalEntry?,
-    onEditEntry: (Int, String, String) -> Unit,
+    entry: JournalEntry?,
     onNavigateBack: () -> Unit,
-    onNavigateToEntryEdit: (Int) -> Unit
+    onNavigateToEntryEdit: (String) -> Unit
 ) {
-    val entry = onGetEntry(id)
-
-    var title by remember { mutableStateOf(entry?.title ?: "") }
-    var content by remember { mutableStateOf(entry?.content ?: "") }
-
     Column(
         modifier = modifier
             .padding(16.dp)
-            .fillMaxSize()) {
+            .fillMaxSize()
+    ) {
         Text(
-            text = title,
+            text = entry?.title ?: "Please Try Again",
             style = MaterialTheme.typography.headlineMedium,
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = content,
+            text = entry?.content ?: "",
             style = MaterialTheme.typography.bodyMedium,
         )
 
@@ -105,7 +108,7 @@ private fun EntryViewScreenContent(
                 Text("Back")
             }
             Button(
-                onClick = {onNavigateToEntryEdit(id)},
+                onClick = { onNavigateToEntryEdit(entry?.id ?: "null") },
                 modifier = Modifier.weight(1f)
             ) {
                 Text("Edit")

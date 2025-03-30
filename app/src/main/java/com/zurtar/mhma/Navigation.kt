@@ -2,7 +2,7 @@ package com.zurtar.mhma
 
 import android.util.Log
 import androidx.navigation.NavHostController
-import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
+import com.zurtar.mhma.data.models.BiWeeklyEvaluationEntry
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -44,15 +44,15 @@ class Navigation(private val navController: NavHostController) {
         }
     }
 
-    fun navigateToEntryView(id: Int) {
+    fun navigateToEntryView(id: String) {
         navController.navigate("entryView/$id")
     }
 
-    fun navigateToEntryEdit(id: Int) {
+    fun navigateToEntryEdit(id: String) {
         navController.navigate("entryEdit/$id")
     }
 
-    fun navigateToJournalEntryModification(id: Int = -1) {
+    fun navigateToJournalEntryModification(id: String? = null) {
         navController.navigate("entryEdit/$id")
     }
 

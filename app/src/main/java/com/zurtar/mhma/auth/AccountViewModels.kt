@@ -9,8 +9,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-import com.zurtar.mhma.data.MoodRemoteDataSource
-import com.zurtar.mhma.data.MoodRepository
 import com.zurtar.mhma.data.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,8 +53,6 @@ class LoginViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
-
-    val userState = Firebase
 
     fun onEmailChange(newValue: String) {
         _uiState.update { currentState ->
@@ -145,24 +141,31 @@ class AccountViewModel @Inject constructor(
     val uiState: StateFlow<AccountUiState> = _uiState.asStateFlow()
 
     init {
-//        viewModelScope.launch{
-//            userRepository.getAuthState()
-//        }
+        viewModelScope.launch {
+            userRepository.getAuthState().collect { authState ->
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        isLoggedIn = authState != AuthState.Unauthenticated
+                    )
+                }
+            }
+        }
 
 
-        Firebase.auth.addAuthStateListener { auth ->
-            Log.println(
-                Log.INFO,
-                "AccountViewModel_FirebaseListener",
-                "Auth State Listener Fired currentUser:${auth.currentUser}"
-            )
+        /*     Firebase.auth.addAuthStateListener { auth ->
+                 Log.println(
+                     Log.INFO,
+                     "AccountViewModel_FirebaseListener",
+                     "Auth State Listener Fired currentUser:${auth.currentUser}"
+                 )
 
-            /**
-             * This event will fire on Authentication change, sign in sign out, if we update
-             * regardless we'll trigger a lot of redundant recompositions. So we check if there is a mistmatch
-             * between the userState and our isLoggedIn value. This is ugly, and im sure theres a better way
-             * but you are welcome to find it :D
-             */
+                 */
+        /**
+         * This event will fire on Authentication change, sign in sign out, if we update
+         * regardless we'll trigger a lot of redundant recompositions. So we check if there is a mistmatch
+         * between the userState and our isLoggedIn value. This is ugly, and im sure theres a better way
+         * but you are welcome to find it :D
+         *//*
 
             if (auth.currentUser == null && _uiState.value.isLoggedIn) {
                 _uiState.update { currentState ->
@@ -182,7 +185,7 @@ class AccountViewModel @Inject constructor(
                         displayName = auth.currentUser?.displayName ?: "N/A"
                     )
                 }
-        }
+        }*/
     }
 
 

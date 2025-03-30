@@ -27,7 +27,7 @@ import com.zurtar.mhma.auth.SignUpScreen
 import com.zurtar.mhma.chatbot.ChatListPage
 import com.zurtar.mhma.chatbot.ChatLogPage
 import com.zurtar.mhma.chatbot.ChatbotPage
-import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
+import com.zurtar.mhma.data.models.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.home.HomeScreen
 import com.zurtar.mhma.journal.EntryModificationScreen
 import com.zurtar.mhma.journal.EntryViewScreen
@@ -160,7 +160,7 @@ fun NavGraph(
             composable("Journal") {
                 JournalingScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
-                    onNavigateToEntryCreation = { navActions.navigateToJournalEntryModification(-1) },
+                    onNavigateToEntryCreation = { navActions.navigateToEntryEdit("null") },
                     onNavigateToEntryView = { id -> navActions.navigateToEntryView(id) },
                 )
             }
@@ -210,13 +210,11 @@ fun NavGraph(
 
 
             // Directly copied from Journal branch, which is why its different
-//
-
             composable(
                 route = "entryView/{entryId}",
-                arguments = listOf(navArgument("entryId") { type = NavType.IntType })
+                arguments = listOf(navArgument("entryId") { type = NavType.StringType })
             ) { backStackEntry ->
-                val entryId = backStackEntry.arguments?.getInt("entryId") ?: -1
+                val entryId = backStackEntry.arguments?.getString("entryId")
                 EntryViewScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
                     id = entryId,
@@ -228,10 +226,12 @@ fun NavGraph(
             composable(
                 route = "entryEdit/{entryId}",
                 arguments = listOf(navArgument("entryId") {
-                    type = NavType.IntType
+                    type = NavType.StringType
                 })
             ) { backStackEntry ->
-                val entryId = backStackEntry.arguments?.getInt("entryId") ?: -1
+                var entryId = backStackEntry.arguments?.getString("entryId")
+                if(entryId =="null")
+                    entryId = null
 
                 EntryModificationScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
