@@ -33,14 +33,14 @@ import java.time.format.DateTimeFormatter
 fun DailyAnalyticsScreenContent() {
     val labelToContent: Map<String, @Composable () -> Unit> = mapOf(
         "Mood Calendar" to { DailyEvaluationCalendar() },
-        "History" to {  } // call DailyHistoricalAnalytics here
+        "History" to { DailyHistoryPrev() } // call DailyHistoricalAnalytics here
     )
     TabbedContent(labelToContent = labelToContent, key = labelToContent.keys.first())
 }
 
 //This will not be called in the screen content
 //Daily Historical analytics is the main function, this was used for previewing
-@Preview
+
 @Composable
 fun DailyHistoryPrev() {
     val dailyEntry: DailyEvaluationEntry = DailyEvaluationEntry(
@@ -64,7 +64,6 @@ fun DailyAnalyticCard(dailyEntry: DailyEvaluationEntry) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
-            .clickable { }
     ) {
         Row(
             modifier = Modifier
@@ -98,7 +97,8 @@ fun DailyAnalyticCard(dailyEntry: DailyEvaluationEntry) {
                 modifier = Modifier.padding(start = 180.dp),
                 text = dailyEntry.dateCompleted?.toLocalDate()?.format(formatter) ?: "null",
                 style = MaterialTheme.typography.bodySmall,
-                textAlign = TextAlign.Start
+                textAlign = TextAlign.Start,
+                fontSize = 15.sp
             )
 
         }
