@@ -17,6 +17,11 @@ data class MoodCalendarUIState(
     val foo: String
 )
 
+
+data class MoodGraphUIState(
+   //val graphData: List<LineData >
+)
+
 //@HiltViewModel
 class MoodCalendarViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(MoodCalendarUIState(""))

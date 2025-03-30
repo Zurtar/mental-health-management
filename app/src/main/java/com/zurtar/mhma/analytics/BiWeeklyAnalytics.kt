@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.himanshoe.charty.line.model.LineData
 import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.mood.findSeverity
 import java.time.LocalDate
@@ -37,10 +38,23 @@ fun BiWeeklyAnalyticsScreenContent(
     )
 
     TabbedContent(labelToContent = labelToContent, key = labelToContent.keys.first())
+
 }
 
 @Composable
 fun MoodGraphScreen() {
+    val depressionScores = listOf(12, 4, 5, 6, 3, 2)
+
+    val results: List<BiWeeklyEvaluationEntry> = listOf()
+
+
+    results.map { x ->
+        x.dateCompleted to x.depressionScore
+    }
+
+
+
+
     Text("Mood Graph")
 }
 
