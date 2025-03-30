@@ -5,7 +5,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.mood.findSeverity
 import java.time.LocalDate
@@ -15,10 +18,21 @@ import java.util.Date
 
 
 @Composable
-fun BiWeeklyAnalyticsScreenContent(onNavigateToSummaryDialog: () -> Unit) {
+fun BiWeeklyAnalyticsScreenContent(
+    modifier: Modifier = Modifier,
+    viewModel: BiWeeklyAnalyticsViewModel = hiltViewModel(),
+    onNavigateToSummaryDialog: (BiWeeklyEvaluationEntry?) -> Unit
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     val labelToContent: Map<String, @Composable () -> Unit> = mapOf(
         "Mood Graph" to { MoodGraphScreen() },
-        "History" to { InsightsScreen() },
+        "History" to {
+            BiWeeklyHistoricalAnalytics(
+                biWeeklyEvaluations = uiState.pastEvaluations ?: listOf<BiWeeklyEvaluationEntry>(),
+                onNavigateToSummaryDialog = onNavigateToSummaryDialog
+            )
+        },
         "Insights" to { }
     )
 
