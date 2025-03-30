@@ -444,9 +444,11 @@ fun RowChart(modifier: Modifier = Modifier, score: String, severity: String) {
 
 //HELPER FUNCTIONS
 
+/**
+ *
+ */
 @Composable
 fun findSeverity(score: Int, evalType: String): String {
-
     val depressionScores: List<String> = stringArrayResource(R.array.depression_scores).toList()
     val depressionSeverities: List<String> =
         stringArrayResource(R.array.depression_severities).toList()

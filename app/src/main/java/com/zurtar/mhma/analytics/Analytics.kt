@@ -4,11 +4,9 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -40,33 +38,25 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.kizitonwose.calendar.compose.HorizontalCalendar
-import com.kizitonwose.calendar.compose.rememberCalendarState
-import com.kizitonwose.calendar.core.CalendarDay
-import com.kizitonwose.calendar.core.daysOfWeek
-import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zurtar.mhma.R
 import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.mood.ScoreChart
 import com.zurtar.mhma.mood.findSeverity
-import com.zurtar.mhma.theme.AppTypography
 import com.zurtar.mhma.util.DefaultTopAppBar
-import java.time.Instant
 import java.time.LocalDate
-import java.time.YearMonth
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Date
-import java.util.Locale
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnalyticsScreen(
     modifier: Modifier = Modifier,
     id: Int = 0,
     openDrawer: () -> Unit,
-    onNavigateToSummaryDialog: () -> Unit
+    onNavigateToSummaryDialog: (BiWeeklyEvaluationEntry?) -> Unit
 ) {
 
     Scaffold(modifier = Modifier.fillMaxSize(),
@@ -90,7 +80,7 @@ fun AnalyticsScreen(
 fun AnalyticsScreenContent(
     modifier: Modifier = Modifier,
     id: Int = 0,
-    onNavigateToSummaryDialog: () -> Unit
+    onNavigateToSummaryDialog: (BiWeeklyEvaluationEntry?) -> Unit
 ) {
 
     var pagerState by remember { mutableIntStateOf(id) }
@@ -124,7 +114,7 @@ fun AnalyticsScreenContent(
             }
 
             1 -> {
-                BiWeeklyAnalyticsScreenContent(onNavigateToSummaryDialog)
+                BiWeeklyAnalyticsScreenContent(onNavigateToSummaryDialog = onNavigateToSummaryDialog)
             }
         }
     }
@@ -171,30 +161,6 @@ fun QuickAnalyticsScreenContent() {
         "History" to { }
     )
     TabbedContent(labelToContent = labelToContent, key = labelToContent.keys.first())
-    /*    Column(
-            Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.background),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Row(modifier = Modifier.padding(start = 5.dp, top = 5.dp)) {
-                tabLabels.forEachIndexed { index, label ->
-                    SuggestionChip(
-                        onClick = { state = index },
-                        label = { Text(label) },
-                        colors = SuggestionChipDefaults.suggestionChipColors(MaterialTheme.colorScheme.secondaryContainer)
-                    )
-                }
-            }
-
-            when (state) {
-                0 -> {
-                    QuickEvaluationCalendar()
-                }
-
-                1 -> {}
-            }
-        }*/
 }
 
 @Composable
@@ -217,10 +183,21 @@ fun QuickEvaluationCalendar(
 }
 
 @Composable
-fun BiWeeklyAnalyticsScreenContent(onNavigateToSummaryDialog: () -> Unit) {
+fun BiWeeklyAnalyticsScreenContent(
+    modifier: Modifier = Modifier,
+    viewModel: BiWeeklyAnalyticsViewModel = hiltViewModel(),
+    onNavigateToSummaryDialog: (BiWeeklyEvaluationEntry?) -> Unit
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     val labelToContent: Map<String, @Composable () -> Unit> = mapOf(
         "Mood Graph" to { MoodGraphScreen() },
-        "History" to { InsightsScreen() },
+        "History" to {
+            BiWeeklyHistoricalAnalytics(
+                biWeeklyEvaluations = uiState.pastEvaluations ?: listOf<BiWeeklyEvaluationEntry>(),
+                onNavigateToSummaryDialog = onNavigateToSummaryDialog
+            )
+        },
         "Insights" to { }
     )
 
@@ -238,24 +215,34 @@ fun InsightsScreen() {
 }
 
 @Composable
-fun BiWeeklySummaryPage(onNavigateToSummaryDialog: () -> Unit) {
-    val results = makeCardInfo()
+fun BiWeeklyHistoricalAnalytics(
+    biWeeklyEvaluations: List<BiWeeklyEvaluationEntry>,
+    onNavigateToSummaryDialog: (BiWeeklyEvaluationEntry?) -> Unit
+) {
+
+    // Generate results....
+    val biWeeklyEvaluations_ = biWeeklyEvaluations.map { x ->
+        x.copy(
+            depressionResults = findSeverity(x.depressionScore, "depression"),
+            anxietyResults = findSeverity(x.anxietyScore, "anxiety")
+        )
+    }
 
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val current = LocalDate.now()
     val currentString = current.format(formatter)
     val yesterday = current.minusDays(1).format(formatter)
 
-    val todays = results.filter {
-        it.dateCompleted.toLocalDate().format(formatter) == currentString
+    val todays = biWeeklyEvaluations_.filter {
+        (it.dateCompleted?.toLocalDate() ?: LocalDate.MIN).format(formatter) == currentString
     }
 
-    val lastWeek = results.filter {
-        it.dateCompleted.toLocalDate().format(formatter) == yesterday
+    val lastWeek = biWeeklyEvaluations_.filter {
+        (it.dateCompleted?.toLocalDate() ?: LocalDate.MIN).format(formatter) == yesterday
     }
 
-    val other = results.filter {
-        it.dateCompleted.toLocalDate() < current.minusDays(2)
+    val other = biWeeklyEvaluations_.filter {
+        (it.dateCompleted?.toLocalDate() ?: LocalDate.MIN) < current.minusDays(2)
     }
 
     val state = rememberScrollState()
@@ -263,13 +250,13 @@ fun BiWeeklySummaryPage(onNavigateToSummaryDialog: () -> Unit) {
         //SummaryPopupPreview()
 
         WeekTitles("Current Week")
-        todays.forEach { SummaryCards(it, onNavigateToSummaryDialog) }
+        todays.forEach { SummaryCard(it, onNavigateToSummaryDialog) }
 
         WeekTitles("Last Week")
-        lastWeek.forEach { SummaryCards(it, onNavigateToSummaryDialog) }
+        lastWeek.forEach { SummaryCard(it, onNavigateToSummaryDialog) }
 
         WeekTitles("Previous Weeks")
-        other.forEach { SummaryCards(it, onNavigateToSummaryDialog) }
+        other.forEach { SummaryCard(it, onNavigateToSummaryDialog) }
     }
 }
 
@@ -278,7 +265,10 @@ fun onSummaryCard(results: BiWeeklyEvaluationEntry, onNavigateToSummaryDialog: (
 }
 
 @Composable
-fun SummaryCards(results: BiWeeklyEvaluationEntry, onNavigateToSummaryDialog: () -> Unit) {
+fun SummaryCard(
+    result: BiWeeklyEvaluationEntry,
+    onNavigateToSummaryDialog: (BiWeeklyEvaluationEntry?) -> Unit
+) {
 
     val colour = MaterialTheme.colorScheme.primaryContainer
 
@@ -287,7 +277,7 @@ fun SummaryCards(results: BiWeeklyEvaluationEntry, onNavigateToSummaryDialog: ()
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
-            .clickable { onNavigateToSummaryDialog() }
+            .clickable { onNavigateToSummaryDialog(result) }
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -306,7 +296,7 @@ fun SummaryCards(results: BiWeeklyEvaluationEntry, onNavigateToSummaryDialog: ()
             ) {
                 Text(
                     modifier = Modifier.padding(start = 15.dp),
-                    text = results.depressionResults,
+                    text = result.depressionResults,
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center
                 )
@@ -320,7 +310,7 @@ fun SummaryCards(results: BiWeeklyEvaluationEntry, onNavigateToSummaryDialog: ()
                                 radius = this.size.maxDimension
                             )
                         },
-                    text = "${results.depressionScore}"
+                    text = "${result.depressionScore}"
                 )
 
             }
@@ -331,7 +321,7 @@ fun SummaryCards(results: BiWeeklyEvaluationEntry, onNavigateToSummaryDialog: ()
             ) {
                 Text(
                     modifier = Modifier.padding(start = 15.dp),
-                    text = results.anxietyResults,
+                    text = result.anxietyResults,
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center
                 )
@@ -345,7 +335,7 @@ fun SummaryCards(results: BiWeeklyEvaluationEntry, onNavigateToSummaryDialog: ()
                                 radius = this.size.maxDimension
                             )
                         },
-                    text = "${results.anxietyScore}"
+                    text = "${result.anxietyScore}"
                 )
 
             }
@@ -356,7 +346,7 @@ fun SummaryCards(results: BiWeeklyEvaluationEntry, onNavigateToSummaryDialog: ()
 
 
 @Composable
-fun SummaryPopup(results: BiWeeklyEvaluationEntry) {
+fun SummaryPopup(entry: BiWeeklyEvaluationEntry) {
 
     val depressionScores: List<String> = stringArrayResource(R.array.depression_scores).toList()
     val depressionSeverities: List<String> =
@@ -373,7 +363,7 @@ fun SummaryPopup(results: BiWeeklyEvaluationEntry) {
         {
             Text(
                 modifier = Modifier.padding(vertical = 10.dp, horizontal = 5.dp),
-                text = "Evaluation: Completed ${results.dateCompleted}",
+                text = "Evaluation: Completed ${entry.dateCompleted?.toLocalDate()}",
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Start
             )
@@ -386,12 +376,12 @@ fun SummaryPopup(results: BiWeeklyEvaluationEntry) {
                 FilledTonalButton(
                     onClick = {},
                     enabled = true,
-                    content = { Text("${results.depressionScore}") })
+                    content = { Text("${entry.depressionScore}") })
             }
 
             Spacer(Modifier.width(15.dp))
 
-            ScoreChart(results.depressionScore, depressionScores, depressionSeverities)
+            ScoreChart(entry.depressionScore, depressionScores, depressionSeverities)
 
             Spacer(Modifier.width(30.dp))
 
@@ -405,10 +395,10 @@ fun SummaryPopup(results: BiWeeklyEvaluationEntry) {
                     modifier = Modifier.padding(horizontal = 5.dp),
                     onClick = {},
                     enabled = true,
-                    content = { Text("${results.anxietyScore}") }
+                    content = { Text("${entry.anxietyScore}") }
                 )
             }
-            ScoreChart(results.anxietyScore, anxietyScores, anxietySeverities)
+            ScoreChart(entry.anxietyScore, anxietyScores, anxietySeverities)
         }
 
     }
@@ -453,7 +443,6 @@ fun makeCardInfo(): List<BiWeeklyEvaluationEntry> {
 
 @Composable
 fun WeekTitles(title: String) {
-
     Text(
         text = title,
         style = MaterialTheme.typography.titleMedium,

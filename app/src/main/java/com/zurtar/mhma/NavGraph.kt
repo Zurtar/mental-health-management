@@ -29,14 +29,18 @@ import com.zurtar.mhma.home.HomeScreen
 import com.zurtar.mhma.journal.EntryModificationScreen
 import com.zurtar.mhma.journal.JournalingScreen
 import com.zurtar.mhma.analytics.AnalyticsScreen
+import com.zurtar.mhma.analytics.SummaryPopup
 import com.zurtar.mhma.mood.BiWeeklyEvaluationScreen
 import com.zurtar.mhma.mood.DailyMoodEvaluationScreen
 import com.zurtar.mhma.mood.MoodEvaluationScreen
 import com.zurtar.mhma.analytics.SummaryPopupScreen
+import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.util.AppModalDrawer
 import com.zurtar.mhma.util.NavigationViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromJsonElement
 
 @Composable
 fun NavGraph(
@@ -142,8 +146,20 @@ fun NavGraph(
 
             //Added dialog navigation for biweekly summary page
 //            dialog<SummaryDialog> {
-            dialog("SummaryDialog") {
-                SummaryPopupScreen()
+            dialog(
+                route = "SummaryDialog/{EntryObject}",
+                arguments = listOf(navArgument("EntryObject") { type = NavType.StringType }
+                )
+            ) {
+                val jsonString = currentNavBackStackEntry?.arguments?.getString("EntryObject")
+                checkNotNull(jsonString) {
+                    navController.popBackStack()
+                    return@dialog
+                }
+
+                val entry: BiWeeklyEvaluationEntry =
+                    Json.decodeFromString<BiWeeklyEvaluationEntry>(jsonString)
+                SummaryPopup(entry)
             }
 
 
@@ -156,7 +172,7 @@ fun NavGraph(
                 AnalyticsScreen(
                     id = backStackEntry.arguments?.getInt("id") ?: 0,
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
-                    onNavigateToSummaryDialog = { navActions.navigateToSummaryDialog() }
+                    onNavigateToSummaryDialog = navActions::navigateToSummaryDialog
                 )
             }
 

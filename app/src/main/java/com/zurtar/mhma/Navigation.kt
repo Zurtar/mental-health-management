@@ -1,7 +1,11 @@
 package com.zurtar.mhma
 
+import android.util.Log
 import androidx.navigation.NavHostController
+import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 class Navigation(private val navController: NavHostController) {
 
@@ -62,9 +66,16 @@ class Navigation(private val navController: NavHostController) {
     }
 
     //Added dialog navigation for biweekly summary page
-    fun navigateToSummaryDialog() {
+    fun navigateToSummaryDialog(entry: BiWeeklyEvaluationEntry? = null) {
 //        navController.navigate(SummaryDialog) {
-        navController.navigate("SummaryDialog") {
+
+        var route = "SummaryDialog"
+        if (entry != null)
+            route = "${route}/${Json.encodeToString(entry)}"
+
+        Log.println(Log.INFO, "NavigateToSummaryDialog", route)
+
+        navController.navigate(route) {
             restoreState = true
         }
     }
