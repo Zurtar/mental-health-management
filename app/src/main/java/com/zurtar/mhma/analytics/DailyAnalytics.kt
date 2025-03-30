@@ -24,25 +24,25 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.mood.DailyEvaluationEntry
-import com.zurtar.mhma.mood.findSeverity
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-@Preview
+
 @Composable
 fun DailyAnalyticsScreenContent() {
     val labelToContent: Map<String, @Composable () -> Unit> = mapOf(
         "Mood Calendar" to { DailyEvaluationCalendar() },
-        "History" to { DailyHistory() }
+        "History" to {  } // call DailyHistoricalAnalytics here
     )
     TabbedContent(labelToContent = labelToContent, key = labelToContent.keys.first())
 }
 
-
+//This will not be called in the screen content
+//Daily Historical analytics is the main function, this was used for previewing
+@Preview
 @Composable
-fun DailyHistory() {
+fun DailyHistoryPrev() {
     val dailyEntry: DailyEvaluationEntry = DailyEvaluationEntry(
         emotionsMap = mapOf("Happy" to 7f, "Sad" to 4f, "Angry" to 2.5f),
         stressLevel = "Mildly Stressed",
@@ -54,19 +54,11 @@ fun DailyHistory() {
 }
 
 @Composable
-fun SummaryCard(dailyEntry: DailyEvaluationEntry) {
+fun DailyAnalyticCard(dailyEntry: DailyEvaluationEntry) {
 
     val emotionsList = dailyEntry.emotionsMap.toList()
     val stress = stressLevel(dailyEntry.stressLevel)
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-
-    val emotions = listOf(
-        "Sad" to Color(0xFF1E88E5), // Blue
-        "Happy" to Color(0xFF4CAF50), // Yellow
-        "Fearful" to Color(0xFF8E24AA), // Purple
-        "Angry" to Color(0xBAD32F2F), // Red
-
-    )
 
     ElevatedCard(elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         modifier = Modifier
@@ -111,7 +103,7 @@ fun SummaryCard(dailyEntry: DailyEvaluationEntry) {
 
         }
         Text(
-            modifier = Modifier.padding(start = 40.dp),
+            modifier = Modifier.padding(start = 40.dp, bottom = 10.dp),
             text = "Stress Level: ${stress}",
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center
@@ -122,14 +114,8 @@ fun SummaryCard(dailyEntry: DailyEvaluationEntry) {
 
 @Composable
 fun DailyHistoricalAnalytics(
-    dailyEvaluations: List<DailyEvaluationEntry>
-) {
-
-    // Generate results....
-    val dailyEvaluations_ = dailyEvaluations.map { x ->
-        x.copy(
-        )
-    }
+    dailyEvaluations: List<DailyEvaluationEntry>)
+{
 
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val current = LocalDate.now()
@@ -153,13 +139,13 @@ fun DailyHistoricalAnalytics(
         //SummaryPopupPreview()
 
         WeekTitles("Today")
-        todays.forEach { SummaryCard(it) }
+        todays.forEach { DailyAnalyticCard(it) }
 
         WeekTitles("Yesterday")
-        lastWeek.forEach { SummaryCard(it) }
+        lastWeek.forEach { DailyAnalyticCard(it) }
 
         WeekTitles("Previous Days")
-        other.forEach { SummaryCard(it) }
+        other.forEach { DailyAnalyticCard(it) }
     }
 }
 
@@ -201,6 +187,7 @@ fun makeCardInfoDaily(): List<DailyEvaluationEntry> {
         results.add(
             DailyEvaluationEntry(
                 emotionsMap = map,
+                stressLevel = "Very Stressed",
                 dateCompleted = localDate.toDate()
             )
         )
