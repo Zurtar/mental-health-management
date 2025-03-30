@@ -235,7 +235,53 @@ fun ChatbotPageContent(
                 }
             }
             if ((currentBranch == ChatBranch.ActionPlan && viewModel.getBranchStep() == 2) || (currentBranch == ChatBranch.SmartGoal && viewModel.getBranchStep() == 5)) {
-                DatePickerFieldToModal()
+                var selectedDate by remember { mutableStateOf<Long?>(null) }
+                var showModal by remember { mutableStateOf(false) }
+
+                OutlinedTextField(
+                    value = selectedDate?.let { convertMillisToDate(it) } ?: "",
+                    onValueChange = { },
+                    label = { Text("Date to be completed") },
+                    placeholder = { Text("MM/DD/YYYY") },
+                    trailingIcon = {
+                        Icon(Icons.Default.DateRange, contentDescription = "Select date")
+                    },
+                    modifier = modifier
+                        .weight(1f)
+                        .pointerInput(selectedDate) {
+                            awaitEachGesture {
+                                // Modifier.clickable doesn't work for text fields, so we use Modifier.pointerInput
+                                // in the Initial pass to observe events before the text field consumes them
+                                // in the Main pass.
+                                awaitFirstDown(pass = PointerEventPass.Initial)
+                                val upEvent =
+                                    waitForUpOrCancellation(pass = PointerEventPass.Initial)
+                                if (upEvent != null) {
+                                    showModal = true
+                                }
+                            }
+                        }
+                )
+
+                if (showModal) {
+                    DatePickerModal(
+                        onDateSelected = { selectedDate = it },
+                        onDismiss = { showModal = false }
+                    )
+                }
+                Button(
+                    onClick = {
+                        if (selectedDate.isNotBlank()) {
+                            viewModel.sendMessage(selectedDate.toString())
+                            userMessage = ""
+                        }
+                    },
+                    modifier = Modifier.padding(start = 8.dp)
+                ) {
+                    Text("Send")
+                }
+
+
             }
             else if (currentBranch != ChatBranch.Initial) {
                 Row(
@@ -266,6 +312,10 @@ fun ChatbotPageContent(
             }
         }
     }
+}
+
+private fun Long?.isNotBlank(): Boolean {
+    return this != null
 }
 
 @Composable
