@@ -5,13 +5,19 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -32,10 +38,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zurtar.mhma.R
 import com.zurtar.mhma.data.models.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.mood.ScoreChart
@@ -136,6 +146,7 @@ fun TabbedContent(
                     SuggestionChip(
                         onClick = { state = key },
                         label = { Text(key) },
+                        modifier = Modifier.padding(end = 10.dp),
                         colors = SuggestionChipDefaults.suggestionChipColors(MaterialTheme.colorScheme.secondaryContainer)
                     )
                 else {
@@ -155,6 +166,7 @@ fun SummaryCard(
 ) {
 
     val colour = MaterialTheme.colorScheme.primaryContainer
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
     ElevatedCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
@@ -163,68 +175,78 @@ fun SummaryCard(
             .padding(10.dp)
             .clickable { onNavigateToSummaryDialog(result) }
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.SpaceEvenly,
-            horizontalAlignment = Alignment.Start
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 10.dp, bottom = 10.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
+
+            ElevatedButton(
+                onClick = {},
+                modifier = Modifier
+                    .width(34.dp)
+                    .align(Alignment.CenterVertically),
+                colors = ButtonDefaults.buttonColors(),
+                contentPadding = PaddingValues(0.dp)
+            ) {
+                Text(
+                    text = "${result.depressionScore}",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
             Text(
-                modifier = Modifier.padding(start = 5.dp),
-                text = "Mood:",
-                style = MaterialTheme.typography.titleMedium
+                modifier = Modifier.padding(end = 60.dp),
+                text = result.depressionResults,
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                fontSize = 18.sp
             )
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    modifier = Modifier.padding(start = 15.dp),
-                    text = result.depressionResults,
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center
-                )
-                Text(
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier
-                        .padding(end = 30.dp, bottom = 20.dp)
-                        .drawBehind {
-                            drawCircle(
-                                color = colour,
-                                radius = this.size.maxDimension
-                            )
-                        },
-                    text = "${result.depressionScore}"
-                )
-
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    modifier = Modifier.padding(start = 15.dp),
-                    text = result.anxietyResults,
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center
-                )
-                Text(
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier
-                        .padding(end = 30.dp, top = 20.dp, bottom = 20.dp)
-                        .drawBehind {
-                            drawCircle(
-                                color = colour,
-                                radius = this.size.maxDimension
-                            )
-                        },
-                    text = "${result.anxietyScore}"
-                )
-
-            }
+            Text(
+                modifier = Modifier.padding(end = 10.dp),
+                text = result.dateCompleted?.toLocalDate()?.format(formatter) ?: "null",
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Start,
+                fontSize = 15.sp
+            )
         }
 
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 10.dp),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            ElevatedButton(
+                onClick = {},
+                modifier = Modifier
+                    .width(34.dp)
+                    .align(Alignment.CenterVertically),
+                colors = ButtonDefaults.buttonColors(),
+                contentPadding = PaddingValues(0.dp)
+            ) {
+                Text(
+                    text = "${result.anxietyScore}",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+
+            Text(
+                modifier = Modifier.padding(start = 25.dp),
+                text = result.anxietyResults,
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                fontSize = 18.sp
+            )
+        }
     }
 }
 
@@ -328,8 +350,9 @@ fun makeCardInfo(): List<BiWeeklyEvaluationEntry> {
 @Composable
 fun WeekTitles(title: String) {
     Text(
+        modifier = Modifier.padding(10.dp),
         text = title,
-        style = MaterialTheme.typography.titleMedium,
+        style = MaterialTheme.typography.titleLarge,
         color = MaterialTheme.colorScheme.primary
     )
 

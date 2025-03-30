@@ -65,19 +65,24 @@ fun BiWeeklyHistoricalAnalytics(
 
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val current = LocalDate.now()
+    val currentDay = current.dayOfWeek.ordinal
+
+    val currentWeek = current.minusDays((currentDay-1).toLong())
     val currentString = current.format(formatter)
-    val yesterday = current.minusDays(1).format(formatter)
+    val previous = currentWeek.minusWeeks(2)
 
     val todays = biWeeklyEvaluations_.filter {
-        (it.dateCompleted?.toLocalDate() ?: LocalDate.MIN).format(formatter) == currentString
+        (it.dateCompleted?.toLocalDate() ?: LocalDate.MIN) >= currentWeek
     }
 
     val lastWeek = biWeeklyEvaluations_.filter {
-        (it.dateCompleted?.toLocalDate() ?: LocalDate.MIN).format(formatter) == yesterday
+        var d = (it.dateCompleted?.toLocalDate() ?: LocalDate.MIN)
+
+        d >= previous && d < currentWeek
     }
 
     val other = biWeeklyEvaluations_.filter {
-        (it.dateCompleted?.toLocalDate() ?: LocalDate.MIN) < current.minusDays(2)
+        (it.dateCompleted?.toLocalDate() ?: LocalDate.MIN) < previous
     }
 
     val state = rememberScrollState()
