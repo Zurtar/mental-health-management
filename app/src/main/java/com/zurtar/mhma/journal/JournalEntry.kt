@@ -7,7 +7,6 @@ import java.util.Date
 /be taken from a database. This modification will be done by modifying the functions found in JournalEntryManager
 and JournalViewModel
  */
-
 data class JournalEntry(
     var id: Int,
     var title : String,

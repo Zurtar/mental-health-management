@@ -37,7 +37,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.text.style.TextAlign
 import com.zurtar.mhma.R
-import com.zurtar.mhma.util.DefaultTopAppBar
+import com.zurtar.mhma.util.ChatListTopAppBar
 
 /*
 Main function for the ChatListPage, which is used to display a list of previously completed
@@ -60,7 +60,7 @@ fun ChatListPage(
 
     Scaffold(modifier = modifier.fillMaxSize(),
         topBar = {
-            DefaultTopAppBar(openDrawer = openDrawer)
+            ChatListTopAppBar(openDrawer = openDrawer, onNavigateToChatbot)
         }
     ) { innerPadding ->
         ChatListPageContent(
@@ -73,8 +73,6 @@ fun ChatListPage(
             onNavigateToChatbot = onNavigateToChatbot
         )
     }
-
-
 }
 
 /*
@@ -92,25 +90,6 @@ private fun ChatListPageContent(
         modifier = modifier
             .fillMaxSize()
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.onPrimaryContainer)
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Chat Logs",
-                fontSize = 30.sp,
-                color = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier
-                    .padding(8.dp),
-            )
-            Button(onClick = onNavigateToChatbot) {
-                Text(text = "Chatbot")
-            }
-        }
         Column(
         ){
             logList?.let {

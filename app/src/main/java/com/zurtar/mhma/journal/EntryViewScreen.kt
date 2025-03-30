@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import com.zurtar.mhma.util.DefaultTopAppBar
+import com.zurtar.mhma.util.JournalingTopAppBar
 
 /*
 The entry view screen is navigated to by the drop down menu on the journal item buttons
@@ -40,7 +41,7 @@ fun EntryViewScreen(
 ) {
     Scaffold(modifier = modifier.fillMaxSize(),
         topBar = {
-            DefaultTopAppBar(openDrawer = openDrawer)
+            JournalingTopAppBar(openDrawer = openDrawer)
         }
     ) { innerPadding ->
         if (id != null) {
@@ -89,7 +90,6 @@ private fun EntryViewScreenContent(
             text = content,
             style = MaterialTheme.typography.bodyMedium,
         )
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()

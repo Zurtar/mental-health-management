@@ -34,8 +34,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.zurtar.mhma.util.DefaultTopAppBar
 import com.zurtar.mhma.R
+import com.zurtar.mhma.util.JournalingTopAppBar
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -68,7 +68,7 @@ fun JournalingScreen(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            DefaultTopAppBar(openDrawer = openDrawer)
+            JournalingTopAppBar(openDrawer = openDrawer)
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -101,13 +101,6 @@ private fun JournalingScreenContent(
     Column(
         modifier = modifier
     ) {
-        Text(
-            text = "Journal",
-            fontSize = 30.sp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-        )
         entryList?.let {
             LazyColumn(
                 content = {
