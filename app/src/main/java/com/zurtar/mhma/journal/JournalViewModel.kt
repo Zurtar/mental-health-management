@@ -5,10 +5,9 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 
-
-
-
+//@HiltViewModel
 class JournalViewModel : ViewModel() {
     private var _entryList = MutableLiveData<List<JournalEntry>>()
     val entryList: LiveData<List<JournalEntry>> = _entryList
@@ -19,7 +18,6 @@ class JournalViewModel : ViewModel() {
     }
 
     //adds an entry given its title and content
-    @RequiresApi(Build.VERSION_CODES.O)
     fun addEntry(title : String, content : String) {
         JournalEntryManager.addEntry(title, content)
         getAllEntries()

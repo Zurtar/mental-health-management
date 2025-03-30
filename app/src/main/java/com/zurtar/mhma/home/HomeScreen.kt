@@ -34,6 +34,7 @@ fun HomeScreen(
     onNavigateToMoodEvaluation: () -> Unit,
     onNavigateToJournal: () -> Unit,
     onNavigateToChatbot: () -> Unit
+    onNavigateToAnalytics: () -> Unit
 ) {
     Scaffold(modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -46,7 +47,8 @@ fun HomeScreen(
                 .fillMaxSize(),
             onNavigateToMoodEvaluation = onNavigateToMoodEvaluation,
             onNavigateToJournal = onNavigateToJournal,
-            onNavigateToChatbot = onNavigateToChatbot
+            onNavigateToChatbot = onNavigateToChatbot,
+            onNavigateToAnalytics = onNavigateToAnalytics,
         )
     }
 }
@@ -56,6 +58,7 @@ private fun HomeScreenContent(
     modifier: Modifier = Modifier,
     onNavigateToMoodEvaluation: () -> Unit,
     onNavigateToJournal: () -> Unit,
+    onNavigateToAnalytics: () -> Unit
     onNavigateToChatbot: () -> Unit
 ) {
 
@@ -227,15 +230,36 @@ private fun HomeScreenContent(
                 }
             }
 
-            Spacer(modifier = Modifier
-                .width(160.dp)
-                .height(150.dp)
-                .padding(10.dp)
-                .padding(horizontal = 10.dp, vertical = 10.dp)
-                .weight(1f)
-                .aspectRatio(1f))
+            Spacer(
+                modifier = Modifier
+                    .width(160.dp)
+                    .height(150.dp)
+                    .padding(10.dp)
+                    .padding(horizontal = 10.dp, vertical = 10.dp)
+                    .weight(1f)
+                    .aspectRatio(1f)
+            )
         }
 
+
+        ElevatedCard(
+            modifier = Modifier
+                .padding(top = 20.dp)
+                .fillMaxWidth(0.75f)
+                .fillMaxHeight(0.2f)
+                .background(color = MaterialTheme.colorScheme.background),
+            onClick = { onNavigateToAnalytics() }
+        ) {
+            Text(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .height(150.dp)
+                    .wrapContentHeight(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.headlineMedium,
+                text = "Analytics"
+            )
+        }
     }
 }
 
@@ -249,6 +273,7 @@ fun getGreetingFromDate(date: java.util.Date): String {
         else -> "Good Evening!"
     }
 }
+
 
 fun getToDo(): String {
     return "• Quick Evaluation"
@@ -270,7 +295,7 @@ fun HomeScreenContentPreview() {
             topBar = {
                 DefaultTopAppBar(openDrawer = { })
             }
-        ) {innerPadding ->
+        ) { innerPadding ->
             HomeScreenContent(
                 modifier = Modifier
                     .padding(innerPadding)
@@ -279,7 +304,6 @@ fun HomeScreenContentPreview() {
                 onNavigateToJournal = {},
                 onNavigateToChatbot = {}
             )
-
         }
     }
 }

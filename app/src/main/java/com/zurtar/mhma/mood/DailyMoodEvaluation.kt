@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -21,11 +22,13 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -33,6 +36,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -48,7 +53,9 @@ import com.zurtar.mhma.theme.EmojiSmile
 fun DailyMoodEvaluationScreen(
     modifier: Modifier = Modifier,
     viewModel: DailyEvaluationViewModel = viewModel(),
-    openDrawer: () -> Unit
+    openDrawer: () -> Unit,
+    onNavigateToAnalytics: (Int) -> Unit,
+    onNavigateToJournal: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(modifier = modifier.fillMaxSize(),
@@ -56,22 +63,23 @@ fun DailyMoodEvaluationScreen(
             DefaultTopAppBar(openDrawer = openDrawer)
         }
     ) { innerPadding ->
-        if (uiState.isSubmitted == 1) {
-            DailyResult(
-                modifier = modifier
-                    .padding(innerPadding)
-                    .fillMaxSize(), uiState.currentEmotion, uiState.strongestEmotion
-            )
-            return@Scaffold
-        }
+
 
         DailyMoodEvaluationScreenContent(
             modifier = modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
-            onUpdateEmotion = viewModel::updateEmotion,
+            dailyEntry = uiState.dailyEntry,
+            isSubmitted = uiState.isSubmitted,
+            page = uiState.page,
             onEmotionSelect = viewModel::emotionSelect,
-            onSubmit = { viewModel.onSubmit() }
+            onSubmit = { viewModel.onSubmit() },
+            onBack = { viewModel.onBack() },
+            onNext = { viewModel.onNext() },
+            updateIntensity = viewModel::updateIntensity,
+            updateEmotion = viewModel::updateEmotion,
+            onNavigateToAnalytics = onNavigateToAnalytics,
+            onNavigateToJournal = onNavigateToJournal
         )
     }
 }
@@ -79,76 +87,93 @@ fun DailyMoodEvaluationScreen(
 @Composable
 private fun DailyMoodEvaluationScreenContent(
     modifier: Modifier = Modifier,
-    onUpdateEmotion: (ImageVector) -> Unit,
+    dailyEntry: DailyEvaluationEntry,
+    isSubmitted: Int,
+    page:Int,
     onEmotionSelect: (String) -> Unit,
-    onSubmit: () -> Unit
+    onSubmit: () -> Unit,
+    onBack: () -> Unit,
+    onNext: () -> Unit,
+    updateIntensity: (Float, Int) -> Unit,
+    updateEmotion: (ImageVector) -> Unit,
+    onNavigateToAnalytics: (Int) -> Unit,
+    onNavigateToJournal: () -> Unit
 ) {
-
-    var selectedRating by remember { mutableStateOf<Int?>(null) }
 
     Column(
         modifier = modifier.background(MaterialTheme.colorScheme.background),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        MoodSelectionCard(updateEmotion = onUpdateEmotion)
-        EmotionSelectionCard(
-            emotionSelect = onEmotionSelect,
-        )
 
-        FilledTonalButton(onClick = { onSubmit() }, content = { Text("Submit") })
-        // FilledTonalButton(onClick = { onNavigate() }, content = { Text("Submit") })
-    }
-}
+        if (isSubmitted == 1) {
+            DailyResult(dailyEntry = dailyEntry, onNavigateToAnalytics = onNavigateToAnalytics, onNavigateToJournal = onNavigateToJournal)
+            return
+        }
 
 
-@Composable
-private fun DailyResult(
-    modifier: Modifier = Modifier,
-    currentEmotion: String,
-    strongestEmotion: String
-) {
+        if (page == 0)
+            MoodSelectionQuestionPage(
+                dailyEntry = dailyEntry,
+                emotionSelect = onEmotionSelect,
+                updateEmotion = updateEmotion
+            )
 
-    Column(modifier.padding(5.dp), verticalArrangement = Arrangement.Top) {
-        Text(
-            text = "Daily Evaluation Summary",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(bottom = 20.dp)
+        if (page == 1) {
+            if (dailyEntry.selectedEmotions.isEmpty()) {
+                DailyResult(modifier = modifier, dailyEntry, onNavigateToAnalytics, onNavigateToJournal = onNavigateToJournal)
+                return
+            }
+            EmotionRating(dailyEntry, updateIntensity)
+        }
 
-
-        )
-        CurrentMoodResult(currentEmotion)
-        Spacer(modifier = Modifier.height(16.dp))
-        StrongestEmotionResult(strongestEmotion)
-    }
-}
-
-@Composable
-private fun CurrentMoodResult(currentEmotion: String) {
-    ElevatedCard(elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceAround
         ) {
-            Text(
-                text = "You are currently feeling: ",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(bottom = 10.dp)
-            )
-            Text(
-                text = currentEmotion,
-                fontSize = 20.sp
-            )
+            if (page > 0)
+                FilledTonalButton(
+                    onClick = { onBack() },
+                    content = { Text("Back") })
+
+            var text = "Next"
+            if (page == 1) {
+                text = "Submit"
+                FilledTonalButton(onClick = { onSubmit() }, content = { Text(text) })
+
+            } else {
+                FilledTonalButton(onClick = { onNext() }, content = { Text(text) })
+            }
         }
     }
 }
 
 
-@Composable
-private fun StrongestEmotionResult(strongestEmotion: String) {
 
+//PAGE ONE QUESTIONS
+
+@Composable
+fun MoodSelectionQuestionPage(
+    modifier: Modifier = Modifier,
+    dailyEntry: DailyEvaluationEntry,
+    emotionSelect: (String) -> Unit,
+    updateEmotion: (ImageVector) -> Unit) {
+
+    Column (modifier = modifier) {
+        StressSelectionCard(modifier = Modifier, updateEmotion = updateEmotion)
+        EmotionSelectionCard(dailyEntry = dailyEntry,
+                emotionSelect = emotionSelect)
+    }
+
+}
+
+@Composable
+private fun EmotionSelectionCard(
+    modifier: Modifier = Modifier,
+    dailyEntry: DailyEvaluationEntry,
+    emotionSelect: (String) -> Unit
+) {
+    var selectedEmotion = ""
     val emotions = listOf(
         "Sad" to Color(0xFF1E88E5), // Blue
         "Happy" to Color(0xFF4CAF50), // Yellow
@@ -156,58 +181,47 @@ private fun StrongestEmotionResult(strongestEmotion: String) {
         "Angry" to Color(0xBAD32F2F), // Red
 
     )
-    var buttColor = Color.White
-    emotions.forEach { (emotion, color) ->
-        if (strongestEmotion == emotion) {
-            buttColor = color
-        }
-    }
 
-    ElevatedCard(elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)) {
+
+    ElevatedCard(
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        modifier = modifier
+            .padding(bottom = 15.dp, top = 5.dp)
+            .fillMaxWidth(0.85f)
+    ) {
+
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(
-                text = "The strongest emotions you have felt today were: ",
-                //modifier = Modifier.padding(bottom = 10.dp),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 25.dp)
-            )
+            Text("What emotion have you felt strongest today?")
+            HorizontalDivider()
+            // Vertical Emotion Picker
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Button(
-                    onClick = { },
-                    shape = RoundedCornerShape(50), // Oval shape
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = buttColor,
-//            containerColor = if (isSelected) color else color.copy(alpha = 0.3f),
-                        contentColor = Color.White
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth(0.3f) // Make it stretch horizontally
-                        .height(40.dp) // Oval-like height
-                ) {
-                    Text(
-                        text = strongestEmotion,
-                        style = MaterialTheme.typography.bodyMedium,
-                        maxLines = 1
+                emotions.forEach { (emotion, color) ->
+                    EmotionChip(
+                        emotion = emotion,
+                        color = color,
+                        isSelected = dailyEntry.selectedEmotions.contains(emotion),
+                        onClick = {
+                            selectedEmotion = emotion
+                            emotionSelect(emotion)
+                        }
                     )
                 }
             }
         }
-
     }
 }
 
 
 @Composable
-private fun MoodSelectionCard(
+private fun StressSelectionCard(
     modifier: Modifier = Modifier,
     updateEmotion: (ImageVector) -> Unit
 ) {
@@ -230,7 +244,7 @@ private fun MoodSelectionCard(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text("How are you feeling today?")
+            Text("How stressed are you feeling today?")
             HorizontalDivider()
             Row(
                 modifier = Modifier
@@ -299,54 +313,157 @@ private fun MoodSelectionCard(
     }
 }
 
+
+//PAGE 2 QUESTIONS
 @Composable
-private fun EmotionSelectionCard(
-    modifier: Modifier = Modifier,
-    emotionSelect: (String) -> Unit
+fun EmotionRating(
+    dailyEntry: DailyEvaluationEntry, updateIntensity: (Float, Int) -> Unit
 ) {
-    var selectedEmotion by remember { mutableStateOf<String?>(null) }
-
-    val emotions = listOf(
-        "Sad" to Color(0xFF1E88E5), // Blue
-        "Happy" to Color(0xFF4CAF50), // Yellow
-        "Fearful" to Color(0xFF8E24AA), // Purple
-        "Angry" to Color(0xBAD32F2F), // Red
-
-    )
 
     ElevatedCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-        modifier = modifier
-            .padding(bottom = 15.dp, top = 5.dp)
-            .fillMaxWidth(0.85f)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 20.dp, end = 20.dp, top = 25.dp, bottom = 30.dp)
     ) {
 
-        Column(
-            modifier = Modifier
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Text("What emotion have you felt strongest today?")
-            HorizontalDivider()
-            // Vertical Emotion Picker
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                emotions.forEach { (emotion, color) ->
-                    EmotionChip(
-                        emotion = emotion,
-                        color = color,
-                        isSelected = selectedEmotion == emotion,
-                        onClick = {
-                            selectedEmotion = emotion
-                            emotionSelect(emotion)
-                        }
-                    )
-                }
+
+        Text(
+            modifier = Modifier.padding(15.dp),
+            text = "On a scale from 1-10, how strongly are you feeling these emotion",
+            style = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.Center
+        )
+
+        repeat(dailyEntry.selectedEmotions.size) { i ->
+            var sliderPosition by remember { mutableFloatStateOf(1f) }
+
+            Column(modifier = Modifier.padding(all = 20.dp)) {
+                Text(
+                    text = dailyEntry.selectedEmotions[i],
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Slider(
+                    value = sliderPosition,
+                    onValueChange = { sliderPosition = it },
+                    colors = SliderDefaults.colors(
+                        thumbColor = MaterialTheme.colorScheme.secondary,
+                        activeTrackColor = MaterialTheme.colorScheme.secondary,
+                        inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer,
+                    ),
+                    onValueChangeFinished = {
+                        updateIntensity(sliderPosition, i)
+
+                    },
+                    steps = 9,
+                    valueRange = 1f..10f
+                )
+                Text(
+                    text = sliderPosition.toInt().toString(),
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         }
+    }
+}
+
+
+@Composable
+private fun DailyResult(
+    modifier: Modifier = Modifier,
+    dailyEntry: DailyEvaluationEntry,
+    onNavigateToAnalytics: (Int) -> Unit,
+    onNavigateToJournal: () -> Unit
+) {
+
+    Column(
+        modifier
+            .padding(5.dp)
+            .background(MaterialTheme.colorScheme.background),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            modifier = Modifier.padding(top = 15.dp, bottom = 30.dp),
+            text = "You have completed the Quick evaluation!",
+            style = MaterialTheme.typography.titleLarge,
+            textAlign = TextAlign.Center
+        )
+
+        EmotionSummaryTable(dailyEntry)
+
+        Text(
+            modifier = Modifier.padding(bottom = 50.dp),
+            text = "Current Stress Level: ${dailyEntry.currentEmotion}",
+            style = MaterialTheme.typography.titleMedium,
+            fontSize = 20.sp
+        )
+
+        ProceedCard("Proceed to Evaluation Analytics") { onNavigateToAnalytics(0) }
+        ProceedCard("Proceed to Journal") { onNavigateToJournal() }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        FilledTonalButton(
+            onClick = { },
+            content = { Text("Exit") })
+    }
+
+}
+
+
+@Composable
+fun EmotionSummaryTable(dailyEntry: DailyEvaluationEntry) {
+
+    ElevatedCard(
+        Modifier.padding(top = 5.dp, bottom = 20.dp).fillMaxWidth(0.85f),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(top = 10.dp), horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Text(
+                modifier = Modifier.width(100.dp),
+                text = "EMOTION",
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Start,
+                fontSize = 18.sp
+            )
+
+            Text(
+                modifier = Modifier.width(70.dp),
+                text = "SCORE",
+                style = MaterialTheme.typography.titleMedium,
+                textAlign = TextAlign.Right,
+                fontSize = 18.sp
+            )
+        }
+
+        dailyEntry.emotionsMap.forEach{
+            EmotionsChart(emotion = it.key, score = it.value.toString())
+        }
+    }
+}
+
+
+@Composable
+fun EmotionsChart(modifier: Modifier = Modifier, emotion: String, score: String) {
+
+    Row(modifier = modifier.fillMaxWidth().padding(bottom = 5.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+        Text(
+            modifier = Modifier.padding(start = 5.dp, bottom = 5.dp),
+            text = emotion,
+            style = MaterialTheme.typography.titleSmall,
+            textAlign = TextAlign.Left,
+            fontSize = 15.sp
+        )
+        Text(
+            modifier = Modifier.padding(start = 5.dp,bottom = 5.dp),
+            text = score,
+            style = MaterialTheme.typography.titleSmall,
+            textAlign = TextAlign.Left,
+            fontSize = 15.sp
+        )
     }
 }
 
@@ -356,7 +473,7 @@ private fun EmotionChip(emotion: String, color: Color, isSelected: Boolean, onCl
         onClick = onClick,
         shape = RoundedCornerShape(50), // Oval shape
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSelected) color else MaterialTheme.colorScheme.onSecondary,
+            containerColor = if (isSelected) color else MaterialTheme.colorScheme.secondary,
 //            containerColor = if (isSelected) color else color.copy(alpha = 0.3f),
             contentColor = Color.White
         ),
@@ -372,35 +489,9 @@ private fun EmotionChip(emotion: String, color: Color, isSelected: Boolean, onCl
     }
 }
 
-@Composable
-fun AIPage() {
-    // Variable to hold the text entered in the TextField
-    var aiText by remember { mutableStateOf("") }
 
-    // Simple screen with a TextField
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("AI PAGE")
 
-        Spacer(modifier = Modifier.height(16.dp))
 
-        // TextField for user input
-        OutlinedTextField(
-            value = aiText,
-            onValueChange = { aiText = it },
-            label = { Text("Enter something here...") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(150.dp),
-            placeholder = { Text("Type your input...") }
-        )
-    }
-}
 
 @Composable
 fun PastEmotionsScreen(modifier: Modifier = Modifier, navController: NavHostController) {
@@ -428,13 +519,6 @@ fun PastEmotionsScreen(modifier: Modifier = Modifier, navController: NavHostCont
 
 /*
 
-@Preview(showBackground = true)
-@Composable
-fun EmotionPickerScreenPreview() {
-    AppTheme {
-        val navController = rememberNavController()
-    }
-}
 
 @Preview(showBackground = true)
 @Composable
@@ -442,14 +526,6 @@ fun PastEmotionsScreenPreview() {
     AppTheme {
         val navController = rememberNavController()
         PastEmotionsScreen(navController = navController)
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun AIPagePreview() {
-    AppTheme {
-        AIPage()
     }
 }
 */

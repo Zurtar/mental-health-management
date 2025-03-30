@@ -3,25 +3,47 @@ package com.zurtar.mhma.mood
 import android.util.Log
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
+import com.zurtar.mhma.data.MoodRemoteDataSource
+import com.zurtar.mhma.data.MoodRepository
 import com.zurtar.mhma.theme.EmojiFrown
 import com.zurtar.mhma.theme.EmojiNeutral
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import java.time.Instant
+import java.util.Date
+import java.time.LocalDate
+import javax.inject.Inject
+
+data class DailyEvaluationEntry(
+    val selectedEmotions: List<String> = listOf(),
+    val emotionIntensities: List<Float> = listOf(0f, 0f, 0f),
+    val emotionsMap: Map<String, Float> = mapOf(),
+    val currentEmotion: String = "default_initial",
+    val strongestEmotion: String = "",
+    val dateCompleted: LocalDate
+)
 
 data class BiWeeklyEvaluationUiState(
-    val score: Int = 0,
+    val biWeeklyEntry: BiWeeklyEvaluationEntry = BiWeeklyEvaluationEntry(dateCompleted = LocalDate.now()),
     val page: Int = 0,
-    val questionResponse: List<Int> = listOf(0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+)
+
+data class EvaluationMenuUiState(
+    val isBiWeeklyCompleted: Boolean = false,
+    val isDailyEntry: Boolean  = false
 )
 
 data class DailyEvaluationUiState(
-    val currentEmotion: String = "default_initial",
-    // val emotionResponse:List<String> = listOf(0, 0, 0, 0),
+    val dailyEntry: DailyEvaluationEntry = DailyEvaluationEntry(dateCompleted = LocalDate.now()),
     val isSubmitted: Int = 0,
-    val strongestEmotion: String = "default_initial"
-
+    val page: Int = 0
 )
 
 class DailyEvaluationViewModel : ViewModel() {
@@ -30,54 +52,116 @@ class DailyEvaluationViewModel : ViewModel() {
 
     fun onSubmit() {
         _uiState.update { currentState ->
-            currentState.copy(isSubmitted = 1)
+            currentState.copy(isSubmitted = 1,
+                dailyEntry = currentState.dailyEntry.copy(dateCompleted = LocalDate.now()
+            ))
+        }
+    }
+
+    fun onNext() {
+
+        _uiState.update { currentState ->
+            currentState.copy(page = currentState.page + 1)
+        }
+    }
+
+    fun onBack() {
+        _uiState.update { currentState ->
+            currentState.copy(page = currentState.page - 1)
         }
     }
 
     fun updateEmotion(emoji: ImageVector) {
         if (emoji == EmojiFrown) {
             _uiState.update { currentState ->
-                currentState.copy(currentEmotion = "Upset")
+                currentState.copy(
+                    dailyEntry = DailyEvaluationEntry(
+                        selectedEmotions = currentState.dailyEntry.selectedEmotions,
+                        emotionIntensities = currentState.dailyEntry.emotionIntensities,
+                        currentEmotion = "Very Stressed",
+                        dateCompleted = currentState.dailyEntry.dateCompleted
+                    )
+                )
             }
         } else if (emoji == EmojiNeutral) {
             _uiState.update { currentState ->
-                currentState.copy(currentEmotion = "Neutral")
+                currentState.copy(
+                    dailyEntry = DailyEvaluationEntry(
+                        selectedEmotions = currentState.dailyEntry.selectedEmotions,
+                        emotionIntensities = currentState.dailyEntry.emotionIntensities,
+                        currentEmotion = "Mildly Stressed",
+                        dateCompleted = currentState.dailyEntry.dateCompleted
+                    )
+                )
             }
         } else {
             _uiState.update { currentState ->
-                currentState.copy(currentEmotion = "Happy")
+                currentState.copy(
+                    dailyEntry = DailyEvaluationEntry(
+                        selectedEmotions = currentState.dailyEntry.selectedEmotions,
+                        emotionIntensities = currentState.dailyEntry.emotionIntensities,
+                        currentEmotion = "Not Stressed",
+                        dateCompleted = currentState.dailyEntry.dateCompleted
+                    )
+                )
             }
         }
     }
 
     fun emotionSelect(emotion: String) {
-//
-//        val newList = _uiState.value.emotionResponse.toMutableList()
-//        var index = 0
-//        if(emotion == "Happy"){
-//            index = 1
-//        }else if(emotion == "Fearful") {
-//            index = 2
-//        } else if (emotion == "Angry") {
-//            index = 3
-//        } else {
-//            index = 0
-//        }
-//        newList[index] = _uiState.value.emotionResponse[index] +1
-//
-//        _uiState.update { currentState ->
-//            currentState.copy(
-//                emotionResponse = newList
-//            )
-//        }
-        _uiState.update { currentState ->
-            currentState.copy(strongestEmotion = emotion)
+        Log.println(Log.DEBUG, "DailyEval:: ", "$emotion")
+
+        val emotionList = _uiState.value.dailyEntry.selectedEmotions.toMutableList()
+
+        if (emotionList.contains(emotion))
+            emotionList.remove(emotion)
+        else if (emotionList.size < 3) {
+            emotionList.add(emotion)
         }
+        Log.println(Log.DEBUG, "DailyEval:: ", "$emotionList")
+
+        _uiState.update { currentState ->
+            val d_entry = DailyEvaluationEntry(
+                selectedEmotions = emotionList,
+                emotionIntensities = currentState.dailyEntry.emotionIntensities,
+                currentEmotion = currentState.dailyEntry.currentEmotion,
+                dateCompleted = currentState.dailyEntry.dateCompleted
+            )
+
+            currentState.copy(dailyEntry = d_entry)
+        }
+    }
+
+    fun updateIntensity(value: Float, index: Int) {
+
+        val intensityList = _uiState.value.dailyEntry.emotionIntensities.toMutableList()
+        intensityList[index] = value
+        Log.println(Log.DEBUG, "DailyEval:: ", "$value")
+
+        var emotionsMap: Map<String, Float> =
+            _uiState.value.dailyEntry.selectedEmotions.zip(intensityList).sortedByDescending { (_, intensity) ->
+                intensity
+            }.toMap()
+
+
+        _uiState.update { currentState ->
+            currentState.copy(
+                dailyEntry = currentState.dailyEntry.copy(
+                    emotionIntensities = intensityList,
+                    emotionsMap = emotionsMap
+                )
+            )
+        }
+        Log.println(Log.DEBUG, "DailyEval:: ", "$intensityList")
     }
 
 }
 
-class BiWeeklyEvaluationViewModel : ViewModel() {
+@HiltViewModel
+class BiWeeklyEvaluationViewModel @Inject constructor(
+    private val moodRepository: MoodRepository
+) : ViewModel() {
+
     private val _uiState = MutableStateFlow(BiWeeklyEvaluationUiState())
     val uiState: StateFlow<BiWeeklyEvaluationUiState> = _uiState.asStateFlow()
 
@@ -91,8 +175,8 @@ class BiWeeklyEvaluationViewModel : ViewModel() {
             currentState.copy(page = currentState.page + 1)
         }
 
-        if (_uiState.value.page == 8)
-            debugScore()
+        if (_uiState.value.page == _uiState.value.biWeeklyEntry.questionResponse.size)
+            submitMoodEntry()
     }
 
     fun onBack() {
@@ -102,28 +186,74 @@ class BiWeeklyEvaluationViewModel : ViewModel() {
     }
 
     fun onSelect(selected: Int) {
-        val newList = _uiState.value.questionResponse.toMutableList()
+        val newList = _uiState.value.biWeeklyEntry.questionResponse.toMutableList()
         newList[_uiState.value.page] = selected
 
         _uiState.update { currentState ->
             currentState.copy(
-                questionResponse = newList
+                biWeeklyEntry = currentState.biWeeklyEntry.copy(
+                    questionResponse = newList
+                )
             )
         }
     }
 
+
     fun debugScore() {
-        val score = _uiState.value.questionResponse.sum()
+        val depressionScore = _uiState.value.biWeeklyEntry.questionResponse.subList(0, 9).sum()
+        val anxietyScore = _uiState.value.biWeeklyEntry.questionResponse.subList(9, 15).sum()
+
         _uiState.update { currentState ->
-            currentState.copy(score = score)
+            currentState.copy(
+                biWeeklyEntry = currentState.biWeeklyEntry.copy(
+                    depressionScore = depressionScore,
+                    anxietyScore = anxietyScore
+                )
+            )
         }
 
-        Log.println(Log.DEBUG, "BiWeeklyEvalVM", "$score")
+        // Log.println(Log.DEBUG, "BiWeeklyEvalVM", "Depression Score: $depressionScore")
+        //Log.println(Log.DEBUG, "BiWeeklyEvalVM", "Anxiety Score: $anxietyScore")
     }
+
+    private fun submitMoodEntry() {
+        debugScore();
+
+        viewModelScope.launch {
+            moodRepository.addMoodEntry(
+                BiWeeklyEvaluationEntry(
+                    depressionScore = _uiState.value.depressionScore,
+                    anxietyScore = _uiState.value.anxietyScore,
+                    dateCompleted = Date.from(Instant.now())
+                )
+            )
+        }
+    }
+
 
     fun resetPage() {
         _uiState.update { currentState ->
             currentState.copy(page = 0)
         }
     }
+}
+
+class EvaluationMenuViewModel : ViewModel() {
+    private val _uiState = MutableStateFlow(EvaluationMenuUiState())
+    val uiState: StateFlow<EvaluationMenuUiState> = _uiState.asStateFlow()
+
+
+    fun updateBiWeekly() {
+        if (!_uiState.value.isBiWeeklyCompleted) {
+            _uiState.update { currentState ->
+                currentState.copy(isBiWeeklyCompleted = true)
+            }
+        } else {
+            _uiState.update { currentState ->
+                currentState.copy(isBiWeeklyCompleted = false)
+            }
+        }
+
+    }
+
 }
