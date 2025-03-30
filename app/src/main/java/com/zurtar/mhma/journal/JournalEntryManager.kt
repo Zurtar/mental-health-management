@@ -41,8 +41,11 @@ object JournalEntryManager {
     fun editEntry(id: Int, newTitle: String, newContent: String) {
         val entry = getEntry(id)
         entry?.let {
-            entryList.remove(it)
-            entryList.add(JournalEntry(id, newTitle, newContent, it.createdAt))
+            val updatedEntry = it.copy(
+                title = newTitle,
+                content = newContent)
+            val index = entryList.indexOf(it)
+            entryList[index] = updatedEntry
         }
     }
 }
