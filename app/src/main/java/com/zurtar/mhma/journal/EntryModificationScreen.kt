@@ -1,6 +1,8 @@
 package com.zurtar.mhma.journal
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,6 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.zurtar.mhma.data.JournalEntry
 import com.zurtar.mhma.util.DefaultTopAppBar
+import com.zurtar.mhma.util.JournalingTopAppBar
 
 /*
 EntryModification page can be called upon in two different ways: a version where it is
@@ -45,7 +48,7 @@ fun EntryModificationScreen(
     }
     Scaffold(modifier = modifier.fillMaxSize(),
         topBar = {
-            DefaultTopAppBar(openDrawer = openDrawer)
+            JournalingTopAppBar(openDrawer = openDrawer)
         }
     ) { innerPadding ->
         if (id == null) {
@@ -94,11 +97,27 @@ private fun EntryModificationScreenContent(
                 .fillMaxWidth()
                 .weight(1f)
         )
-        Button(onClick = {
-            onAddEntry(title, content)
-            onNavigateBack()
-        }) {
-            Text("Save Entry")
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+            horizontalArrangement = Arrangement
+                .spacedBy(8.dp)
+
+        ) {
+            Button(
+                onClick = onNavigateBack,
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Cancel")
+            }
+            Button(
+                onClick = {onAddEntry(title, content)
+                    onNavigateBack()},
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Save")
+            }
         }
     }
 }
@@ -128,11 +147,26 @@ private fun EntryModificationScreenContent(
                 .fillMaxWidth()
                 .weight(1f)
         )
-        Button(onClick = {
-            onEditEntry(entry?.id ?: "null", title, content)
-            onNavigateBack()
-        }) {
-            Text("Save Entry")
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+            horizontalArrangement = Arrangement
+                .spacedBy(8.dp)
+
+        ) {
+            Button(
+                onClick = onNavigateBack,
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Cancel")
+            }
+            Button(onClick = {
+                onEditEntry(entry?.id ?: "null", title, content)
+                onNavigateBack()
+            }) {
+                Text("Save Entry")
+            }
         }
     }
 }

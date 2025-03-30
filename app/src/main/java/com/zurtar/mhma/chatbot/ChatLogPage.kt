@@ -24,7 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.zurtar.mhma.util.DefaultTopAppBar
+import com.zurtar.mhma.util.ChatLogTopAppBar
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -38,7 +38,7 @@ fun ChatLogPage(
 ) {
     Scaffold(modifier = modifier.fillMaxSize(),
         topBar = {
-            DefaultTopAppBar(openDrawer = openDrawer)
+            ChatLogTopAppBar(openDrawer = openDrawer, onNavigateBack)
         }
     ) { innerPadding ->
         ChatLogPageContent(
@@ -82,25 +82,6 @@ fun ChatLogPageContent(
         modifier = modifier
             .fillMaxSize()
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.onPrimaryContainer)
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Chat Log",
-                fontSize = 30.sp,
-                color = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier
-                    .padding(8.dp),
-            )
-            Button(onClick = onNavigateBack) {
-                Text(text = "Back")
-            }
-        }
         Column(
             modifier = Modifier
                 .padding(16.dp)
