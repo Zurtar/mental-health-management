@@ -237,15 +237,15 @@ private fun HomeScreenContent(
                 modifier = cardModifier,
                 onClick = { onNavigateToAnalytics() }
             ) {
-             /*   Text(
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .height(150.dp)
-                        .wrapContentHeight(),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.headlineMedium,
-                    text = "Analytics"
-                )*/
+                /*   Text(
+                       modifier = Modifier
+                           .align(Alignment.CenterHorizontally)
+                           .height(150.dp)
+                           .wrapContentHeight(),
+                       textAlign = TextAlign.Center,
+                       style = MaterialTheme.typography.headlineMedium,
+                       text = "Analytics"
+                   )*/
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -275,7 +275,6 @@ fun getGreetingFromDate(date: java.util.Date): String {
         else -> "Good Evening!"
     }
 }
-
 
 fun getToDo(): String {
     return "• Quick Evaluation"
