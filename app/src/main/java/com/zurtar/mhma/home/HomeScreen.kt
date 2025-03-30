@@ -68,6 +68,7 @@ private fun HomeScreenContent(
         modifier = modifier.fillMaxWidth(0.5f),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        /*
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -84,6 +85,7 @@ private fun HomeScreenContent(
                 textAlign = TextAlign.Center
             )
         }
+         */
         val currentDate = Date.from(Instant.now())
         Text(
             text = getGreetingFromDate(currentDate),
@@ -91,7 +93,6 @@ private fun HomeScreenContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 20.dp),
-            color = Color.Black,
             textAlign = TextAlign.Center
         )
         val dateFormat = SimpleDateFormat("EEEE, MMMM dd", Locale.getDefault())
@@ -143,14 +144,41 @@ private fun HomeScreenContent(
 
         }
 
+        ElevatedCard(
+            modifier = Modifier
+                .padding(horizontal = 10.dp, vertical = 10.dp)
+                .fillMaxWidth()
+                .height(100.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(10.dp),
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.Top
+            ) {
+                Text(
+                    textAlign = TextAlign.Start,
+                    style = MaterialTheme.typography.headlineSmall,
+                    text = "Suggested Actions:"
+                )
+                Text(
+                    modifier = Modifier.padding(horizontal = 15.dp),
+                    textAlign = TextAlign.Start,
+                    style = MaterialTheme.typography.bodyMedium,
+                    text = getSuggestedActions()
+                )
+            }
+
+        }
+
 
         val cardModifier = Modifier
             .padding(horizontal = 10.dp, vertical = 10.dp)
-            .aspectRatio(1f)
-            .width(100.dp)
-            .height(100.dp)
+            .width(80.dp)
+            .height(120.dp)
             .weight(1f)
-            .then(Modifier.align(Alignment.Start))
+            .align(Alignment.Start)
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -248,6 +276,10 @@ fun getToDo(): String {
 
 fun getUpcoming(): String {
     return "• Bi-Weekly Evaluation"
+}
+
+fun getSuggestedActions(): String {
+    return "• Suggested Actions"
 }
 
 @Preview(showBackground = true)
