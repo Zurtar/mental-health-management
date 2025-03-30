@@ -149,6 +149,7 @@ fun TabbedContent(
                     SuggestionChip(
                         onClick = { state = key },
                         label = { Text(key) },
+                        modifier = Modifier.padding(end = 10.dp),
                         colors = SuggestionChipDefaults.suggestionChipColors(MaterialTheme.colorScheme.secondaryContainer)
                     )
                 else {
