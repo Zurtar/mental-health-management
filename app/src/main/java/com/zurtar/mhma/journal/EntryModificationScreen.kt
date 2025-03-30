@@ -25,7 +25,6 @@ id, then title anc content boxes will be empty: this is used for new entry creat
 it is given an id, then title and content boxes will be filled from the associated
 entry's data: this is used for entry editing.
  */
-
 @Composable
 fun EntryModificationScreen(
     modifier: Modifier = Modifier,
@@ -52,8 +51,6 @@ fun EntryModificationScreen(
             )
             return@Scaffold
         }
-
-
         EntryModificationScreenContent(
             modifier = modifier
                 .padding(innerPadding)

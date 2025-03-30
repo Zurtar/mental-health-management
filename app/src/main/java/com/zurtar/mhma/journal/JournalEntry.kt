@@ -1,12 +1,12 @@
 package com.zurtar.mhma.journal
 
+import java.time.Instant
+import java.util.Date
+
 /*The following contains examples of Journal entries In updated version of application, Journal entries should
 /be taken from a database. This modification will be done by modifying the functions found in JournalEntryManager
 and JournalViewModel
  */
-
-import java.time.Instant
-import java.util.Date
 
 data class JournalEntry(
     var id: Int,
@@ -14,7 +14,6 @@ data class JournalEntry(
     var content : String,
     var createdAt: Date
 )
-
 
 //These are just "example" entries for demo purposes. I just took them from random sections of
 //the cognitive behavioural therapy document.
