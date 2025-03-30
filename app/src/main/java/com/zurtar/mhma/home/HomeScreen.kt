@@ -120,7 +120,7 @@ private fun HomeScreenContent(
             ) {
                 Text(
                     textAlign = TextAlign.Start,
-                    style = MaterialTheme.typography.headlineSmall,
+                    style = MaterialTheme.typography.titleLarge,
                     text = "To-do:"
                 )
                 Text(
@@ -129,9 +129,12 @@ private fun HomeScreenContent(
                     style = MaterialTheme.typography.bodyMedium,
                     text = getToDo()
                 )
+                Spacer(
+                    modifier = Modifier.height(20.dp)
+                )
                 Text(
                     textAlign = TextAlign.Start,
-                    style = MaterialTheme.typography.headlineSmall,
+                    style = MaterialTheme.typography.titleLarge,
                     text = "Upcoming:"
                 )
                 Text(
@@ -159,7 +162,7 @@ private fun HomeScreenContent(
             ) {
                 Text(
                     textAlign = TextAlign.Start,
-                    style = MaterialTheme.typography.headlineSmall,
+                    style = MaterialTheme.typography.titleLarge,
                     text = "Suggested Actions:"
                 )
                 Text(
@@ -197,8 +200,8 @@ private fun HomeScreenContent(
                 ) {
                     Text(
                         textAlign = TextAlign.Start,
-                        style = MaterialTheme.typography.headlineSmall,
-                        text = "Mood Evaluation"
+                        style = MaterialTheme.typography.titleLarge,
+                        text = "Mood Eval"
                     )
                 }
 
@@ -217,7 +220,7 @@ private fun HomeScreenContent(
                 ) {
                     Text(
                         textAlign = TextAlign.Start,
-                        style = MaterialTheme.typography.headlineSmall,
+                        style = MaterialTheme.typography.titleLarge,
                         text = "Journal"
                     )
                 }
@@ -241,7 +244,7 @@ private fun HomeScreenContent(
                     Text(
                         modifier = Modifier.padding(5.dp),
                         textAlign = TextAlign.Start,
-                        style = MaterialTheme.typography.headlineSmall,
+                        style = MaterialTheme.typography.titleLarge,
                         text = "Chatbot"
                     )
                 }
