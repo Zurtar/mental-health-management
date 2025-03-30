@@ -196,15 +196,6 @@ fun BiWeeklyAnalyticsScreenContent(
     TabbedContent(labelToContent = labelToContent, key = labelToContent.keys.first())
 }
 
-@Composable
-fun MoodGraphScreen() {
-    Text("Mood Graph")
-}
-
-@Composable
-fun InsightsScreen() {
-    Text("Insights")
-}
 
 @Composable
 fun BiWeeklyHistoricalAnalytics(
@@ -433,6 +424,7 @@ fun makeCardInfo(): List<BiWeeklyEvaluationEntry> {
 @Composable
 fun WeekTitles(title: String) {
     Text(
+
         text = title,
         style = MaterialTheme.typography.titleMedium,
         color = MaterialTheme.colorScheme.primary

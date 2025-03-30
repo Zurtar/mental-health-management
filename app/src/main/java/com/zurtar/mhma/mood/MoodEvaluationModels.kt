@@ -5,7 +5,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
-import com.zurtar.mhma.data.MoodRemoteDataSource
 import com.zurtar.mhma.data.MoodRepository
 import com.zurtar.mhma.theme.EmojiFrown
 import com.zurtar.mhma.theme.EmojiNeutral
@@ -24,13 +23,14 @@ data class DailyEvaluationEntry(
     val selectedEmotions: List<String> = listOf(),
     val emotionIntensities: List<Float> = listOf(0f, 0f, 0f),
     val emotionsMap: Map<String, Float> = mapOf(),
-    val currentEmotion: String = "default_initial",
+    val stressLevel: String = "default_initial",
     val strongestEmotion: String = "",
     val dateCompleted: LocalDate
 )
 
 data class BiWeeklyEvaluationUiState(
-    val biWeeklyEntry: BiWeeklyEvaluationEntry = BiWeeklyEvaluationEntry(dateCompleted = LocalDate.now()),
+    val biWeeklyEntry: BiWeeklyEvaluationEntry = BiWeeklyEvaluationEntry(),
+    val questionResponse: List<Int> = listOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
     val page: Int = 0,
 
 )
@@ -78,7 +78,7 @@ class DailyEvaluationViewModel : ViewModel() {
                     dailyEntry = DailyEvaluationEntry(
                         selectedEmotions = currentState.dailyEntry.selectedEmotions,
                         emotionIntensities = currentState.dailyEntry.emotionIntensities,
-                        currentEmotion = "Very Stressed",
+                        stressLevel = "Very Stressed",
                         dateCompleted = currentState.dailyEntry.dateCompleted
                     )
                 )
@@ -89,7 +89,7 @@ class DailyEvaluationViewModel : ViewModel() {
                     dailyEntry = DailyEvaluationEntry(
                         selectedEmotions = currentState.dailyEntry.selectedEmotions,
                         emotionIntensities = currentState.dailyEntry.emotionIntensities,
-                        currentEmotion = "Mildly Stressed",
+                        stressLevel = "Mildly Stressed",
                         dateCompleted = currentState.dailyEntry.dateCompleted
                     )
                 )
@@ -100,7 +100,7 @@ class DailyEvaluationViewModel : ViewModel() {
                     dailyEntry = DailyEvaluationEntry(
                         selectedEmotions = currentState.dailyEntry.selectedEmotions,
                         emotionIntensities = currentState.dailyEntry.emotionIntensities,
-                        currentEmotion = "Not Stressed",
+                        stressLevel = "Not Stressed",
                         dateCompleted = currentState.dailyEntry.dateCompleted
                     )
                 )
@@ -124,7 +124,7 @@ class DailyEvaluationViewModel : ViewModel() {
             val d_entry = DailyEvaluationEntry(
                 selectedEmotions = emotionList,
                 emotionIntensities = currentState.dailyEntry.emotionIntensities,
-                currentEmotion = currentState.dailyEntry.currentEmotion,
+                stressLevel = currentState.dailyEntry.stressLevel,
                 dateCompleted = currentState.dailyEntry.dateCompleted
             )
 
@@ -138,7 +138,7 @@ class DailyEvaluationViewModel : ViewModel() {
         intensityList[index] = value
         Log.println(Log.DEBUG, "DailyEval:: ", "$value")
 
-        var emotionsMap: Map<String, Float> =
+        val emotionsMap: Map<String, Float> =
             _uiState.value.dailyEntry.selectedEmotions.zip(intensityList).sortedByDescending { (_, intensity) ->
                 intensity
             }.toMap()
@@ -175,7 +175,7 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
             currentState.copy(page = currentState.page + 1)
         }
 
-        if (_uiState.value.page == _uiState.value.biWeeklyEntry.questionResponse.size)
+        if (_uiState.value.page == _uiState.value.questionResponse.size)
             submitMoodEntry()
     }
 
@@ -186,22 +186,20 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
     }
 
     fun onSelect(selected: Int) {
-        val newList = _uiState.value.biWeeklyEntry.questionResponse.toMutableList()
+        val newList = _uiState.value.questionResponse.toMutableList()
         newList[_uiState.value.page] = selected
 
         _uiState.update { currentState ->
             currentState.copy(
-                biWeeklyEntry = currentState.biWeeklyEntry.copy(
-                    questionResponse = newList
-                )
+                questionResponse = newList
             )
         }
     }
 
 
     fun debugScore() {
-        val depressionScore = _uiState.value.biWeeklyEntry.questionResponse.subList(0, 9).sum()
-        val anxietyScore = _uiState.value.biWeeklyEntry.questionResponse.subList(9, 15).sum()
+        val depressionScore = _uiState.value.questionResponse.subList(0, 9).sum()
+        val anxietyScore = _uiState.value.questionResponse.subList(9, 15).sum()
 
         _uiState.update { currentState ->
             currentState.copy(
@@ -222,8 +220,8 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
         viewModelScope.launch {
             moodRepository.addMoodEntry(
                 BiWeeklyEvaluationEntry(
-                    depressionScore = _uiState.value.depressionScore,
-                    anxietyScore = _uiState.value.anxietyScore,
+                    depressionScore = _uiState.value.biWeeklyEntry.depressionScore,
+                    anxietyScore = _uiState.value.biWeeklyEntry.anxietyScore,
                     dateCompleted = Date.from(Instant.now())
                 )
             )

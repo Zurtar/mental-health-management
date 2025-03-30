@@ -69,6 +69,7 @@ fun BiWeeklyEvaluationScreen(
                 .fillMaxSize(),
             page = uiState.page,
             biWeeklyEntry = uiState.biWeeklyEntry,
+            questionResponse = uiState.questionResponse,
             onSelect = viewModel::onSelect,
             onBack = viewModel::onBack,
             onNext = viewModel::onNext,
@@ -82,6 +83,7 @@ private fun BiWeeklyEvaluationScreenContent(
     modifier: Modifier = Modifier,
     page: Int,
     biWeeklyEntry:BiWeeklyEvaluationEntry,
+    questionResponse:List<Int>,
     onSelect: (Int) -> Unit,
     onBack: () -> Unit,
     onNext: () -> Unit,
@@ -114,7 +116,7 @@ private fun BiWeeklyEvaluationScreenContent(
         QuestionCard(
             num = page,
             question = questions[page],
-            selectedOption = biWeeklyEntry.questionResponse[page],
+            selectedOption = questionResponse[page],
             onSelect = onSelect
         )
 

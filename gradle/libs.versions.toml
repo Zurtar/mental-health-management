@@ -28,6 +28,7 @@ hiltNavigationCompose = "1.2.0"
 calendarLibrary = "2.6.2"
 hiltAndroid = "2.53.1"
 googleKsp = "2.1.10-1.0.30"
+charty = "2.1.0-beta03.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -68,6 +69,7 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 google-hilt-android = { module = "com.google.dagger:hilt-android",  version.ref = "hiltAndroid" }
 
+himanshoe-charty = {module = "com.himanshoe:charty", version.ref = "charty" }
 
 
 
