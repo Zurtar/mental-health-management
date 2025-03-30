@@ -82,8 +82,8 @@ fun BiWeeklyEvaluationScreen(
 private fun BiWeeklyEvaluationScreenContent(
     modifier: Modifier = Modifier,
     page: Int,
-    biWeeklyEntry:BiWeeklyEvaluationEntry,
-    questionResponse:List<Int>,
+    biWeeklyEntry: BiWeeklyEvaluationEntry,
+    questionResponse: MutableList<Int>,
     onSelect: (Int) -> Unit,
     onBack: () -> Unit,
     onNext: () -> Unit,
@@ -314,7 +314,10 @@ fun BiWeeklyResult(
 fun ProceedCard(text: String, navigate: () -> Unit) {
 
     OutlinedCard(
-        modifier = Modifier.fillMaxWidth().clickable{navigate()}, colors = CardDefaults.cardColors(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { navigate() },
+        colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
         border = BorderStroke(1.dp, Color.Black)

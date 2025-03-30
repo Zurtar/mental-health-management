@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zurtar.mhma.analytics.toDate
 import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.data.MoodRepository
 import com.zurtar.mhma.theme.EmojiFrown
@@ -25,23 +26,13 @@ data class DailyEvaluationEntry(
     val emotionsMap: Map<String, Float> = mapOf(),
     val stressLevel: String = "default_initial",
     val strongestEmotion: String = "",
-    val dateCompleted: LocalDate
+    val dateCompleted: Date? = null
 )
-
-data class BiWeeklyEvaluationUiState(
-    val biWeeklyEntry: BiWeeklyEvaluationEntry = BiWeeklyEvaluationEntry(),
-    val questionResponse: List<Int> = listOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ),
-    val page: Int = 0,
-
-)
-
-data class EvaluationMenuUiState(
-    val isBiWeeklyCompleted: Boolean = false,
-    val isDailyEntry: Boolean  = false
-)
-
+/**
+ * Daily/Quick Evaluation UI State & ViewModel
+ */
 data class DailyEvaluationUiState(
-    val dailyEntry: DailyEvaluationEntry = DailyEvaluationEntry(dateCompleted = LocalDate.now()),
+    val dailyEntry: DailyEvaluationEntry = DailyEvaluationEntry(),
     val isSubmitted: Int = 0,
     val page: Int = 0
 )
@@ -52,9 +43,12 @@ class DailyEvaluationViewModel : ViewModel() {
 
     fun onSubmit() {
         _uiState.update { currentState ->
-            currentState.copy(isSubmitted = 1,
-                dailyEntry = currentState.dailyEntry.copy(dateCompleted = LocalDate.now()
-            ))
+            currentState.copy(
+                isSubmitted = 1,
+                dailyEntry = currentState.dailyEntry.copy(
+                    dateCompleted = LocalDate.now().toDate()
+                )
+            )
         }
     }
 
@@ -72,39 +66,17 @@ class DailyEvaluationViewModel : ViewModel() {
     }
 
     fun updateEmotion(emoji: ImageVector) {
-        if (emoji == EmojiFrown) {
-            _uiState.update { currentState ->
-                currentState.copy(
-                    dailyEntry = DailyEvaluationEntry(
-                        selectedEmotions = currentState.dailyEntry.selectedEmotions,
-                        emotionIntensities = currentState.dailyEntry.emotionIntensities,
-                        stressLevel = "Very Stressed",
-                        dateCompleted = currentState.dailyEntry.dateCompleted
-                    )
+        val stressLevel = when (emoji) {
+            EmojiFrown -> "Very Stressed"
+            EmojiNeutral -> "Mildly Stressed"
+            else -> "Not Stressed"
+        }
+        _uiState.update { currentState ->
+            currentState.copy(
+                dailyEntry = currentState.dailyEntry.copy(
+                    stressLevel = stressLevel
                 )
-            }
-        } else if (emoji == EmojiNeutral) {
-            _uiState.update { currentState ->
-                currentState.copy(
-                    dailyEntry = DailyEvaluationEntry(
-                        selectedEmotions = currentState.dailyEntry.selectedEmotions,
-                        emotionIntensities = currentState.dailyEntry.emotionIntensities,
-                        stressLevel = "Mildly Stressed",
-                        dateCompleted = currentState.dailyEntry.dateCompleted
-                    )
-                )
-            }
-        } else {
-            _uiState.update { currentState ->
-                currentState.copy(
-                    dailyEntry = DailyEvaluationEntry(
-                        selectedEmotions = currentState.dailyEntry.selectedEmotions,
-                        emotionIntensities = currentState.dailyEntry.emotionIntensities,
-                        stressLevel = "Not Stressed",
-                        dateCompleted = currentState.dailyEntry.dateCompleted
-                    )
-                )
-            }
+            )
         }
     }
 
@@ -156,6 +128,15 @@ class DailyEvaluationViewModel : ViewModel() {
     }
 
 }
+
+/**
+ * Bi-Weekly Evaluation UI State & ViewModel
+ */
+data class BiWeeklyEvaluationUiState(
+    val biWeeklyEntry: BiWeeklyEvaluationEntry = BiWeeklyEvaluationEntry(),
+    val questionResponse: MutableList<Int> = (0..16).map { x -> x * 0 }.toMutableList(),
+    val page: Int = 0,
+)
 
 @HiltViewModel
 class BiWeeklyEvaluationViewModel @Inject constructor(
@@ -210,8 +191,8 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
             )
         }
 
-        // Log.println(Log.DEBUG, "BiWeeklyEvalVM", "Depression Score: $depressionScore")
-        //Log.println(Log.DEBUG, "BiWeeklyEvalVM", "Anxiety Score: $anxietyScore")
+        Log.println(Log.DEBUG, "BiWeeklyEvalVM", "Depression Score: $depressionScore")
+        Log.println(Log.DEBUG, "BiWeeklyEvalVM", "Anxiety Score: $anxietyScore")
     }
 
     private fun submitMoodEntry() {
@@ -219,22 +200,19 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
 
         viewModelScope.launch {
             moodRepository.addMoodEntry(
-                BiWeeklyEvaluationEntry(
-                    depressionScore = _uiState.value.biWeeklyEntry.depressionScore,
-                    anxietyScore = _uiState.value.biWeeklyEntry.anxietyScore,
-                    dateCompleted = Date.from(Instant.now())
-                )
+                _uiState.value.biWeeklyEntry
             )
         }
     }
 
-
-    fun resetPage() {
-        _uiState.update { currentState ->
-            currentState.copy(page = 0)
-        }
-    }
 }
+/**
+ * Evaluation Menu/Landing Page UI State & ViewModel
+ */
+data class EvaluationMenuUiState(
+    val isBiWeeklyCompleted: Boolean = false,
+    val isDailyEntry: Boolean = false
+)
 
 class EvaluationMenuViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(EvaluationMenuUiState())

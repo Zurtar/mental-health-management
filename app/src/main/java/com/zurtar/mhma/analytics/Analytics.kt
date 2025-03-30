@@ -424,20 +424,9 @@ fun makeCardInfo(): List<BiWeeklyEvaluationEntry> {
 @Composable
 fun WeekTitles(title: String) {
     Text(
-
         text = title,
         style = MaterialTheme.typography.titleMedium,
         color = MaterialTheme.colorScheme.primary
     )
 
-}
-
-fun Date.toLocalDate(): LocalDate {
-    return java.time.Instant.ofEpochMilli(this.getTime())
-        .atZone(java.time.ZoneId.systemDefault())
-        .toLocalDate()
-}
-
-fun LocalDate.toDate(): Date {
-    return Date.from(this.atStartOfDay(ZoneId.systemDefault()).toInstant())
 }

@@ -42,7 +42,7 @@ fun DailyAnalyticsScreenContent() {
 
 @Preview
 @Composable
-fun DailyHistory(){
+fun DailyHistory() {
     val dailyEntry: DailyEvaluationEntry = DailyEvaluationEntry(
         emotionsMap = mapOf("Happy" to 7f, "Sad" to 4f, "Angry" to 2.5f),
         stressLevel = "Mildly Stressed",
