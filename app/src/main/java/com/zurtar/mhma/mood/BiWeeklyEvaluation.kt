@@ -40,13 +40,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.zurtar.mhma.util.DefaultTopAppBar
 import com.zurtar.mhma.R
-import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
-import java.time.Instant
-import java.time.LocalDate
-import java.util.Date
+import com.zurtar.mhma.data.models.BiWeeklyEvaluationEntry
 
 
 @Composable

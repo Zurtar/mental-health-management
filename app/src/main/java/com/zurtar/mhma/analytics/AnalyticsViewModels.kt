@@ -2,8 +2,8 @@ package com.zurtar.mhma.analytics
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
-import com.zurtar.mhma.data.MoodRepository
+import com.zurtar.mhma.data.models.BiWeeklyEvaluationEntry
+import com.zurtar.mhma.data.BiWeeklyMoodRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,7 +31,7 @@ data class BiWeeklyAnalyticsUIState(
 
 @HiltViewModel
 class BiWeeklyAnalyticsViewModel @Inject constructor(
-    private val moodRepository: MoodRepository
+    private val biWeeklyMoodRepository: BiWeeklyMoodRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(BiWeeklyAnalyticsUIState())
     val uiState: StateFlow<BiWeeklyAnalyticsUIState> = _uiState.asStateFlow()
@@ -40,7 +40,7 @@ class BiWeeklyAnalyticsViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { currentState ->
                 currentState.copy(
-                    pastEvaluations = moodRepository.fetchLatestMoodEntries().toMutableList()
+                    pastEvaluations = biWeeklyMoodRepository.fetchLatestMoodEntries().toMutableList()
                 )
             }
         }

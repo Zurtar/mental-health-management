@@ -5,8 +5,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zurtar.mhma.analytics.toDate
-import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
-import com.zurtar.mhma.data.MoodRepository
+import com.zurtar.mhma.data.models.BiWeeklyEvaluationEntry
+import com.zurtar.mhma.data.BiWeeklyMoodRepository
 import com.zurtar.mhma.theme.EmojiFrown
 import com.zurtar.mhma.theme.EmojiNeutral
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.Instant
 import java.util.Date
 import java.time.LocalDate
 import javax.inject.Inject
@@ -28,6 +27,7 @@ data class DailyEvaluationEntry(
     val strongestEmotion: String = "",
     val dateCompleted: Date? = null
 )
+
 /**
  * Daily/Quick Evaluation UI State & ViewModel
  */
@@ -111,9 +111,10 @@ class DailyEvaluationViewModel : ViewModel() {
         Log.println(Log.DEBUG, "DailyEval:: ", "$value")
 
         val emotionsMap: Map<String, Float> =
-            _uiState.value.dailyEntry.selectedEmotions.zip(intensityList).sortedByDescending { (_, intensity) ->
-                intensity
-            }.toMap()
+            _uiState.value.dailyEntry.selectedEmotions.zip(intensityList)
+                .sortedByDescending { (_, intensity) ->
+                    intensity
+                }.toMap()
 
 
         _uiState.update { currentState ->
@@ -140,7 +141,7 @@ data class BiWeeklyEvaluationUiState(
 
 @HiltViewModel
 class BiWeeklyEvaluationViewModel @Inject constructor(
-    private val moodRepository: MoodRepository
+    private val biWeeklyMoodRepository: BiWeeklyMoodRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BiWeeklyEvaluationUiState())
@@ -199,13 +200,14 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
         debugScore();
 
         viewModelScope.launch {
-            moodRepository.addMoodEntry(
+            biWeeklyMoodRepository.addMoodEntry(
                 _uiState.value.biWeeklyEntry
             )
         }
     }
 
 }
+
 /**
  * Evaluation Menu/Landing Page UI State & ViewModel
  */

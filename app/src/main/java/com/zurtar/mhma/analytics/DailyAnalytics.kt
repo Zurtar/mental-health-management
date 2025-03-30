@@ -24,9 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.mood.DailyEvaluationEntry
-import com.zurtar.mhma.mood.findSeverity
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 

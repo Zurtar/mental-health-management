@@ -9,7 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
+import com.zurtar.mhma.data.models.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.mood.findSeverity
 import java.time.LocalDate
 import java.time.ZoneId
