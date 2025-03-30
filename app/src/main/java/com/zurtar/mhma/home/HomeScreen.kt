@@ -5,11 +5,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
@@ -109,7 +111,7 @@ private fun HomeScreenContent(
             .width(160.dp)
             .height(150.dp)
             .weight(1f)
-            .align(Alignment.Start)
+            .then(Modifier.align(Alignment.Start))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -154,24 +156,38 @@ private fun HomeScreenContent(
                 }
             }
         }
-        ElevatedCard(
-            modifier = cardModifier,
-            onClick = { onNavigateToChatbot() }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(10.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+            ElevatedCard(
+                modifier = cardModifier,
+                onClick = { onNavigateToChatbot() }
             ) {
-                Text(
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.headlineSmall,
-                    text = "Chatbot"
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(10.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.headlineSmall,
+                        text = "Chatbot"
+                    )
+                }
             }
+
+            Spacer(modifier = Modifier
+                .width(160.dp)
+                .height(150.dp)
+                .padding(10.dp)
+                .padding(horizontal = 10.dp, vertical = 10.dp)
+                .weight(1f)
+                .aspectRatio(1f))
         }
+
     }
 }
 
