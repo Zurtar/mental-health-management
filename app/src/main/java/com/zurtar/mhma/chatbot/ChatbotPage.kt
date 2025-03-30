@@ -235,40 +235,7 @@ fun ChatbotPageContent(
                 }
             }
             if ((currentBranch == ChatBranch.ActionPlan && viewModel.getBranchStep() == 2) || (currentBranch == ChatBranch.SmartGoal && viewModel.getBranchStep() == 5)) {
-                var selectedDate by remember { mutableStateOf<Long?>(null) }
-                var showModal by remember { mutableStateOf(false) }
-
-                OutlinedTextField(
-                    value = selectedDate?.let { convertMillisToDate(it) } ?: "",
-                    onValueChange = { },
-                    label = { Text("Date to be completed") },
-                    placeholder = { Text("MM/DD/YYYY") },
-                    trailingIcon = {
-                        Icon(Icons.Default.DateRange, contentDescription = "Select date")
-                    },
-                    modifier = modifier
-                        .weight(1f)
-                        .pointerInput(selectedDate) {
-                            awaitEachGesture {
-                                // Modifier.clickable doesn't work for text fields, so we use Modifier.pointerInput
-                                // in the Initial pass to observe events before the text field consumes them
-                                // in the Main pass.
-                                awaitFirstDown(pass = PointerEventPass.Initial)
-                                val upEvent =
-                                    waitForUpOrCancellation(pass = PointerEventPass.Initial)
-                                if (upEvent != null) {
-                                    showModal = true
-                                }
-                            }
-                        }
-                )
-
-                if (showModal) {
-                    DatePickerModal(
-                        onDateSelected = { selectedDate = it },
-                        onDismiss = { showModal = false }
-                    )
-                }
+                var selectedDate = DatePickerFieldToModal()
                 Button(
                     onClick = {
                         if (selectedDate.isNotBlank()) {
@@ -392,61 +359,8 @@ fun getBranchSelection(logType: ChatBranch): String {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatePickerDocked() {
-    var showDatePicker by remember { mutableStateOf(false) }
-    val datePickerState = rememberDatePickerState()
-    val selectedDate = datePickerState.selectedDateMillis?.let {
-        convertMillisToDate(it)
-    } ?: ""
-
-    Box(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        OutlinedTextField(
-            value = selectedDate,
-            onValueChange = { },
-            label = { Text("Date for Completion") },
-            readOnly = true,
-            trailingIcon = {
-                IconButton(onClick = { showDatePicker = !showDatePicker }) {
-                    Icon(
-                        imageVector = Icons.Default.DateRange,
-                        contentDescription = "Select date"
-                    )
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(64.dp)
-        )
-
-        if (showDatePicker) {
-            Popup(
-                onDismissRequest = { showDatePicker = false },
-                alignment = Alignment.TopStart
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .offset(y = 64.dp)
-                        .shadow(elevation = 4.dp)
-                        .background(MaterialTheme.colorScheme.surface)
-                        .padding(16.dp)
-                ) {
-                    DatePicker(
-                        state = datePickerState,
-                        showModeToggle = false
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun DatePickerFieldToModal(modifier: Modifier = Modifier) {
+fun DatePickerFieldToModal(modifier: Modifier = Modifier): Long? {
     var selectedDate by remember { mutableStateOf<Long?>(null) }
     var showModal by remember { mutableStateOf(false) }
 
@@ -480,6 +394,8 @@ fun DatePickerFieldToModal(modifier: Modifier = Modifier) {
             onDismiss = { showModal = false }
         )
     }
+
+    return selectedDate
 }
 
 fun convertMillisToDate(millis: Long): String {
