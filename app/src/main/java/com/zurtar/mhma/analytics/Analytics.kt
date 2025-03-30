@@ -196,63 +196,6 @@ fun BiWeeklyAnalyticsScreenContent(
 }
 
 @Composable
-fun MoodGraphScreen() {
-    Text("Mood Graph")
-}
-
-@Composable
-fun InsightsScreen() {
-    Text("Insights")
-}
-
-@Composable
-fun BiWeeklyHistoricalAnalytics(
-    biWeeklyEvaluations: List<BiWeeklyEvaluationEntry>,
-    onNavigateToSummaryDialog: (BiWeeklyEvaluationEntry?) -> Unit
-) {
-
-    // Generate results....
-    val biWeeklyEvaluations_ = biWeeklyEvaluations.map { x ->
-        x.copy(
-            depressionResults = findSeverity(x.depressionScore, "depression"),
-            anxietyResults = findSeverity(x.anxietyScore, "anxiety")
-        )
-    }
-
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    val current = LocalDate.now()
-    val currentString = current.format(formatter)
-    val yesterday = current.minusDays(1).format(formatter)
-
-    val todays = biWeeklyEvaluations_.filter {
-        (it.dateCompleted?.toLocalDate() ?: LocalDate.MIN).format(formatter) == currentString
-    }
-
-    val lastWeek = biWeeklyEvaluations_.filter {
-        (it.dateCompleted?.toLocalDate() ?: LocalDate.MIN).format(formatter) == yesterday
-    }
-
-    val other = biWeeklyEvaluations_.filter {
-        (it.dateCompleted?.toLocalDate() ?: LocalDate.MIN) < current.minusDays(2)
-    }
-
-    val state = rememberScrollState()
-    Column(modifier = Modifier.verticalScroll(state)) {
-        //SummaryPopupPreview()
-
-        WeekTitles("Current Week")
-        todays.forEach { SummaryCard(it, onNavigateToSummaryDialog) }
-
-        WeekTitles("Last Week")
-        lastWeek.forEach { SummaryCard(it, onNavigateToSummaryDialog) }
-
-        WeekTitles("Previous Weeks")
-        other.forEach { SummaryCard(it, onNavigateToSummaryDialog) }
-    }
-}
-
-
-@Composable
 fun SummaryCard(
     result: BiWeeklyEvaluationEntry,
     onNavigateToSummaryDialog: (BiWeeklyEvaluationEntry?) -> Unit
@@ -437,14 +380,4 @@ fun WeekTitles(title: String) {
         color = MaterialTheme.colorScheme.primary
     )
 
-}
-
-fun Date.toLocalDate(): LocalDate {
-    return java.time.Instant.ofEpochMilli(this.getTime())
-        .atZone(java.time.ZoneId.systemDefault())
-        .toLocalDate()
-}
-
-fun LocalDate.toDate(): Date {
-    return Date.from(this.atStartOfDay(ZoneId.systemDefault()).toInstant())
 }

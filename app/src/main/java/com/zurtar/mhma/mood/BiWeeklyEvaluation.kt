@@ -72,6 +72,7 @@ fun BiWeeklyEvaluationScreen(
             onSelect = viewModel::onSelect,
             onBack = viewModel::onBack,
             onNext = viewModel::onNext,
+            questionResponse = uiState.questionResponse,
             onNavigateToAnalytics = onNavigateToAnalytics
         )
     }
@@ -81,7 +82,8 @@ fun BiWeeklyEvaluationScreen(
 private fun BiWeeklyEvaluationScreenContent(
     modifier: Modifier = Modifier,
     page: Int,
-    biWeeklyEntry:BiWeeklyEvaluationEntry,
+    biWeeklyEntry: BiWeeklyEvaluationEntry,
+    questionResponse: MutableList<Int>,
     onSelect: (Int) -> Unit,
     onBack: () -> Unit,
     onNext: () -> Unit,
@@ -114,7 +116,7 @@ private fun BiWeeklyEvaluationScreenContent(
         QuestionCard(
             num = page,
             question = questions[page],
-            selectedOption = biWeeklyEntry.questionResponse[page],
+            selectedOption = questionResponse[page],
             onSelect = onSelect
         )
 
@@ -312,7 +314,10 @@ fun BiWeeklyResult(
 fun ProceedCard(text: String, navigate: () -> Unit) {
 
     OutlinedCard(
-        modifier = Modifier.fillMaxWidth().clickable{navigate()}, colors = CardDefaults.cardColors(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { navigate() },
+        colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
         border = BorderStroke(1.dp, Color.Black)
