@@ -120,7 +120,6 @@ fun SummaryCard(dailyEntry: DailyEvaluationEntry) {
     }
 }
 
-
 @Composable
 fun DailyHistoricalAnalytics(
     dailyEvaluations: List<DailyEvaluationEntry>
@@ -206,7 +205,6 @@ fun makeCardInfoDaily(): List<DailyEvaluationEntry> {
             )
         )
     }
-
     return results.toList()
 }
 

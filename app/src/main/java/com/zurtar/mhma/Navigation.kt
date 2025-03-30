@@ -44,6 +44,18 @@ class Navigation(private val navController: NavHostController) {
         }
     }
 
+    fun navigateToEntryView(id: Int) {
+        navController.navigate("entryView/$id")
+    }
+
+    fun navigateToEntryEdit(id: Int) {
+        navController.navigate("entryEdit/$id")
+    }
+
+    fun navigateToJournalEntryModification(id: Int = -1) {
+        navController.navigate("entryEdit/$id")
+    }
+
     fun navigateToMoodEvaluation() {
 //        navController.navigate(MoodEvaluation) {
         navController.navigate("MoodEvaluation") {
@@ -85,6 +97,22 @@ class Navigation(private val navController: NavHostController) {
             restoreState = true
         }
     }
+
+    fun navigateToChatbot() {
+        navController.navigate("Chatbot") {
+            restoreState = true
+        }
+    }
+
+    fun navigateToChatList() {
+        navController.navigate("ChatList") {
+            restoreState = true
+        }
+    }
+
+    fun navigateToChatLog(logId: Int) {
+        navController.navigate("chatlog/$logId")
+    }
 }
 
 /**
@@ -118,6 +146,15 @@ object Journal
 
 @Serializable
 object JournalEntryR
+
+@Serializable
+object Chatbot
+
+@Serializable
+object ChatList
+
+@Serializable
+object ChatLog
 
 //Added Anayltics for navigation
 @Serializable
