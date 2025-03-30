@@ -11,6 +11,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -26,13 +29,18 @@ import com.zurtar.mhma.home.HomeScreen
 import com.zurtar.mhma.journal.EntryModificationScreen
 import com.zurtar.mhma.journal.JournalingScreen
 import com.zurtar.mhma.analytics.AnalyticsScreen
+import com.zurtar.mhma.analytics.SummaryPopup
 import com.zurtar.mhma.mood.BiWeeklyEvaluationScreen
 import com.zurtar.mhma.mood.DailyMoodEvaluationScreen
 import com.zurtar.mhma.mood.MoodEvaluationScreen
 import com.zurtar.mhma.analytics.SummaryPopupScreen
+import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.util.AppModalDrawer
+import com.zurtar.mhma.util.NavigationViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromJsonElement
 
 @Composable
 fun NavGraph(
@@ -40,13 +48,16 @@ fun NavGraph(
     navController: NavHostController = rememberNavController(),
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
-    startDestination: Any = Home,
+    viewModel: NavigationViewModel = hiltViewModel(),
+    startDestination: Any = "Home",
     navActions: Navigation = remember(navController) {
         Navigation(navController)
     },
 ) {
+    val navViewModelState by viewModel.uiState.collectAsStateWithLifecycle()
     val currentNavBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = currentNavBackStackEntry?.destination?.route ?: startDestination
+    val start = if (navViewModelState.isLoggedIn) "Home" else "Login"
 
     /** this wraps around nav host to provide a shared modal drawer across all pages
      *
@@ -66,16 +77,19 @@ fun NavGraph(
     AppModalDrawer(drawerState, currentRoute, navActions) {
         NavHost(
             navController = navController,
-            startDestination = Home,
+            startDestination = start,
             modifier = modifier,
-            enterTransition = {
-                fadeIn(animationSpec = tween(100))
-            },
-            exitTransition = {
-                fadeOut(animationSpec = tween(100))
-            }
+            /*       enterTransition = {
+                       fadeIn(animationSpec = tween(100))
+                   },
+                   exitTransition = {
+                       fadeOut(animationSpec = tween(100))
+                   }*/
         ) {
-            composable<Home> {
+
+//            composable<Home> {
+
+            composable("Home") {
                 HomeScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
                     onNavigateToMoodEvaluation = { navActions.navigateToMoodEvaluation() },
@@ -84,51 +98,69 @@ fun NavGraph(
                 )
             }
 
-            composable<Account> {
+//            composable<Account> {
+            composable("Account") {
                 AccountScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
                     onLogoutResult = { navActions.navigateToHome() })
             }
 
-            composable<Login> {
+//            composable<Login> {
+            composable("Login") {
                 LoginScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
                     onLoginResult = { navActions.navigateToAccount() },
                     onNavigateToSignUp = { navActions.navigateToSignup() })
             }
 
-            composable<SignUp> {
+//            composable<SignUp> {
+            composable("Signup") {
                 SignUpScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
                     onSignUpResult = { navActions.navigateToLogin() })
             }
 
-            composable<MoodEvaluation> {
+//            composable<MoodEvaluation> {
+            composable("MoodEvaluation") {
                 MoodEvaluationScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
                     onNavigateToDaily = { navActions.navigateToDailyEvaluation() },
                     onNavigateToBiWeekly = { navActions.navigateToBiWeeklyEvaluation() }
                 )
             }
-
-            composable<BiWeeklyEvaluation> {
+//            composable<BiWeeklyEvaluation> {
+            composable("BiWeeklyEvaluation") {
                 BiWeeklyEvaluationScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
                     onNavigateToAnalytics = { navActions.navigateToAnalytics() }
                 )
             }
 
-            composable<DailyEvaluation> {
+//            composable<DailyEvaluation> {
+            composable("DailyEvaluation") {
                 DailyMoodEvaluationScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
-                    onNavigateToAnalytics = {navActions.navigateToAnalytics(0)},
-                    onNavigateToJournal = {navActions.navigateToJournal()}
+                    onNavigateToAnalytics = { navActions.navigateToAnalytics(0) } ,
+                    onNavigateToJournal = { navActions.navigateToJournal() }
                 )
             }
 
             //Added dialog navigation for biweekly summary page
-            dialog<SummaryDialog> {
-                SummaryPopupScreen()
+//            dialog<SummaryDialog> {
+            dialog(
+                route = "SummaryDialog/{EntryObject}",
+                arguments = listOf(navArgument("EntryObject") { type = NavType.StringType }
+                )
+            ) {
+                val jsonString = currentNavBackStackEntry?.arguments?.getString("EntryObject")
+                checkNotNull(jsonString) {
+                    navController.popBackStack()
+                    return@dialog
+                }
+
+                val entry: BiWeeklyEvaluationEntry =
+                    Json.decodeFromString<BiWeeklyEvaluationEntry>(jsonString)
+                SummaryPopup(entry)
             }
 
 
@@ -141,21 +173,22 @@ fun NavGraph(
                 AnalyticsScreen(
                     id = backStackEntry.arguments?.getInt("id") ?: 0,
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
-                    onNavigateToSummaryDialog = { navActions.navigateToSummaryDialog() }
+                    onNavigateToSummaryDialog = navActions::navigateToSummaryDialog
                 )
             }
 
-
-            composable<Journal> {
+//            composable<Journal> {
+            composable("Journal") {
                 JournalingScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
-                    onNavigateToEntryCreation = { navController.navigate(JournalEntryR) },
+                    onNavigateToEntryCreation = { navController.navigate("JournalEntryR") },
                     onNavigateToEntryEdit = { id -> navController.navigate("entryEdit/$id") }
                 )
             }
 
             // Directly copied from Journal branch, which is why its different
-            composable<JournalEntryR> {
+//            composable<JournalEntryR> {
+            composable("JournalEntryR") {
                 EntryModificationScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
                     onNavigateBack = { navController.popBackStack() }

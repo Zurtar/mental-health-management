@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.zurtar.mhma.util.DefaultTopAppBar
@@ -30,7 +31,7 @@ import com.zurtar.mhma.util.DefaultTopAppBar
 @Composable
 fun AccountScreen(
     modifier: Modifier = Modifier,
-    viewModel: AccountViewModel = viewModel(),
+    viewModel: AccountViewModel = hiltViewModel(),
     openDrawer: () -> Unit,
     onLogoutResult: () -> Unit
 ) {
@@ -85,7 +86,7 @@ private fun AccountScreenContent(
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
-    viewModel: LoginViewModel = viewModel(),
+    viewModel: LoginViewModel = hiltViewModel(),
     openDrawer: () -> Unit,
     onLoginResult: () -> Unit,
     onNavigateToSignUp: () -> Unit
@@ -158,7 +159,7 @@ private fun LoginScreenContent(
 @Composable
 fun SignUpScreen(
     modifier: Modifier = Modifier,
-    viewModel: SignupViewModel = viewModel(),
+    viewModel: SignupViewModel = hiltViewModel(),
     openDrawer: () -> Unit,
     onSignUpResult: () -> Unit
 ) {

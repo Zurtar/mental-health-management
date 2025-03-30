@@ -3,23 +3,22 @@ package com.zurtar.mhma.mood
 import android.util.Log
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
+import com.zurtar.mhma.data.MoodRemoteDataSource
+import com.zurtar.mhma.data.MoodRepository
 import com.zurtar.mhma.theme.EmojiFrown
 import com.zurtar.mhma.theme.EmojiNeutral
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import java.time.Instant
+import java.util.Date
 import java.time.LocalDate
-
-data class BiWeeklyEvaluationEntry(
-    var depressionScore: Int = 0,
-    var anxietyScore: Int = 0,
-    var dateCompleted: LocalDate,
-    var depressionResults: String = "",
-    var anxietyResults: String = "",
-    val questionResponse: List<Int> = listOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-
-)
+import javax.inject.Inject
 
 data class DailyEvaluationEntry(
     val selectedEmotions: List<String> = listOf(),
@@ -46,7 +45,6 @@ data class DailyEvaluationUiState(
     val isSubmitted: Int = 0,
     val page: Int = 0
 )
-
 
 class DailyEvaluationViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(DailyEvaluationUiState())
@@ -159,7 +157,11 @@ class DailyEvaluationViewModel : ViewModel() {
 
 }
 
-class BiWeeklyEvaluationViewModel : ViewModel() {
+@HiltViewModel
+class BiWeeklyEvaluationViewModel @Inject constructor(
+    private val moodRepository: MoodRepository
+) : ViewModel() {
+
     private val _uiState = MutableStateFlow(BiWeeklyEvaluationUiState())
     val uiState: StateFlow<BiWeeklyEvaluationUiState> = _uiState.asStateFlow()
 
@@ -174,7 +176,7 @@ class BiWeeklyEvaluationViewModel : ViewModel() {
         }
 
         if (_uiState.value.page == _uiState.value.biWeeklyEntry.questionResponse.size)
-            debugScore()
+            submitMoodEntry()
     }
 
     fun onBack() {
@@ -196,6 +198,7 @@ class BiWeeklyEvaluationViewModel : ViewModel() {
         }
     }
 
+
     fun debugScore() {
         val depressionScore = _uiState.value.biWeeklyEntry.questionResponse.subList(0, 9).sum()
         val anxietyScore = _uiState.value.biWeeklyEntry.questionResponse.subList(9, 15).sum()
@@ -213,6 +216,21 @@ class BiWeeklyEvaluationViewModel : ViewModel() {
         //Log.println(Log.DEBUG, "BiWeeklyEvalVM", "Anxiety Score: $anxietyScore")
     }
 
+    private fun submitMoodEntry() {
+        debugScore();
+
+        viewModelScope.launch {
+            moodRepository.addMoodEntry(
+                BiWeeklyEvaluationEntry(
+                    depressionScore = _uiState.value.depressionScore,
+                    anxietyScore = _uiState.value.anxietyScore,
+                    dateCompleted = Date.from(Instant.now())
+                )
+            )
+        }
+    }
+
+
     fun resetPage() {
         _uiState.update { currentState ->
             currentState.copy(page = 0)
@@ -224,18 +242,18 @@ class EvaluationMenuViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(EvaluationMenuUiState())
     val uiState: StateFlow<EvaluationMenuUiState> = _uiState.asStateFlow()
 
-//
-//    fun updateBiWeekly() {
-//        if (!_uiState.value.biWeeklyCompleted) {
-//            _uiState.update { currentState ->
-//                currentState.copy(biWeeklyCompleted = true)
-//            }
-//        } else {
-//            _uiState.update { currentState ->
-//                currentState.copy(biWeeklyCompleted = false)
-//            }
-//        }
-//
-//    }
+
+    fun updateBiWeekly() {
+        if (!_uiState.value.isBiWeeklyCompleted) {
+            _uiState.update { currentState ->
+                currentState.copy(isBiWeeklyCompleted = true)
+            }
+        } else {
+            _uiState.update { currentState ->
+                currentState.copy(isBiWeeklyCompleted = false)
+            }
+        }
+
+    }
 
 }
