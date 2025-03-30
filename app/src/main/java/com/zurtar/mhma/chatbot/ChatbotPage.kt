@@ -239,7 +239,8 @@ fun ChatbotPageContent(
                 Button(
                     onClick = {
                         if (selectedDate.isNotBlank()) {
-                            viewModel.sendMessage(selectedDate.toString())
+                            viewModel.sendCompletionDate(convertLongToDate(selectedDate))
+                            viewModel.sendMessage(SimpleDateFormat("EEEE, MMMM dd", Locale.getDefault()).format(selectedDate))
                             userMessage = ""
                         }
                     },
@@ -342,6 +343,11 @@ fun BotMessageItem(message: ChatMessage) {
         }
     }
 }
+
+fun convertLongToDate(date: Long?): Date? {
+    return date?.let { Date(it) }
+}
+
 
 /*
 Used for branch selection from buttons. Determines what string is passed

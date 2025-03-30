@@ -15,7 +15,8 @@ selection messages or messages from previous logs.
  */
 @RequiresApi(Build.VERSION_CODES.O)
 class ChatbotMessageManager (
-    private val addCurrentBranchLog: (List<ChatMessage>, ChatBranch) -> Unit
+    private val addCurrentBranchLog: (List<ChatMessage>, ChatBranch) -> Unit,
+    private val addCurrentBranchLogWithDate: (List<ChatMessage>, ChatBranch, Date?) -> Unit
 ){
     //Used to list of all messages in the chatbot dialogue. Used for presenting messages in the ChatbotPage
     private val _allMessages = mutableListOf<ChatMessage>()
@@ -24,6 +25,8 @@ class ChatbotMessageManager (
     //Used to store relevant messages into newly created logs
     var currentBranchMessages: MutableList<ChatMessage> = mutableListOf()
     private var currentBranch: ChatBranch = ChatBranch.Initial
+
+    private var completionDate: Date? = null
 
     //tracks the current step in the active branch
     private var branchStep: Int = 0
@@ -40,6 +43,14 @@ class ChatbotMessageManager (
     //adds new message to total message list by taking a ChatMessage object
     fun addMessage(message: ChatMessage) {
         _allMessages.add(message)
+    }
+
+    fun sendCompletionDate(selectedDate: Date?){
+        completionDate = selectedDate
+    }
+
+    private fun resetCompletionDate() {
+        completionDate = null
     }
 
     /*
@@ -216,7 +227,9 @@ class ChatbotMessageManager (
 
             else -> {
                 currentBranch = ChatBranch.Initial
-                addCurrentBranchLog(currentBranchMessages, ChatBranch.SmartGoal)
+                addCurrentBranchLogWithDate(currentBranchMessages, ChatBranch.SmartGoal, completionDate)
+                print("Completion date: $completionDate")
+                resetCompletionDate()
                 currentBranchMessages.clear()
                 "Great work [user]! Lets save that goal now. Is there anything else you would like to do today?"
             }
@@ -359,7 +372,9 @@ class ChatbotMessageManager (
 
             else -> {
                 currentBranch = ChatBranch.Initial
-                addCurrentBranchLog(currentBranchMessages, ChatBranch.ActionPlan)
+                addCurrentBranchLogWithDate(currentBranchMessages, ChatBranch.SmartGoal, completionDate)
+                print("Completion date: $completionDate")
+                resetCompletionDate()
                 currentBranchMessages.clear()
                 "Great work [user]! Lets save that action plan now. Is there anything else you would like to do today?"
             }

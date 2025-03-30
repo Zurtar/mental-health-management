@@ -14,7 +14,10 @@ import java.util.Date
 class ChatbotViewModel : ViewModel() {
 
     //message manager for handling chat messages and responses
-    private val messageManager = ChatbotMessageManager(::addCurrentBranchLog)
+    private val messageManager = ChatbotMessageManager(
+        ::addCurrentBranchLog,
+        ::addCurrentBranchLogWithDate
+    )
 
     //Used for list of all messages
     private val _allMessages = MutableLiveData<List<ChatMessage>>()
@@ -56,6 +59,10 @@ class ChatbotViewModel : ViewModel() {
         }
     }
 
+    fun sendCompletionDate(selectedDate: Date?){
+        messageManager.sendCompletionDate(selectedDate)
+    }
+
     //gets currently active branch/dialogue activity
     fun getCurrentBranch(): ChatBranch {
         return messageManager.getCurrentBranch()
@@ -89,6 +96,17 @@ class ChatbotViewModel : ViewModel() {
         val copiedMessageList = messageList.map { it.copy() }
 
         val log = ChatLog(ChatbotLogManager.getAllLogs().size, logType, copiedMessageList, Date.from(Instant.now()))
+        ChatbotLogManager.addLog(log)
+        getAllLogs()
+
+        messageManager.currentBranchMessages.clear()
+    }
+
+    //addCurrentBranchLog for action plan and smart goal
+    fun addCurrentBranchLogWithDate(messageList: List<ChatMessage>, logType: ChatBranch, toBeCompleted: Date?) {
+        val copiedMessageList = messageList.map { it.copy() }
+
+        val log = ChatLog(ChatbotLogManager.getAllLogs().size, logType, copiedMessageList, Date.from(Instant.now()), toBeCompleted)
         ChatbotLogManager.addLog(log)
         getAllLogs()
 
