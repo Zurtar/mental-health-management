@@ -49,7 +49,6 @@ fun InsightsScreen() {
     Text("Insights")
 }
 
-
 @Composable
 fun BiWeeklyHistoricalAnalytics(
     biWeeklyEvaluations: List<BiWeeklyEvaluationEntry>,

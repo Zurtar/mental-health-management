@@ -156,25 +156,6 @@ fun TabbedContent(
 
 
 @Composable
-fun QuickEvaluationCalendar(
-    modifier: Modifier = Modifier
-) {
-
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.Start
-    ) {
-        AppHorizontalCalendar()
-
-        Text(
-            modifier = Modifier.padding(start = 10.dp),
-            text = "Selected Date:",
-            style = MaterialTheme.typography.headlineSmall
-        )
-    }
-}
-
-@Composable
 fun SummaryCard(
     result: BiWeeklyEvaluationEntry,
     onNavigateToSummaryDialog: (BiWeeklyEvaluationEntry?) -> Unit

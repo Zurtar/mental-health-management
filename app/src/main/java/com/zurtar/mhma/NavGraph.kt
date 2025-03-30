@@ -79,16 +79,9 @@ fun NavGraph(
             navController = navController,
             startDestination = start,
             modifier = modifier,
-            /*       enterTransition = {
-                       fadeIn(animationSpec = tween(100))
-                   },
-                   exitTransition = {
-                       fadeOut(animationSpec = tween(100))
-                   }*/
         ) {
 
 //            composable<Home> {
-
             composable("Home") {
                 HomeScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
@@ -140,7 +133,7 @@ fun NavGraph(
             composable("DailyEvaluation") {
                 DailyMoodEvaluationScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
-                    onNavigateToAnalytics = { navActions.navigateToAnalytics(0) } ,
+                    onNavigateToAnalytics = { navActions.navigateToAnalytics(0) },
                     onNavigateToJournal = { navActions.navigateToJournal() }
                 )
             }
