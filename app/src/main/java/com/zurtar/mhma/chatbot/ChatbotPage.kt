@@ -20,7 +20,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -31,7 +30,6 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberDatePickerState
@@ -39,46 +37,19 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.window.Popup
 import com.zurtar.mhma.util.DefaultTopAppBar
 import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.text.isNotBlank
-
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DateRangePicker
-import androidx.compose.material3.DisplayMode
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.material3.rememberDateRangePickerState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Popup
+import java.util.Calendar
 import java.util.Date
 
 
@@ -365,6 +336,18 @@ fun getBranchSelection(logType: ChatBranch): String {
     }
 }
 
+fun correctDateOffset(date: Long?): Long? {
+    val calendar = Calendar.getInstance()
+    calendar.time = Date(date ?: 0)
+    calendar.add(Calendar.DAY_OF_MONTH, 1)
+    return calendar.time.time
+}
+
+
+/*
+Date picker functions from android developer tools
+
+ */
 @Composable
 fun DatePickerFieldToModal(modifier: Modifier = Modifier): Long? {
     var selectedDate by remember { mutableStateOf<Long?>(null) }
@@ -382,9 +365,6 @@ fun DatePickerFieldToModal(modifier: Modifier = Modifier): Long? {
             .fillMaxWidth()
             .pointerInput(selectedDate) {
                 awaitEachGesture {
-                    // Modifier.clickable doesn't work for text fields, so we use Modifier.pointerInput
-                    // in the Initial pass to observe events before the text field consumes them
-                    // in the Main pass.
                     awaitFirstDown(pass = PointerEventPass.Initial)
                     val upEvent = waitForUpOrCancellation(pass = PointerEventPass.Initial)
                     if (upEvent != null) {
@@ -396,7 +376,7 @@ fun DatePickerFieldToModal(modifier: Modifier = Modifier): Long? {
 
     if (showModal) {
         DatePickerModal(
-            onDateSelected = { selectedDate = it },
+            onDateSelected = { selectedDate = correctDateOffset(it) },
             onDismiss = { showModal = false }
         )
     }
@@ -410,7 +390,6 @@ fun convertMillisToDate(millis: Long): String {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-// [START android_compose_components_datepicker_modal]
 @Composable
 fun DatePickerModal(
     onDateSelected: (Long?) -> Unit,
