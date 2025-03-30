@@ -34,9 +34,14 @@ fun DailyHistory() {
         currentEmotion = "Mildly Stressed",
         dateCompleted = LocalDate.now().toDate()
     )
+}
+
+@Composable
+fun SummaryCard(dailyEntry:DailyEvaluationEntry) {
 
     ElevatedCard() {
         Row() {
+            
 
         }
     }
