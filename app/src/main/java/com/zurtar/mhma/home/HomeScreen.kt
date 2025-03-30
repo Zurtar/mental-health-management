@@ -233,35 +233,34 @@ private fun HomeScreenContent(
                 }
             }
 
-            Spacer(
-                modifier = Modifier
-                    .width(160.dp)
-                    .height(150.dp)
-                    .padding(10.dp)
-                    .padding(horizontal = 10.dp, vertical = 10.dp)
-                    .weight(1f)
-                    .aspectRatio(1f)
-            )
-        }
-
-
-        ElevatedCard(
-            modifier = Modifier
-                .padding(top = 20.dp)
-                .fillMaxWidth(0.75f)
-                .fillMaxHeight(0.2f)
-                .background(color = MaterialTheme.colorScheme.background),
-            onClick = { onNavigateToAnalytics() }
-        ) {
-            Text(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .height(150.dp)
-                    .wrapContentHeight(),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.headlineMedium,
-                text = "Analytics"
-            )
+            ElevatedCard(
+                modifier = cardModifier,
+                onClick = { onNavigateToAnalytics() }
+            ) {
+             /*   Text(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .height(150.dp)
+                        .wrapContentHeight(),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.headlineMedium,
+                    text = "Analytics"
+                )*/
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(10.dp),
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    Text(
+                        modifier = Modifier.padding(5.dp),
+                        textAlign = TextAlign.Start,
+                        style = MaterialTheme.typography.titleLarge,
+                        text = "Analytics"
+                    )
+                }
+            }
         }
     }
 }
