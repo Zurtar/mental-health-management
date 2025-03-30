@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.Instant
 import java.util.Date
 import java.time.LocalDate
 import javax.inject.Inject
@@ -25,7 +24,7 @@ data class DailyEvaluationEntry(
     val emotionIntensities: List<Float> = listOf(0f, 0f, 0f),
     val emotionsMap: Map<String, Float> = mapOf(),
     val stressLevel: String = "default_initial",
-    val strongestEmotion: String = "",
+    val strongestEmotion: Pair<String, Float> = "" to 0f,
     val dateCompleted: Date? = null
 )
 /**
@@ -42,10 +41,17 @@ class DailyEvaluationViewModel : ViewModel() {
     val uiState: StateFlow<DailyEvaluationUiState> = _uiState.asStateFlow()
 
     fun onSubmit() {
+
+        val emotionsMap: Map<String, Float> =
+            _uiState.value.dailyEntry.selectedEmotions.zip(_uiState.value.dailyEntry.emotionIntensities).sortedByDescending { (_, intensity) ->
+                intensity
+            }.toMap()
+
         _uiState.update { currentState ->
             currentState.copy(
                 isSubmitted = 1,
                 dailyEntry = currentState.dailyEntry.copy(
+                    emotionsMap = emotionsMap,
                     dateCompleted = LocalDate.now().toDate()
                 )
             )
@@ -125,6 +131,19 @@ class DailyEvaluationViewModel : ViewModel() {
             )
         }
         Log.println(Log.DEBUG, "DailyEval:: ", "$intensityList")
+    }
+
+    fun updateStrongestEmotion() {
+
+        val strongest = _uiState.value.dailyEntry.emotionsMap.entries.first().toPair()
+
+        _uiState.update { currentState ->
+            currentState.copy(
+                dailyEntry = currentState.dailyEntry.copy(
+                   strongestEmotion = strongest
+                )
+            )
+        }
     }
 
 }

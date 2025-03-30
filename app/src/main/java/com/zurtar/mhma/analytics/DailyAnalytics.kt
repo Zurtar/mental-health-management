@@ -30,7 +30,7 @@ import com.zurtar.mhma.mood.findSeverity
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-
+@Preview
 @Composable
 fun DailyAnalyticsScreenContent() {
     val labelToContent: Map<String, @Composable () -> Unit> = mapOf(
@@ -40,7 +40,7 @@ fun DailyAnalyticsScreenContent() {
     TabbedContent(labelToContent = labelToContent, key = labelToContent.keys.first())
 }
 
-@Preview
+
 @Composable
 fun DailyHistory() {
     val dailyEntry: DailyEvaluationEntry = DailyEvaluationEntry(
@@ -153,13 +153,13 @@ fun DailyHistoricalAnalytics(
     Column(modifier = Modifier.verticalScroll(state)) {
         //SummaryPopupPreview()
 
-        WeekTitles("Current Week")
+        WeekTitles("Today")
         todays.forEach { SummaryCard(it) }
 
-        WeekTitles("Last Week")
+        WeekTitles("Yesterday")
         lastWeek.forEach { SummaryCard(it) }
 
-        WeekTitles("Previous Weeks")
+        WeekTitles("Previous Days")
         other.forEach { SummaryCard(it) }
     }
 }
@@ -189,6 +189,11 @@ fun DailyEvaluationCalendar(
 fun makeCardInfoDaily(): List<DailyEvaluationEntry> {
     val results = mutableListOf<DailyEvaluationEntry>()
 
+    val map = mapOf(
+        "Happy" to 7f,
+        "Sad" to 3f
+    )
+
     val current = LocalDate.now()
     for (i in 0..8) {
 
@@ -196,6 +201,7 @@ fun makeCardInfoDaily(): List<DailyEvaluationEntry> {
 
         results.add(
             DailyEvaluationEntry(
+                emotionsMap = map,
                 dateCompleted = localDate.toDate()
             )
         )
