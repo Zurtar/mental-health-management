@@ -224,18 +224,18 @@ class EvaluationMenuViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(EvaluationMenuUiState())
     val uiState: StateFlow<EvaluationMenuUiState> = _uiState.asStateFlow()
 
-//
-//    fun updateBiWeekly() {
-//        if (!_uiState.value.biWeeklyCompleted) {
-//            _uiState.update { currentState ->
-//                currentState.copy(biWeeklyCompleted = true)
-//            }
-//        } else {
-//            _uiState.update { currentState ->
-//                currentState.copy(biWeeklyCompleted = false)
-//            }
-//        }
-//
-//    }
+
+    fun updateBiWeekly() {
+        if (!_uiState.value.isBiWeeklyCompleted) {
+            _uiState.update { currentState ->
+                currentState.copy(isBiWeeklyCompleted = true)
+            }
+        } else {
+            _uiState.update { currentState ->
+                currentState.copy(isBiWeeklyCompleted = false)
+            }
+        }
+
+    }
 
 }

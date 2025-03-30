@@ -126,6 +126,7 @@ fun TabbedContent(
 ) {
     var state by remember { mutableStateOf(key) }
 
+    
     Column(
         modifier
             .fillMaxWidth()
@@ -150,10 +151,6 @@ fun TabbedContent(
     }
 }
 
-
-fun onSummaryCard(results: BiWeeklyEvaluationEntry, onNavigateToSummaryDialog: () -> Unit) {
-
-}
 
 @Composable
 fun SummaryCards(results: BiWeeklyEvaluationEntry, onNavigateToSummaryDialog: () -> Unit) {
