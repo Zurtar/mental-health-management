@@ -4,11 +4,9 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -40,19 +38,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.kizitonwose.calendar.compose.HorizontalCalendar
-import com.kizitonwose.calendar.compose.rememberCalendarState
-import com.kizitonwose.calendar.core.CalendarDay
-import com.kizitonwose.calendar.core.daysOfWeek
-import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
 import com.zurtar.mhma.R
 import com.zurtar.mhma.mood.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.mood.ScoreChart
 import com.zurtar.mhma.mood.findSeverity
-import com.zurtar.mhma.theme.AppTypography
 import com.zurtar.mhma.util.DefaultTopAppBar
 import java.time.LocalDate
-import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
 
@@ -116,7 +107,7 @@ fun AnalyticsScreenContent(
         }
         when (pagerState) {
             0 -> {
-                QuickAnalyticsScreenContent()
+                DailyAnalyticsScreenContent()
             }
 
             1 -> {
@@ -159,112 +150,6 @@ fun TabbedContent(
     }
 }
 
-
-@Composable
-fun QuickAnalyticsScreenContent() {
-    val labelToContent: Map<String, @Composable () -> Unit> = mapOf(
-        "Mood Calendar" to { QuickEvaluationCalendar() },
-        "History" to { }
-    )
-    TabbedContent(labelToContent = labelToContent, key = labelToContent.keys.first())
-    /*    Column(
-            Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.background),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Row(modifier = Modifier.padding(start = 5.dp, top = 5.dp)) {
-                tabLabels.forEachIndexed { index, label ->
-                    SuggestionChip(
-                        onClick = { state = index },
-                        label = { Text(label) },
-                        colors = SuggestionChipDefaults.suggestionChipColors(MaterialTheme.colorScheme.secondaryContainer)
-                    )
-                }
-            }
-
-            when (state) {
-                0 -> {
-                    QuickEvaluationCalendar()
-                }
-
-                1 -> {}
-            }
-        }*/
-}
-
-@Composable
-fun QuickEvaluationCalendar(
-    modifier: Modifier = Modifier
-) {
-
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.Start
-    ) {
-        AppHorizontalCalendar()
-
-        Text(
-            modifier = Modifier.padding(start = 10.dp),
-            text = "Selected Date:",
-            style = MaterialTheme.typography.headlineSmall
-        )
-    }
-}
-
-@Composable
-fun BiWeeklyAnalyticsScreenContent(onNavigateToSummaryDialog: () -> Unit) {
-    val labelToContent: Map<String, @Composable () -> Unit> = mapOf(
-        "Mood Graph" to { MoodGraphScreen() },
-        "History" to { InsightsScreen() },
-        "Insights" to { }
-    )
-
-    TabbedContent(labelToContent = labelToContent, key = labelToContent.keys.first())
-}
-
-@Composable
-fun MoodGraphScreen() {
-    Text("Mood Graph")
-}
-
-@Composable
-fun InsightsScreen() {
-    Text("Insights")
-}
-
-@Composable
-fun BiWeeklySummaryPage(onNavigateToSummaryDialog: () -> Unit) {
-    val results = makeCardInfo()
-
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    val current = LocalDate.now()
-    val currentString = current.format(formatter)
-    val yesterday = current.minusDays(1).format(formatter)
-
-    val todays = results.filter {
-        it.dateCompleted.format(formatter) == currentString
-    }
-    val lastWeek = results.filter {
-        it.dateCompleted.format(formatter) == yesterday
-    }
-    val other = results.filter {
-        it.dateCompleted < current.minusDays(2)
-    }
-    val state = rememberScrollState()
-    Column(modifier = Modifier.verticalScroll(state)) {
-        //SummaryPopupPreview()
-
-        WeekTitles("Current Week")
-        todays.forEach { SummaryCards(it, onNavigateToSummaryDialog) }
-
-        WeekTitles("Last Week")
-        lastWeek.forEach { SummaryCards(it, onNavigateToSummaryDialog) }
-
-        WeekTitles("Previous Weeks")
-        other.forEach { SummaryCards(it, onNavigateToSummaryDialog) }
-    }
-}
 
 fun onSummaryCard(results: BiWeeklyEvaluationEntry, onNavigateToSummaryDialog: () -> Unit) {
 
