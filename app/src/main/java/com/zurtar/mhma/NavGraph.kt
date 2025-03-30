@@ -186,8 +186,7 @@ fun NavGraph(
                 )
             }
 
-            // Directly copied from Journal branch, which is why its different
-//            composable<JournalEntryR> {
+
             composable("JournalEntryR") {
                 EntryModificationScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },

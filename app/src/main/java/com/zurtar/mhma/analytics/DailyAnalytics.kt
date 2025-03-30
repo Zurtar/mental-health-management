@@ -46,16 +46,15 @@ fun DailyHistory() {
     val dailyEntry: DailyEvaluationEntry = DailyEvaluationEntry(
         emotionsMap = mapOf("Happy" to 7f, "Sad" to 4f, "Angry" to 2.5f),
         stressLevel = "Mildly Stressed",
-        dateCompleted = LocalDate.now()
+        dateCompleted = LocalDate.now().toDate()
     )
 
     val results = makeCardInfoDaily()
-
     DailyHistoricalAnalytics(results)
 }
 
 @Composable
-fun SummaryCard(dailyEntry:DailyEvaluationEntry) {
+fun SummaryCard(dailyEntry: DailyEvaluationEntry) {
 
     val emotionsList = dailyEntry.emotionsMap.toList()
     val stress = stressLevel(dailyEntry.stressLevel)
@@ -69,16 +68,24 @@ fun SummaryCard(dailyEntry:DailyEvaluationEntry) {
 
     )
 
-    ElevatedCard( elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+    ElevatedCard(elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
             .clickable { }
     ) {
-        Row(modifier = Modifier.fillMaxWidth().padding(start = 10.dp), horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 10.dp),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             ElevatedButton(
                 onClick = {},
-                modifier = Modifier.width(34.dp).align(Alignment.CenterVertically),
+                modifier = Modifier
+                    .width(34.dp)
+                    .align(Alignment.CenterVertically),
                 contentPadding = PaddingValues(0.dp)
             ) {
                 Text(
@@ -97,7 +104,7 @@ fun SummaryCard(dailyEntry:DailyEvaluationEntry) {
 
             Text(
                 modifier = Modifier.padding(start = 180.dp),
-                text = dailyEntry.dateCompleted.format(formatter),
+                text = dailyEntry.dateCompleted?.toLocalDate()?.format(formatter) ?: "null",
                 style = MaterialTheme.typography.bodySmall,
                 textAlign = TextAlign.Start
             )
@@ -112,7 +119,6 @@ fun SummaryCard(dailyEntry:DailyEvaluationEntry) {
 
     }
 }
-
 
 
 @Composable
@@ -131,16 +137,16 @@ fun DailyHistoricalAnalytics(
     val currentString = current.format(formatter)
     val yesterday = current.minusDays(1).format(formatter)
 
-    val todays = dailyEvaluations_.filter {
-        it.dateCompleted.format(formatter) == currentString
+    val todays = dailyEvaluations.filter {
+        (it.dateCompleted?.toLocalDate() ?: LocalDate.MIN).format(formatter) == currentString
     }
 
-    val lastWeek = dailyEvaluations_.filter {
-        it.dateCompleted.format(formatter) == yesterday
+    val lastWeek = dailyEvaluations.filter {
+        (it.dateCompleted?.toLocalDate() ?: LocalDate.MIN).format(formatter) == yesterday
     }
 
-    val other = dailyEvaluations_.filter {
-        it.dateCompleted< current.minusDays(2)
+    val other = dailyEvaluations.filter {
+        (it.dateCompleted?.toLocalDate() ?: LocalDate.MIN) < current.minusDays(2)
     }
 
     val state = rememberScrollState()
@@ -190,9 +196,7 @@ fun makeCardInfoDaily(): List<DailyEvaluationEntry> {
 
         results.add(
             DailyEvaluationEntry(
-
-
-                dateCompleted = localDate
+                dateCompleted = localDate.toDate()
             )
         )
     }
@@ -201,12 +205,12 @@ fun makeCardInfoDaily(): List<DailyEvaluationEntry> {
 }
 
 
-fun stressLevel(currentStress:String):String {
+fun stressLevel(currentStress: String): String {
     var level = ""
 
-    if(currentStress == "Very Stressed") {
+    if (currentStress == "Very Stressed") {
         level = "High"
-    } else if(currentStress == "Mildly Stressed") {
+    } else if (currentStress == "Mildly Stressed") {
         level = "Low"
     } else {
         level = "None"
