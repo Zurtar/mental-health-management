@@ -24,22 +24,26 @@ data class DailyEvaluationEntry(
     val selectedEmotions: List<String> = listOf(),
     val emotionIntensities: List<Float> = listOf(0f, 0f, 0f),
     val emotionsMap: Map<String, Float> = mapOf(),
-    val isSubmitted: Int = 0,
-    val strongestEmotion: String = "default_initial",
-    val page: Int = 0,
+    val currentEmotion: String = "default_initial",
+    val strongestEmotion: String = "",
+    val dateCompleted: LocalDate
 )
 
 data class BiWeeklyEvaluationUiState(
-    val depressionScore: Int = 0,
-    val anxietyScore: Int = 0,
+    val biWeeklyEntry: BiWeeklyEvaluationEntry = BiWeeklyEvaluationEntry(dateCompleted = LocalDate.now()),
     val page: Int = 0,
-    val questionResponse: List<Int> = listOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
+)
+
+data class EvaluationMenuUiState(
+    val isBiWeeklyCompleted: Boolean = false,
+    val isDailyEntry: Boolean  = false
 )
 
 data class DailyEvaluationUiState(
-    val currentEmotion: String = "default_initial",
-    val dailyEntry: DailyEvaluationEntry = DailyEvaluationEntry(),
+    val dailyEntry: DailyEvaluationEntry = DailyEvaluationEntry(dateCompleted = LocalDate.now()),
     val isSubmitted: Int = 0,
+    val page: Int = 0
 )
 
 class DailyEvaluationViewModel : ViewModel() {
@@ -48,45 +52,58 @@ class DailyEvaluationViewModel : ViewModel() {
 
     fun onSubmit() {
         _uiState.update { currentState ->
-            currentState.copy(isSubmitted = 1)
+            currentState.copy(isSubmitted = 1,
+                dailyEntry = currentState.dailyEntry.copy(dateCompleted = LocalDate.now()
+            ))
         }
     }
 
     fun onNext() {
 
         _uiState.update { currentState ->
-            val d_entry = DailyEvaluationEntry(
-                selectedEmotions = currentState.dailyEntry.selectedEmotions,
-                emotionIntensities = currentState.dailyEntry.emotionIntensities,
-                page = currentState.dailyEntry.page + 1
-            )
-            currentState.copy(dailyEntry = d_entry)
+            currentState.copy(page = currentState.page + 1)
         }
     }
 
     fun onBack() {
         _uiState.update { currentState ->
-            val d_entry = DailyEvaluationEntry(
-                selectedEmotions = currentState.dailyEntry.selectedEmotions,
-                emotionIntensities = currentState.dailyEntry.emotionIntensities,
-                page = currentState.dailyEntry.page - 1
-            )
-            currentState.copy(dailyEntry = d_entry)
+            currentState.copy(page = currentState.page - 1)
         }
     }
 
     fun updateEmotion(emoji: ImageVector) {
         if (emoji == EmojiFrown) {
             _uiState.update { currentState ->
-                currentState.copy(currentEmotion = "Upset")
+                currentState.copy(
+                    dailyEntry = DailyEvaluationEntry(
+                        selectedEmotions = currentState.dailyEntry.selectedEmotions,
+                        emotionIntensities = currentState.dailyEntry.emotionIntensities,
+                        currentEmotion = "Very Stressed",
+                        dateCompleted = currentState.dailyEntry.dateCompleted
+                    )
+                )
             }
         } else if (emoji == EmojiNeutral) {
             _uiState.update { currentState ->
-                currentState.copy(currentEmotion = "Neutral")
+                currentState.copy(
+                    dailyEntry = DailyEvaluationEntry(
+                        selectedEmotions = currentState.dailyEntry.selectedEmotions,
+                        emotionIntensities = currentState.dailyEntry.emotionIntensities,
+                        currentEmotion = "Mildly Stressed",
+                        dateCompleted = currentState.dailyEntry.dateCompleted
+                    )
+                )
             }
         } else {
             _uiState.update { currentState ->
-                currentState.copy(currentEmotion = "Happy")
+                currentState.copy(
+                    dailyEntry = DailyEvaluationEntry(
+                        selectedEmotions = currentState.dailyEntry.selectedEmotions,
+                        emotionIntensities = currentState.dailyEntry.emotionIntensities,
+                        currentEmotion = "Not Stressed",
+                        dateCompleted = currentState.dailyEntry.dateCompleted
+                    )
+                )
             }
         }
     }
@@ -107,7 +124,8 @@ class DailyEvaluationViewModel : ViewModel() {
             val d_entry = DailyEvaluationEntry(
                 selectedEmotions = emotionList,
                 emotionIntensities = currentState.dailyEntry.emotionIntensities,
-                page = currentState.dailyEntry.page
+                currentEmotion = currentState.dailyEntry.currentEmotion,
+                dateCompleted = currentState.dailyEntry.dateCompleted
             )
 
             currentState.copy(dailyEntry = d_entry)
@@ -120,30 +138,22 @@ class DailyEvaluationViewModel : ViewModel() {
         intensityList[index] = value
         Log.println(Log.DEBUG, "DailyEval:: ", "$value")
 
+        var emotionsMap: Map<String, Float> =
+            _uiState.value.dailyEntry.selectedEmotions.zip(intensityList).sortedByDescending { (_, intensity) ->
+                intensity
+            }.toMap()
+
+
         _uiState.update { currentState ->
             currentState.copy(
-                dailyEntry = DailyEvaluationEntry(
-                    selectedEmotions = currentState.dailyEntry.selectedEmotions,
+                dailyEntry = currentState.dailyEntry.copy(
                     emotionIntensities = intensityList,
-                    page = currentState.dailyEntry.page
+                    emotionsMap = emotionsMap
                 )
             )
         }
         Log.println(Log.DEBUG, "DailyEval:: ", "$intensityList")
     }
-
-    fun makeMap(
-        selectedEmotions: List<String>,
-        intensities: List<Float>
-    ): MutableMap<String, Float> {
-        val emotionsMap = mutableMapOf<String, Float>()
-
-        for (i in 0..selectedEmotions.size) {
-            emotionsMap[selectedEmotions[i]] = intensities[i]
-        }
-        return emotionsMap
-    }
-
 
 }
 
@@ -165,7 +175,7 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
             currentState.copy(page = currentState.page + 1)
         }
 
-        if (_uiState.value.page == _uiState.value.questionResponse.size)
+        if (_uiState.value.page == _uiState.value.biWeeklyEntry.questionResponse.size)
             submitMoodEntry()
     }
 
@@ -176,24 +186,29 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
     }
 
     fun onSelect(selected: Int) {
-        val newList = _uiState.value.questionResponse.toMutableList()
+        val newList = _uiState.value.biWeeklyEntry.questionResponse.toMutableList()
         newList[_uiState.value.page] = selected
 
         _uiState.update { currentState ->
             currentState.copy(
-                questionResponse = newList
+                biWeeklyEntry = currentState.biWeeklyEntry.copy(
+                    questionResponse = newList
+                )
             )
         }
     }
 
 
     fun debugScore() {
-        val depressionScore = _uiState.value.questionResponse.subList(0, 9).sum()
-        val anxietyScore = _uiState.value.questionResponse.subList(9, 15).sum()
+        val depressionScore = _uiState.value.biWeeklyEntry.questionResponse.subList(0, 9).sum()
+        val anxietyScore = _uiState.value.biWeeklyEntry.questionResponse.subList(9, 15).sum()
+
         _uiState.update { currentState ->
             currentState.copy(
-                depressionScore = depressionScore,
-                anxietyScore = anxietyScore
+                biWeeklyEntry = currentState.biWeeklyEntry.copy(
+                    depressionScore = depressionScore,
+                    anxietyScore = anxietyScore
+                )
             )
         }
 
@@ -221,4 +236,24 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
             currentState.copy(page = 0)
         }
     }
+}
+
+class EvaluationMenuViewModel : ViewModel() {
+    private val _uiState = MutableStateFlow(EvaluationMenuUiState())
+    val uiState: StateFlow<EvaluationMenuUiState> = _uiState.asStateFlow()
+
+
+    fun updateBiWeekly() {
+        if (!_uiState.value.isBiWeeklyCompleted) {
+            _uiState.update { currentState ->
+                currentState.copy(isBiWeeklyCompleted = true)
+            }
+        } else {
+            _uiState.update { currentState ->
+                currentState.copy(isBiWeeklyCompleted = false)
+            }
+        }
+
+    }
+
 }

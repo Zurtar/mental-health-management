@@ -110,7 +110,7 @@ fun AnalyticsScreenContent(
         }
         when (pagerState) {
             0 -> {
-                QuickAnalyticsScreenContent()
+                DailyAnalyticsScreenContent()
             }
 
             1 -> {
@@ -153,15 +153,6 @@ fun TabbedContent(
     }
 }
 
-
-@Composable
-fun QuickAnalyticsScreenContent() {
-    val labelToContent: Map<String, @Composable () -> Unit> = mapOf(
-        "Mood Calendar" to { QuickEvaluationCalendar() },
-        "History" to { }
-    )
-    TabbedContent(labelToContent = labelToContent, key = labelToContent.keys.first())
-}
 
 @Composable
 fun QuickEvaluationCalendar(
@@ -260,9 +251,6 @@ fun BiWeeklyHistoricalAnalytics(
     }
 }
 
-fun onSummaryCard(results: BiWeeklyEvaluationEntry, onNavigateToSummaryDialog: () -> Unit) {
-
-}
 
 @Composable
 fun SummaryCard(
