@@ -26,6 +26,7 @@ data class ChatLog(
     var logType: ChatBranch,
     var content : List<ChatMessage>,
     var createdAt: Date,
+    var toBeCompleted: Date? = null
 )
 
 /*
