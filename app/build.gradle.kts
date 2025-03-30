@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.services)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.google.hilt.android)
+    alias(libs.plugins.google.ksp)
 }
 
 android {
@@ -46,6 +48,10 @@ dependencies {
 
     implementation(libs.kotlinx.serialization.json)
 
+    // Hilt & Dagger
+    implementation(libs.google.hilt.android)
+    ksp(libs.hilt.android.compiler)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -56,8 +62,10 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.ui.text.google.fonts)
 
-//    From Journal
-    implementation (libs.androidx.runtime.livedata)
+    implementation(libs.kizitonwose.calendar.compose)
+
+    //    From Journal
+    implementation(libs.androidx.runtime.livedata)
 
 
     implementation(platform(libs.firebase.bom))
@@ -71,8 +79,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
-    implementation(libs.androidx.navigation.compose)
-
+    implementation(libs.androidx.hilt.navigation.compose)
+//    implementation(libs.androidx.navigation.compose)
+//    implementation(libs.androidx.ui.test.android)
 
 
     testImplementation(libs.junit)
@@ -86,6 +95,9 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.firestore)
+
+    //for Charts
+    implementation(libs.himanshoe.charty)
 }
 
 //Add nav host, serial plugin is fine, need implementations

@@ -24,7 +24,7 @@ fun DefaultTopAppBar(
     openDrawer: () -> Unit
 ) {
     TopAppBar(
-        title = { Text("Mental-Health Tracker") },
+        title = { Text("VibeCheck: Home") },
         colors = topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             titleContentColor = MaterialTheme.colorScheme.primary

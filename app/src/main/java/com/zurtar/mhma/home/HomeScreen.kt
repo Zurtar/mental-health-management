@@ -1,15 +1,18 @@
 package com.zurtar.mhma.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -33,7 +36,8 @@ fun HomeScreen(
     openDrawer: () -> Unit,
     onNavigateToMoodEvaluation: () -> Unit,
     onNavigateToJournal: () -> Unit,
-    onNavigateToChatbot: () -> Unit
+    onNavigateToChatbot: () -> Unit,
+    onNavigateToAnalytics: () -> Unit
 ) {
     Scaffold(modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -46,7 +50,8 @@ fun HomeScreen(
                 .fillMaxSize(),
             onNavigateToMoodEvaluation = onNavigateToMoodEvaluation,
             onNavigateToJournal = onNavigateToJournal,
-            onNavigateToChatbot = onNavigateToChatbot
+            onNavigateToChatbot = onNavigateToChatbot,
+            onNavigateToAnalytics = onNavigateToAnalytics,
         )
     }
 }
@@ -56,6 +61,7 @@ private fun HomeScreenContent(
     modifier: Modifier = Modifier,
     onNavigateToMoodEvaluation: () -> Unit,
     onNavigateToJournal: () -> Unit,
+    onNavigateToAnalytics: () -> Unit,
     onNavigateToChatbot: () -> Unit
 ) {
 
@@ -227,15 +233,35 @@ private fun HomeScreenContent(
                 }
             }
 
-            Spacer(modifier = Modifier
-                .width(160.dp)
-                .height(150.dp)
-                .padding(10.dp)
-                .padding(horizontal = 10.dp, vertical = 10.dp)
-                .weight(1f)
-                .aspectRatio(1f))
+            ElevatedCard(
+                modifier = cardModifier,
+                onClick = { onNavigateToAnalytics() }
+            ) {
+                /*   Text(
+                       modifier = Modifier
+                           .align(Alignment.CenterHorizontally)
+                           .height(150.dp)
+                           .wrapContentHeight(),
+                       textAlign = TextAlign.Center,
+                       style = MaterialTheme.typography.headlineMedium,
+                       text = "Analytics"
+                   )*/
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(10.dp),
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    Text(
+                        modifier = Modifier.padding(5.dp),
+                        textAlign = TextAlign.Start,
+                        style = MaterialTheme.typography.titleLarge,
+                        text = "Analytics"
+                    )
+                }
+            }
         }
-
     }
 }
 
@@ -270,16 +296,16 @@ fun HomeScreenContentPreview() {
             topBar = {
                 DefaultTopAppBar(openDrawer = { })
             }
-        ) {innerPadding ->
+        ) { innerPadding ->
             HomeScreenContent(
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize(),
                 onNavigateToMoodEvaluation = {},
                 onNavigateToJournal = {},
-                onNavigateToChatbot = {}
+                onNavigateToAnalytics = {},
+                onNavigateToChatbot = {},
             )
-
         }
     }
 }
