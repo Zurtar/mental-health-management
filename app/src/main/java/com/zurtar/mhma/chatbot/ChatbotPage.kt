@@ -191,7 +191,10 @@ fun ChatbotPageContent(
                     }
                 }
             }
-            if (currentBranch != ChatBranch.Initial) {
+            if ((currentBranch == ChatBranch.ActionPlan && viewModel.getBranchStep() == 2) || (currentBranch == ChatBranch.SmartGoal && viewModel.getBranchStep() == 5)) {
+
+            }
+            else if (currentBranch != ChatBranch.Initial) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

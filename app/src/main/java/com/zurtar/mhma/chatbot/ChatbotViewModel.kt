@@ -34,6 +34,10 @@ class ChatbotViewModel : ViewModel() {
         getAllLogs()
     }
 
+    fun getBranchStep(): Int {
+        return messageManager.getBranchStep()
+    }
+
     /*
     Sends a message to the chatbot, also calls on simulate bot responses
     to generate appropriate response. Buttons in the Chatbot page call on this

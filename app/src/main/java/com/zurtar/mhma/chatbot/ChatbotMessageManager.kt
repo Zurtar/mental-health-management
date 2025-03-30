@@ -28,6 +28,10 @@ class ChatbotMessageManager (
     //tracks the current step in the active branch
     private var branchStep: Int = 0
 
+    fun getBranchStep(): Int {
+        return branchStep
+    }
+
     //returns active dialogue branch
     fun getCurrentBranch(): ChatBranch {
         return currentBranch

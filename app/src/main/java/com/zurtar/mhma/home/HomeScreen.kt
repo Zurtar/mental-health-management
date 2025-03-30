@@ -68,24 +68,6 @@ private fun HomeScreenContent(
         modifier = modifier.fillMaxWidth(0.5f),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        /*
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(color = Color("#B8D4A6".toColorInt()))
-                .height(60.dp)
-            ) {
-            Text(
-                text = "Home",
-                fontSize = 24.sp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.Center),
-                color = Color.Black,
-                textAlign = TextAlign.Center
-            )
-        }
-         */
         val currentDate = Date.from(Instant.now())
         Text(
             text = getGreetingFromDate(currentDate),
@@ -245,7 +227,7 @@ private fun HomeScreenContent(
                         modifier = Modifier.padding(5.dp),
                         textAlign = TextAlign.Start,
                         style = MaterialTheme.typography.titleLarge,
-                        text = "Chatbot"
+                        text = "Chat Bot"
                     )
                 }
             }
