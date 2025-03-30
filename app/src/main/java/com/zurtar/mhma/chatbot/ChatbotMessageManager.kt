@@ -228,7 +228,6 @@ class ChatbotMessageManager (
             else -> {
                 currentBranch = ChatBranch.Initial
                 addCurrentBranchLogWithDate(currentBranchMessages, ChatBranch.SmartGoal, completionDate)
-                print("Completion date: $completionDate")
                 resetCompletionDate()
                 currentBranchMessages.clear()
                 "Great work [user]! Lets save that goal now. Is there anything else you would like to do today?"
@@ -373,7 +372,6 @@ class ChatbotMessageManager (
             else -> {
                 currentBranch = ChatBranch.Initial
                 addCurrentBranchLogWithDate(currentBranchMessages, ChatBranch.SmartGoal, completionDate)
-                print("Completion date: $completionDate")
                 resetCompletionDate()
                 currentBranchMessages.clear()
                 "Great work [user]! Lets save that action plan now. Is there anything else you would like to do today?"

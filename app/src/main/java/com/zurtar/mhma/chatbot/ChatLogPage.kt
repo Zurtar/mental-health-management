@@ -121,6 +121,13 @@ fun ChatLogPageContent(
                     fontSize = 14.sp,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
+                if (log.toBeCompleted != null) {
+                    Text(
+                        text = "To be completed At: ${SimpleDateFormat("EEEE, MMMM dd", Locale.getDefault()).format(log.toBeCompleted)}",
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                }
 
                 for ((index, userMessage) in log.content.withIndex()) {
                     BotMessageItemReconstruct(branch = log.logType, messageNumber = index)
