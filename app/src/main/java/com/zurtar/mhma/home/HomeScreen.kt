@@ -11,15 +11,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.DateRange
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -65,202 +71,89 @@ private fun HomeScreenContent(
     onNavigateToChatbot: () -> Unit
 ) {
 
-    Column(
-        modifier = modifier.fillMaxWidth(0.5f),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        val currentDate = Date.from(Instant.now())
-        Text(
-            text = getGreetingFromDate(currentDate),
-            fontSize = 27.sp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 20.dp),
-            textAlign = TextAlign.Center
-        )
-        val dateFormat = SimpleDateFormat("EEEE, MMMM dd", Locale.getDefault())
-        val formattedDate = dateFormat.format(currentDate)
-        Text(
-            text = formattedDate,
-            fontSize = 20.sp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 25.dp),
-        )
+    val currentDate = Date.from(Instant.now())
+    val dateFormat = SimpleDateFormat("EEEE, MMMM dd", Locale.getDefault())
+    val formattedDate = dateFormat.format(currentDate)
 
-        ElevatedCard(
-            modifier = Modifier
-                .padding(horizontal = 10.dp, vertical = 10.dp)
-                .width(300.dp)
-                .height(150.dp)
+    Column(modifier = modifier.fillMaxWidth()) {
+        Column(
+          //  modifier = modifier.fillMaxWidth(0.5f),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
+
+            Text(
+                text = getGreetingFromDate(currentDate),
+                fontSize = 27.sp,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(10.dp),
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.Top
-            ) {
-                Text(
-                    textAlign = TextAlign.Start,
-                    style = MaterialTheme.typography.titleLarge,
-                    text = "To-do:"
-                )
-                Text(
-                    modifier = Modifier.padding(horizontal = 15.dp),
-                    textAlign = TextAlign.Start,
-                    style = MaterialTheme.typography.bodyMedium,
-                    text = getToDo()
-                )
-                Spacer(
-                    modifier = Modifier.height(20.dp)
-                )
-                Text(
-                    textAlign = TextAlign.Start,
-                    style = MaterialTheme.typography.titleLarge,
-                    text = "Upcoming:"
-                )
-                Text(
-                    modifier = Modifier.padding(horizontal = 15.dp),
-                    textAlign = TextAlign.Start,
-                    style = MaterialTheme.typography.bodyMedium,
-                    text = getUpcoming()
-                )
-            }
+                    .fillMaxWidth()
+                    .padding(top = 20.dp),
+                textAlign = TextAlign.Center
+            )
 
-        }
-
-        ElevatedCard(
-            modifier = Modifier
-                .padding(horizontal = 10.dp, vertical = 10.dp)
-                .fillMaxWidth()
-                .height(100.dp)
-        ) {
-            Column(
+            Text(
+                text = formattedDate,
+                fontSize = 20.sp,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(10.dp),
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.Top
-            ) {
-                Text(
-                    textAlign = TextAlign.Start,
-                    style = MaterialTheme.typography.titleLarge,
-                    text = "Suggested Actions:"
-                )
-                Text(
-                    modifier = Modifier.padding(horizontal = 15.dp),
-                    textAlign = TextAlign.Start,
-                    style = MaterialTheme.typography.bodyMedium,
-                    text = getSuggestedActions()
-                )
-            }
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 25.dp),
+            )
 
+            UpcomingScheduleCard()
+
+            SuggestedActionsCard()
         }
-
-
         val cardModifier = Modifier
             .padding(horizontal = 10.dp, vertical = 10.dp)
             .width(80.dp)
             .height(120.dp)
             .weight(1f)
-            .align(Alignment.Start)
+            .align(Alignment.CenterHorizontally)
 
-        Row(
+        Row (
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
-            ElevatedCard(
-                modifier = cardModifier,
-                onClick = { onNavigateToMoodEvaluation() }
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(10.dp),
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.Top
-                ) {
-                    Text(
-                        textAlign = TextAlign.Start,
-                        style = MaterialTheme.typography.titleLarge,
-                        text = "Mood Eval"
-                    )
-                }
-
-            }
-
-            ElevatedCard(
-                modifier = cardModifier,
-                onClick = { onNavigateToJournal() }
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(10.dp),
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.Top
-                ) {
-                    Text(
-                        textAlign = TextAlign.Start,
-                        style = MaterialTheme.typography.titleLarge,
-                        text = "Journal"
-                    )
-                }
-            }
+            NavigationCard(cardModifier,"Mood Evaluation", onNavigateToMoodEvaluation)
+            NavigationCard(cardModifier,"Chat", onNavigateToChatbot)
         }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            ElevatedCard(
-                modifier = cardModifier,
-                onClick = { onNavigateToChatbot() }
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(10.dp),
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.Top
-                ) {
-                    Text(
-                        modifier = Modifier.padding(5.dp),
-                        textAlign = TextAlign.Start,
-                        style = MaterialTheme.typography.titleLarge,
-                        text = "Chat Bot"
-                    )
-                }
-            }
 
-            ElevatedCard(
-                modifier = cardModifier,
-                onClick = { onNavigateToAnalytics() }
-            ) {
-                /*   Text(
-                       modifier = Modifier
-                           .align(Alignment.CenterHorizontally)
-                           .height(150.dp)
-                           .wrapContentHeight(),
-                       textAlign = TextAlign.Center,
-                       style = MaterialTheme.typography.headlineMedium,
-                       text = "Analytics"
-                   )*/
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(10.dp),
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.Top
-                ) {
-                    Text(
-                        modifier = Modifier.padding(5.dp),
-                        textAlign = TextAlign.Start,
-                        style = MaterialTheme.typography.titleLarge,
-                        text = "Analytics"
-                    )
-                }
-            }
+        Row(modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center)
+        {
+            NavigationCard(cardModifier,"Journal", onNavigateToJournal)
+            NavigationCard(cardModifier,"Analytics", onNavigateToAnalytics)
+
+        }
+    }
+
+}
+
+@Composable
+fun NavigationCard(cardModifier:Modifier, title: String, onNavigateTo: () -> Unit) {
+
+    ElevatedCard(
+        modifier = cardModifier.background(Color.Transparent),
+        onClick = { onNavigateTo() }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(10.dp)
+                .background(Color.Transparent),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge,
+                text = title
+
+            )
+
+//            Icon(imageVector = Icons.Rounded.DateRange,
+//                contentDescription = "",
+//                modifier = Modifier.size(100.dp)
+//            )
         }
     }
 }
@@ -275,6 +168,86 @@ fun getGreetingFromDate(date: java.util.Date): String {
         else -> "Good Evening!"
     }
 }
+
+@Composable
+fun UpcomingScheduleCard() {
+
+    ElevatedCard(
+        modifier = Modifier
+            .padding(horizontal = 10.dp, vertical = 10.dp)
+            .width(350.dp)
+            .height(150.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(10.dp),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Top
+        ) {
+            Text(
+                textAlign = TextAlign.Start,
+                style = MaterialTheme.typography.titleLarge,
+                text = "To-do:"
+            )
+            Text(
+                modifier = Modifier.padding(horizontal = 15.dp),
+                textAlign = TextAlign.Start,
+                style = MaterialTheme.typography.bodyMedium,
+                text = getToDo()
+            )
+            Spacer(
+                modifier = Modifier.height(20.dp)
+            )
+            Text(
+                textAlign = TextAlign.Start,
+                style = MaterialTheme.typography.titleLarge,
+                text = "Upcoming:"
+            )
+            Text(
+                modifier = Modifier.padding(horizontal = 15.dp),
+                textAlign = TextAlign.Start,
+                style = MaterialTheme.typography.bodyMedium,
+                text = getUpcoming()
+            )
+        }
+
+    }
+}
+
+@Composable
+fun SuggestedActionsCard() {
+    ElevatedCard(
+        modifier = Modifier
+            .padding(horizontal = 10.dp, vertical = 10.dp)
+            .fillMaxWidth()
+            .height(100.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(10.dp),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Top
+        ) {
+            Text(
+                textAlign = TextAlign.Start,
+                style = MaterialTheme.typography.titleLarge,
+                text = "Suggested Actions:"
+            )
+            Text(
+                modifier = Modifier.padding(horizontal = 15.dp),
+                textAlign = TextAlign.Start,
+                style = MaterialTheme.typography.bodyMedium,
+                text = getSuggestedActions()
+            )
+        }
+
+    }
+
+
+}
+
 
 fun getToDo(): String {
     return "• Quick Evaluation"
