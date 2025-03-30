@@ -96,7 +96,7 @@ private fun ChatListPageContent(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.onPrimary)
+                .background(MaterialTheme.colorScheme.onPrimaryContainer)
                 .padding(8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -104,7 +104,7 @@ private fun ChatListPageContent(
             Text(
                 text = "Chat Logs",
                 fontSize = 30.sp,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier
                     .padding(8.dp),
             )
@@ -153,7 +153,7 @@ fun LogItem(
             .fillMaxWidth()
             .padding(8.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.onPrimary)
+            .background(MaterialTheme.colorScheme.onSecondaryContainer)
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
 
@@ -166,19 +166,19 @@ fun LogItem(
             Text(
                 text = SimpleDateFormat("HH:mm:aa, MMMM dd", Locale.ENGLISH).format(item.createdAt),
                 fontSize = 12.sp,
-                color = Color.LightGray
+                color = MaterialTheme.colorScheme.onSecondary
             )
             Text(
                 text = getBranchDisplayName(item.logType),
                 fontSize = 20.sp,
-                color = Color.White
+                color = MaterialTheme.colorScheme.onSecondary
             )
         }
         IconButton(onClick = { expanded = true }) {
             Icon(
                 painter = painterResource(id = R.drawable.baseline_arrow_drop_down_circle_24),
                 contentDescription = "Options",
-                tint = Color.White
+                tint = MaterialTheme.colorScheme.onSecondary
             )
             DropdownMenu(
                 expanded = expanded,

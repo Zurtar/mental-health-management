@@ -21,11 +21,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.zurtar.mhma.util.DefaultTopAppBar
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.Date
 import java.util.Locale
 
@@ -86,7 +89,7 @@ fun ChatLogPageContent(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.onPrimary)
+                .background(MaterialTheme.colorScheme.onPrimaryContainer)
                 .padding(8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -94,7 +97,7 @@ fun ChatLogPageContent(
             Text(
                 text = "Chat Log",
                 fontSize = 30.sp,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier
                     .padding(8.dp),
             )
@@ -153,12 +156,12 @@ fun UserMessageItemReconstruct(message: ChatMessage) {
         Column(
             modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
-                .background(MaterialTheme.colorScheme.primary)
+                .background(MaterialTheme.colorScheme.onSecondaryContainer)
                 .padding(8.dp)
         ) {
             Text(
                 text = message.message,
-                color = Color.White)
+                color = MaterialTheme.colorScheme.onSecondary)
             Text(
                 text = formattedTime,
                 color = Color.White,
@@ -172,7 +175,6 @@ fun UserMessageItemReconstruct(message: ChatMessage) {
 @Composable
 fun BotMessageItemReconstruct(branch: ChatBranch, messageNumber: Int) {
     val botMessage = handleBotMessage(branch, messageNumber)
-    val formattedTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -182,18 +184,12 @@ fun BotMessageItemReconstruct(branch: ChatBranch, messageNumber: Int) {
         Column(
             modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
-                .background(MaterialTheme.colorScheme.onPrimary)
+                .background(MaterialTheme.colorScheme.onTertiaryContainer)
                 .padding(8.dp)
         ) {
             Text(
                 text = botMessage,
-                color = Color.White)
-            Text(
-                text = formattedTime,
-                color = Color.White,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.align(Alignment.End)
-            )
+                color = MaterialTheme.colorScheme.onTertiary)
         }
     }
 }

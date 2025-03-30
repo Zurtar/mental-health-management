@@ -95,7 +95,7 @@ fun ChatbotPageContent(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.onPrimary)
+                .background(MaterialTheme.colorScheme.onPrimaryContainer)
                 .padding(8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -103,7 +103,7 @@ fun ChatbotPageContent(
             Text(
                 text = "Chatbot",
                 fontSize = 30.sp,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier
                     .padding(8.dp),
             )
@@ -111,7 +111,7 @@ fun ChatbotPageContent(
                 onClick = onNavigateToChatList
             ) {
                 Text(text = "Chat Log",
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }
@@ -234,14 +234,16 @@ fun UserMessageItem(message: ChatMessage) {
         Column(
             modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
-                .background(MaterialTheme.colorScheme.primary)
+                .background(MaterialTheme.colorScheme.onSecondaryContainer)
                 .padding(8.dp)
         ) {
-            Text(text = message.message,
-                color = Color.White)
+            Text(
+                text = message.message,
+                color = MaterialTheme.colorScheme.onSecondary
+            )
             Text(
                 text = formattedTime,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSecondary,
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.align(Alignment.End)
             )
@@ -261,15 +263,16 @@ fun BotMessageItem(message: ChatMessage) {
         Column(
             modifier = Modifier
                 .clip(RoundedCornerShape(8.dp))
-                .background(MaterialTheme.colorScheme.onPrimary)
+                .background(MaterialTheme.colorScheme.onTertiaryContainer)
                 .padding(8.dp)
         ) {
             Text(
                 text = message.message,
-                color = Color.White)
+                color = MaterialTheme.colorScheme.onTertiary
+            )
             Text(
                 text = formattedTime,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onTertiary,
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.align(Alignment.End)
             )

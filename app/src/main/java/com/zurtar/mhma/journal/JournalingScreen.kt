@@ -141,7 +141,7 @@ fun EntryItem(
             .fillMaxWidth()
             .padding(8.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.onPrimary)
+            .background(MaterialTheme.colorScheme.onPrimaryContainer)
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
 
@@ -154,24 +154,24 @@ fun EntryItem(
             Text(
                 text = SimpleDateFormat("HH:mm:aa, dd/mm", Locale.ENGLISH).format(item.createdAt),
                 fontSize = 12.sp,
-                color = Color.LightGray
+                color = MaterialTheme.colorScheme.onPrimary
             )
             Text(
                 text = item.title,
                 fontSize = 20.sp,
-                color = Color.White
+                color = MaterialTheme.colorScheme.onPrimary
             )
             Text(
                 text = item.content.take(200),
                 fontSize = 10.sp,
-                color = Color.White
+                color = MaterialTheme.colorScheme.onPrimary
             )
         }
         IconButton(onClick = { expanded = true }) {
             Icon(
                 painter = painterResource(id = R.drawable.baseline_arrow_drop_down_circle_24),
                 contentDescription = "Options",
-                tint = Color.White
+                tint = MaterialTheme.colorScheme.onPrimary
             )
             DropdownMenu(
                 expanded = expanded,
