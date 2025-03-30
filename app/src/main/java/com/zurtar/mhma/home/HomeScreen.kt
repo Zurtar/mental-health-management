@@ -1,6 +1,7 @@
 package com.zurtar.mhma.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.zurtar.mhma.R
 import com.zurtar.mhma.util.DefaultTopAppBar
 import androidx.core.graphics.toColorInt
@@ -67,15 +69,23 @@ private fun HomeScreenContent(
         modifier = modifier.fillMaxWidth(0.5f),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Home",
-            fontSize = MaterialTheme.typography.headlineLarge.fontSize,
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color = Color("#B8D4A6".toColorInt())),
-            color = Color.Black,
-            textAlign = TextAlign.Center
-        )
+                .background(color = Color("#B8D4A6".toColorInt()))
+                .height(60.dp)
+            ) {
+            Text(
+                text = "Home",
+                fontSize = 24.sp,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.Center),
+                color = Color.Black,
+                textAlign = TextAlign.Center
+            )
+        }
+
 
         Row (
             modifier = Modifier
