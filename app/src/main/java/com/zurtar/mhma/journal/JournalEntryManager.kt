@@ -46,10 +46,6 @@ object JournalEntryManager {
                 content = newContent)
             val index = entryList.indexOf(it)
             entryList[index] = updatedEntry
-            /*
-            entryList.remove(it)
-            entryList.add(JournalEntry(id, newTitle, newContent, it.createdAt))
-             */
         }
     }
 }
