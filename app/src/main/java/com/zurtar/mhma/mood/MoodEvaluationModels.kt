@@ -26,8 +26,6 @@ data class DailyEvaluationEntry(
     val emotionsMap:Map<String, Float> = mapOf(),
     val currentEmotion: String = "default_initial",
     val strongestEmotion: String = "default_initial",
-    val page: Int = 0,
-
     )
 
 data class BiWeeklyEvaluationUiState(
@@ -45,6 +43,7 @@ data class EvaluationMenuUiState(
 data class DailyEvaluationUiState(
     val dailyEntry: DailyEvaluationEntry = DailyEvaluationEntry(),
     val isSubmitted: Int = 0,
+    val page: Int = 0
 )
 
 
@@ -60,27 +59,14 @@ class DailyEvaluationViewModel : ViewModel() {
 
     fun onNext() {
 
-
         _uiState.update { currentState ->
-            val d_entry = DailyEvaluationEntry(
-                selectedEmotions = currentState.dailyEntry.selectedEmotions,
-                emotionIntensities = currentState.dailyEntry.emotionIntensities,
-                currentEmotion = currentState.dailyEntry.currentEmotion,
-                page = currentState.dailyEntry.page + 1
-            )
-            currentState.copy(dailyEntry = d_entry)
+            currentState.copy(page = currentState.page +1)
         }
     }
 
     fun onBack() {
         _uiState.update { currentState ->
-
-            currentState.copy(dailyEntry = DailyEvaluationEntry(
-                selectedEmotions = currentState.dailyEntry.selectedEmotions,
-                emotionIntensities = currentState.dailyEntry.emotionIntensities,
-                currentEmotion = currentState.dailyEntry.currentEmotion,
-                page = currentState.dailyEntry.page - 1)
-            )
+            currentState.copy(page = currentState.page -1)
         }
     }
 
@@ -90,8 +76,7 @@ class DailyEvaluationViewModel : ViewModel() {
                 currentState.copy(dailyEntry = DailyEvaluationEntry(
                     selectedEmotions = currentState.dailyEntry.selectedEmotions,
                     emotionIntensities = currentState.dailyEntry.emotionIntensities,
-                    currentEmotion = "Very Stressed",
-                    page = currentState.dailyEntry.page)
+                    currentEmotion = "Very Stressed")
                 )
             }
         } else if (emoji == EmojiNeutral) {
@@ -99,16 +84,15 @@ class DailyEvaluationViewModel : ViewModel() {
                 currentState.copy(dailyEntry = DailyEvaluationEntry(
                     selectedEmotions = currentState.dailyEntry.selectedEmotions,
                     emotionIntensities = currentState.dailyEntry.emotionIntensities,
-                    currentEmotion = "Mildly Stressed",
-                    page = currentState.dailyEntry.page))
+                    currentEmotion = "Mildly Stressed")
+                )
             }
         } else {
             _uiState.update { currentState ->
                 currentState.copy(dailyEntry = DailyEvaluationEntry(
                     selectedEmotions = currentState.dailyEntry.selectedEmotions,
                     emotionIntensities = currentState.dailyEntry.emotionIntensities,
-                    currentEmotion = "Not Stressed",
-                    page = currentState.dailyEntry.page))
+                    currentEmotion = "Not Stressed"))
             }
         }
     }
@@ -129,8 +113,7 @@ class DailyEvaluationViewModel : ViewModel() {
             val d_entry = DailyEvaluationEntry(
                 selectedEmotions = emotionList,
                 emotionIntensities = currentState.dailyEntry.emotionIntensities,
-                currentEmotion = currentState.dailyEntry.currentEmotion,
-                page = currentState.dailyEntry.page
+                currentEmotion = currentState.dailyEntry.currentEmotion
             )
 
             currentState.copy(dailyEntry = d_entry)
@@ -155,8 +138,7 @@ class DailyEvaluationViewModel : ViewModel() {
                     selectedEmotions = currentState.dailyEntry.selectedEmotions,
                     emotionIntensities = intensityList,
                     emotionsMap = newMap,
-                    currentEmotion = currentState.dailyEntry.currentEmotion,
-                    page = currentState.dailyEntry.page
+                    currentEmotion = currentState.dailyEntry.currentEmotion
                 )
             )
         }
