@@ -64,7 +64,6 @@ fun EntryModificationScreen(
                 .padding(innerPadding)
                 .fillMaxSize(),
             entry = entry,
-            onGetEntry = viewModel::getEntry,
             onEditEntry = viewModel::updateEntry,
             onNavigateBack = onNavigateBack,
         )
@@ -108,7 +107,6 @@ private fun EntryModificationScreenContent(
 private fun EntryModificationScreenContent(
     modifier: Modifier = Modifier,
     entry: JournalEntry?,
-    onGetEntry: (String) -> JournalEntry?,
     onEditEntry: (String, String, String) -> Unit,
     onNavigateBack: () -> Unit
 ) {
