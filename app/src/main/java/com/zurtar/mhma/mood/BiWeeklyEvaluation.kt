@@ -38,17 +38,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.zurtar.mhma.util.DefaultTopAppBar
 import com.zurtar.mhma.R
+import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
+import java.time.Instant
 import java.time.LocalDate
+import java.util.Date
 
 
 @Composable
 fun BiWeeklyEvaluationScreen(
     modifier: Modifier = Modifier,
-    viewModel: BiWeeklyEvaluationViewModel = viewModel(),
+    viewModel: BiWeeklyEvaluationViewModel = hiltViewModel(),
     openDrawer: () -> Unit,
     onNavigateToAnalytics: (Int) -> Unit
 ) {
@@ -96,7 +100,7 @@ private fun BiWeeklyEvaluationScreenContent(
             anxietyScore = anxietyScore,
             depressionResults = findSeverity(depressionScore, "depression"),
             anxietyResults = findSeverity(anxietyScore, "anxiety"),
-            dateCompleted = LocalDate.now()
+            dateCompleted = Date.from(Instant.now())
         )
 
         BiWeeklyResult(
@@ -440,9 +444,11 @@ fun RowChart(modifier: Modifier = Modifier, score: String, severity: String) {
 
 //HELPER FUNCTIONS
 
+/**
+ *
+ */
 @Composable
 fun findSeverity(score: Int, evalType: String): String {
-
     val depressionScores: List<String> = stringArrayResource(R.array.depression_scores).toList()
     val depressionSeverities: List<String> =
         stringArrayResource(R.array.depression_severities).toList()

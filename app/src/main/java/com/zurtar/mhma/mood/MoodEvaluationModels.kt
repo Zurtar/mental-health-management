@@ -4,27 +4,21 @@ import android.util.Log
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zurtar.mhma.data.MoodEntry
+import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.data.MoodRemoteDataSource
 import com.zurtar.mhma.data.MoodRepository
 import com.zurtar.mhma.theme.EmojiFrown
 import com.zurtar.mhma.theme.EmojiNeutral
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.Instant
 import java.util.Date
 import java.time.LocalDate
-
-data class BiWeeklyEvaluationEntry(
-    var depressionScore: Int,
-    var anxietyScore: Int,
-    var dateCompleted: LocalDate,
-    var depressionResults: String = "",
-    var anxietyResults: String = ""
-
-)
+import javax.inject.Inject
 
 data class DailyEvaluationEntry(
     val selectedEmotions: List<String> = listOf(),
@@ -33,8 +27,7 @@ data class DailyEvaluationEntry(
     val isSubmitted: Int = 0,
     val strongestEmotion: String = "default_initial",
     val page: Int = 0,
-
-    )
+)
 
 data class BiWeeklyEvaluationUiState(
     val depressionScore: Int = 0,
@@ -48,7 +41,6 @@ data class DailyEvaluationUiState(
     val dailyEntry: DailyEvaluationEntry = DailyEvaluationEntry(),
     val isSubmitted: Int = 0,
 )
-
 
 class DailyEvaluationViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(DailyEvaluationUiState())
@@ -155,9 +147,10 @@ class DailyEvaluationViewModel : ViewModel() {
 
 }
 
-class BiWeeklyEvaluationViewModel : ViewModel() {
-
-    private val moodRepository = MoodRepository(moodRemoteDataSource = MoodRemoteDataSource())
+@HiltViewModel
+class BiWeeklyEvaluationViewModel @Inject constructor(
+    private val moodRepository: MoodRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BiWeeklyEvaluationUiState())
     val uiState: StateFlow<BiWeeklyEvaluationUiState> = _uiState.asStateFlow()
@@ -208,16 +201,17 @@ class BiWeeklyEvaluationViewModel : ViewModel() {
         //Log.println(Log.DEBUG, "BiWeeklyEvalVM", "Anxiety Score: $anxietyScore")
     }
 
-    fun submitMoodEntry() {
+    private fun submitMoodEntry() {
         debugScore();
 
-        val entry = MoodEntry(
-            depressionScore = _uiState.value.depressionScore,
-            anxietyScore = -1,
-            dateCompleted = Date()
-        )
         viewModelScope.launch {
-            moodRepository.addMoodEntry(entry)
+            moodRepository.addMoodEntry(
+                BiWeeklyEvaluationEntry(
+                    depressionScore = _uiState.value.depressionScore,
+                    anxietyScore = _uiState.value.anxietyScore,
+                    dateCompleted = Date.from(Instant.now())
+                )
+            )
         }
     }
 

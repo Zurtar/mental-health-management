@@ -4,7 +4,6 @@ package com.zurtar.mhma.auth
 // im unsure about the project structure, ive moved this into a dedicated model folder.
 // I dont  have time to focus on the best way to arrange the file structure though.
 
-import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,11 +11,14 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.zurtar.mhma.data.MoodRemoteDataSource
 import com.zurtar.mhma.data.MoodRepository
+import com.zurtar.mhma.data.UserRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * This file will hold no UI logic!! This is a ViewModel/Buisness Logic Class only!
@@ -27,25 +29,6 @@ import kotlinx.coroutines.launch
  * ~~~inch by inch, row, by row~~~~~
  */
 
-
-/**
- * TODO:
- *  - Theres some redundancy, we have listeners inside the viewmodels being added to the auth object, those listeners then have
- *    logic to update their Ui State, to trigger recomposition. However that means that we have these data classes holding UI State for
- *    the various pages, which is fine, but for screens where we only want to check *if* someone is logged in we have this isLoggedIn varriable,
- *    then if we want to acesss user data we re-create those same fields that are in the other data classes (email, displayname, blahblah)
- *    .
- *    Is there not a better way to do this? Do we have to implement this listener code in every viewmodel? Surely theres a way to setup the one
- *    listener as a stateflow, fire off some event trigger anand then have other viewmodels inherit/react to *that* trigger instead of the direct.
- *    .
- *    the current approach is like having 7 children staring at a parent and the parent shoots the message to each, the children all specifically handling
- *    how they respond to it, but all defined ahead of time. Where the implementation I'd like to switch to would be the parent rings a bell, sending out
- *    one signal, the children then react, and can also tell other children that arent listening for that bell. I dont like the bulk of logic all being in that
- *    listener, or that im adding listeners in the init function of these view models. When the lifecycle of the viewmodel is up, is that listener removed?
- *    .
- *
- *    ^ this applies to all view models, it was written when there was a central model file.
- */
 
 data class LoginUiState(
     val email: String = "",
@@ -64,8 +47,11 @@ data class AccountUiState(
     val displayName: String = "default_initial"
 )
 
-class LoginViewModel : ViewModel() {
-    private val accountService: AccountServiceImplementation = AccountServiceImplementation()
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    private val userRepository: UserRepository,
+    private val accountService: AccountService
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
@@ -103,8 +89,12 @@ class LoginViewModel : ViewModel() {
     }
 }
 
-class SignupViewModel : ViewModel() {
-    private val accountService: AccountServiceImplementation = AccountServiceImplementation()
+@HiltViewModel
+class SignupViewModel @Inject constructor(
+    private val userRepository: UserRepository,
+    private val accountService: AccountService
+) : ViewModel() {
+//    private val accountService: AccountServiceImplementation = AccountServiceImplementation()
 
     private val _uiState = MutableStateFlow(SignupUiState())
     val uiState: StateFlow<SignupUiState> = _uiState.asStateFlow()
@@ -146,16 +136,20 @@ class SignupViewModel : ViewModel() {
     }
 }
 
-class AccountViewModel : ViewModel() {
+@HiltViewModel
+class AccountViewModel @Inject constructor(
+    private val userRepository: UserRepository,
+    private val accountService: AccountService
+) : ViewModel() {
     private val _uiState = MutableStateFlow(AccountUiState())
     val uiState: StateFlow<AccountUiState> = _uiState.asStateFlow()
 
-    private val accountService: AccountServiceImplementation = AccountServiceImplementation()
-
-    // debug to check
-    private val moodRepository: MoodRepository = MoodRepository(MoodRemoteDataSource())
-
     init {
+//        viewModelScope.launch{
+//            userRepository.getAuthState()
+//        }
+
+
         Firebase.auth.addAuthStateListener { auth ->
             Log.println(
                 Log.INFO,
@@ -188,10 +182,6 @@ class AccountViewModel : ViewModel() {
                         displayName = auth.currentUser?.displayName ?: "N/A"
                     )
                 }
-        }
-
-        viewModelScope.launch {
-            Log.println(Log.INFO, "MoodRepoTest", moodRepository.fetchLatestMoodEntries().toString())
         }
     }
 
