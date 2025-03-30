@@ -24,9 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.mood.DailyEvaluationEntry
-import com.zurtar.mhma.mood.findSeverity
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -35,14 +33,16 @@ import java.time.format.DateTimeFormatter
 fun DailyAnalyticsScreenContent() {
     val labelToContent: Map<String, @Composable () -> Unit> = mapOf(
         "Mood Calendar" to { DailyEvaluationCalendar() },
-        "History" to { DailyHistory() }
+        "History" to { DailyHistoryPrev() } // call DailyHistoricalAnalytics here
     )
     TabbedContent(labelToContent = labelToContent, key = labelToContent.keys.first())
 }
 
-@Preview
+//This will not be called in the screen content
+//Daily Historical analytics is the main function, this was used for previewing
+
 @Composable
-fun DailyHistory() {
+fun DailyHistoryPrev() {
     val dailyEntry: DailyEvaluationEntry = DailyEvaluationEntry(
         emotionsMap = mapOf("Happy" to 7f, "Sad" to 4f, "Angry" to 2.5f),
         stressLevel = "Mildly Stressed",
@@ -54,25 +54,16 @@ fun DailyHistory() {
 }
 
 @Composable
-fun SummaryCard(dailyEntry: DailyEvaluationEntry) {
+fun DailyAnalyticCard(dailyEntry: DailyEvaluationEntry) {
 
     val emotionsList = dailyEntry.emotionsMap.toList()
     val stress = stressLevel(dailyEntry.stressLevel)
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-    val emotions = listOf(
-        "Sad" to Color(0xFF1E88E5), // Blue
-        "Happy" to Color(0xFF4CAF50), // Yellow
-        "Fearful" to Color(0xFF8E24AA), // Purple
-        "Angry" to Color(0xBAD32F2F), // Red
-
-    )
-
     ElevatedCard(elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
-            .clickable { }
     ) {
         Row(
             modifier = Modifier
@@ -106,12 +97,13 @@ fun SummaryCard(dailyEntry: DailyEvaluationEntry) {
                 modifier = Modifier.padding(start = 180.dp),
                 text = dailyEntry.dateCompleted?.toLocalDate()?.format(formatter) ?: "null",
                 style = MaterialTheme.typography.bodySmall,
-                textAlign = TextAlign.Start
+                textAlign = TextAlign.Start,
+                fontSize = 15.sp
             )
 
         }
         Text(
-            modifier = Modifier.padding(start = 40.dp),
+            modifier = Modifier.padding(start = 40.dp, bottom = 10.dp),
             text = "Stress Level: ${stress}",
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center
@@ -122,14 +114,8 @@ fun SummaryCard(dailyEntry: DailyEvaluationEntry) {
 
 @Composable
 fun DailyHistoricalAnalytics(
-    dailyEvaluations: List<DailyEvaluationEntry>
-) {
-
-    // Generate results....
-    val dailyEvaluations_ = dailyEvaluations.map { x ->
-        x.copy(
-        )
-    }
+    dailyEvaluations: List<DailyEvaluationEntry>)
+{
 
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val current = LocalDate.now()
@@ -152,14 +138,14 @@ fun DailyHistoricalAnalytics(
     Column(modifier = Modifier.verticalScroll(state)) {
         //SummaryPopupPreview()
 
-        WeekTitles("Current Week")
-        todays.forEach { SummaryCard(it) }
+        WeekTitles("Today")
+        todays.forEach { DailyAnalyticCard(it) }
 
-        WeekTitles("Last Week")
-        lastWeek.forEach { SummaryCard(it) }
+        WeekTitles("Yesterday")
+        lastWeek.forEach { DailyAnalyticCard(it) }
 
-        WeekTitles("Previous Weeks")
-        other.forEach { SummaryCard(it) }
+        WeekTitles("Previous Days")
+        other.forEach { DailyAnalyticCard(it) }
     }
 }
 
@@ -188,6 +174,11 @@ fun DailyEvaluationCalendar(
 fun makeCardInfoDaily(): List<DailyEvaluationEntry> {
     val results = mutableListOf<DailyEvaluationEntry>()
 
+    val map = mapOf(
+        "Happy" to 7f,
+        "Sad" to 3f
+    )
+
     val current = LocalDate.now()
     for (i in 0..8) {
 
@@ -195,6 +186,8 @@ fun makeCardInfoDaily(): List<DailyEvaluationEntry> {
 
         results.add(
             DailyEvaluationEntry(
+                emotionsMap = map,
+                stressLevel = "Very Stressed",
                 dateCompleted = localDate.toDate()
             )
         )
