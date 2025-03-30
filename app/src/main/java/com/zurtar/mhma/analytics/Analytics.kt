@@ -46,14 +46,18 @@ import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.daysOfWeek
 import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
 import com.zurtar.mhma.R
-import com.zurtar.mhma.mood.BiWeeklyEvaluationEntry
+import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.mood.ScoreChart
 import com.zurtar.mhma.mood.findSeverity
 import com.zurtar.mhma.theme.AppTypography
 import com.zurtar.mhma.util.DefaultTopAppBar
+import java.time.Instant
 import java.time.LocalDate
 import java.time.YearMonth
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Date
+import java.util.Locale
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -243,14 +247,17 @@ fun BiWeeklySummaryPage(onNavigateToSummaryDialog: () -> Unit) {
     val yesterday = current.minusDays(1).format(formatter)
 
     val todays = results.filter {
-        it.dateCompleted.format(formatter) == currentString
+        it.dateCompleted.toLocalDate().format(formatter) == currentString
     }
+
     val lastWeek = results.filter {
-        it.dateCompleted.format(formatter) == yesterday
+        it.dateCompleted.toLocalDate().format(formatter) == yesterday
     }
+
     val other = results.filter {
-        it.dateCompleted < current.minusDays(2)
+        it.dateCompleted.toLocalDate() < current.minusDays(2)
     }
+
     val state = rememberScrollState()
     Column(modifier = Modifier.verticalScroll(state)) {
         //SummaryPopupPreview()
@@ -426,7 +433,7 @@ fun makeCardInfo(): List<BiWeeklyEvaluationEntry> {
     val current = LocalDate.now()
     for (i in 0..8) {
 
-        val date = current.minusDays(i.toLong())
+        val localDate = current.minusDays(i.toLong())
         val depressionResult = findSeverity(5 + i, "depression")
         val anxietyResult = findSeverity(2 + i, "anxiety")
 
@@ -436,7 +443,7 @@ fun makeCardInfo(): List<BiWeeklyEvaluationEntry> {
                 anxietyScore = 2 + i,
                 depressionResults = depressionResult,
                 anxietyResults = anxietyResult,
-                dateCompleted = date
+                dateCompleted = localDate.toDate()
             )
         )
     }
@@ -453,4 +460,14 @@ fun WeekTitles(title: String) {
         color = MaterialTheme.colorScheme.primary
     )
 
+}
+
+fun Date.toLocalDate(): LocalDate {
+    return java.time.Instant.ofEpochMilli(this.getTime())
+        .atZone(java.time.ZoneId.systemDefault())
+        .toLocalDate()
+}
+
+fun LocalDate.toDate(): Date {
+    return Date.from(this.atStartOfDay(ZoneId.systemDefault()).toInstant())
 }

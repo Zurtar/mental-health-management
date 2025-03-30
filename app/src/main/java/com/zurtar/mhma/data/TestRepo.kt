@@ -11,6 +11,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -23,12 +25,14 @@ import javax.inject.Singleton
  * Chat log
  */
 
-
-data class MoodEntry(
-    val depressionScore: Int = 0,
-    val anxietyScore: Int = 0,
-    val dateCompleted: Date? = null
+data class BiWeeklyEvaluationEntry(
+    var depressionScore: Int,
+    var anxietyScore: Int,
+    var dateCompleted: Date,
+    var depressionResults: String = "",
+    var anxietyResults: String = ""
 )
+
 
 @Singleton
 class MoodRepository @Inject constructor(
@@ -36,10 +40,10 @@ class MoodRepository @Inject constructor(
 //    private val moodRemoteLocalSource: MoodLocalDataSource
 ) {
 
-    suspend fun addMoodEntry(moodEntry: MoodEntry) =
+    suspend fun addMoodEntry(moodEntry: BiWeeklyEvaluationEntry) =
         moodRemoteDataSource.addMoodEntry(moodEntry)
 
-    suspend fun fetchLatestMoodEntries(): List<MoodEntry> =
+    suspend fun fetchLatestMoodEntries(): List<BiWeeklyEvaluationEntry> =
         moodRemoteDataSource.fetchMoodEntries()
 }
 
@@ -47,20 +51,21 @@ class MoodRepository @Inject constructor(
 class MoodRemoteDataSource @Inject constructor(
     private val fireStoreDatasource: FirebaseFirestore
 ) {
-
-    suspend fun addMoodEntry(moodEntry: MoodEntry) {
+    suspend fun addMoodEntry(moodEntry: BiWeeklyEvaluationEntry) {
         val response = fireStoreDatasource.collection("users")
             .document(Firebase.auth.currentUser?.uid!!)
-            .collection("mood-entries")
+            .collection("BiweeklyMoodEntries")
             .add(moodEntry).await()
     }
 
-    suspend fun fetchMoodEntries(): List<MoodEntry> {
+
+    suspend fun fetchMoodEntries(): List<BiWeeklyEvaluationEntry> {
         val response = fireStoreDatasource.collection("users")
             .document(Firebase.auth.currentUser?.uid!!)
-            .collection("mood-entries")
+            .collection("BiweeklyMoodEntries")
             .get().await()
 
-        return response.toObjects<MoodEntry>()
+
+        return response.toObjects<BiWeeklyEvaluationEntry>()
     }
 }

@@ -43,7 +43,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.zurtar.mhma.util.DefaultTopAppBar
 import com.zurtar.mhma.R
+import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
+import java.time.Instant
 import java.time.LocalDate
+import java.util.Date
 
 
 @Composable
@@ -97,7 +100,7 @@ private fun BiWeeklyEvaluationScreenContent(
             anxietyScore = anxietyScore,
             depressionResults = findSeverity(depressionScore, "depression"),
             anxietyResults = findSeverity(anxietyScore, "anxiety"),
-            dateCompleted = LocalDate.now()
+            dateCompleted = Date.from(Instant.now())
         )
 
         BiWeeklyResult(

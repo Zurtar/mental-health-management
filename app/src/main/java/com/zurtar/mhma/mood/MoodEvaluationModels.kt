@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.zurtar.mhma.data.MoodEntry
+import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.data.MoodRemoteDataSource
 import com.zurtar.mhma.data.MoodRepository
 import com.zurtar.mhma.theme.EmojiFrown
@@ -15,18 +15,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.Instant
 import java.util.Date
 import java.time.LocalDate
 import javax.inject.Inject
-
-data class BiWeeklyEvaluationEntry(
-    var depressionScore: Int,
-    var anxietyScore: Int,
-    var dateCompleted: LocalDate,
-    var depressionResults: String = "",
-    var anxietyResults: String = ""
-
-)
 
 data class DailyEvaluationEntry(
     val selectedEmotions: List<String> = listOf(),
@@ -35,8 +27,7 @@ data class DailyEvaluationEntry(
     val isSubmitted: Int = 0,
     val strongestEmotion: String = "default_initial",
     val page: Int = 0,
-
-    )
+)
 
 data class BiWeeklyEvaluationUiState(
     val depressionScore: Int = 0,
@@ -210,16 +201,17 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
         //Log.println(Log.DEBUG, "BiWeeklyEvalVM", "Anxiety Score: $anxietyScore")
     }
 
-    fun submitMoodEntry() {
+    private fun submitMoodEntry() {
         debugScore();
 
-        val entry = MoodEntry(
-            depressionScore = _uiState.value.depressionScore,
-            anxietyScore = -1,
-            dateCompleted = Date()
-        )
         viewModelScope.launch {
-            moodRepository.addMoodEntry(entry)
+            moodRepository.addMoodEntry(
+                BiWeeklyEvaluationEntry(
+                    depressionScore = _uiState.value.depressionScore,
+                    anxietyScore = _uiState.value.anxietyScore,
+                    dateCompleted = Date.from(Instant.now())
+                )
+            )
         }
     }
 
