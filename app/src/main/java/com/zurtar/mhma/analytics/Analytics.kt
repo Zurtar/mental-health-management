@@ -129,6 +129,7 @@ fun TabbedContent(
 ) {
     var state by remember { mutableStateOf(key) }
 
+
     Column(
         modifier
             .fillMaxWidth()
@@ -150,94 +151,6 @@ fun TabbedContent(
             }
         }
         labelToContent[state]?.invoke() ?: Text("INVALID_STATE")
-    }
-}
-
-
-@Composable
-fun QuickEvaluationCalendar(
-    modifier: Modifier = Modifier
-) {
-
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.Start
-    ) {
-        AppHorizontalCalendar()
-
-        Text(
-            modifier = Modifier.padding(start = 10.dp),
-            text = "Selected Date:",
-            style = MaterialTheme.typography.headlineSmall
-        )
-    }
-}
-
-@Composable
-fun BiWeeklyAnalyticsScreenContent(
-    modifier: Modifier = Modifier,
-    viewModel: BiWeeklyAnalyticsViewModel = hiltViewModel(),
-    onNavigateToSummaryDialog: (BiWeeklyEvaluationEntry?) -> Unit
-) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-    val labelToContent: Map<String, @Composable () -> Unit> = mapOf(
-        "Mood Graph" to { MoodGraphScreen() },
-        "History" to {
-            BiWeeklyHistoricalAnalytics(
-                biWeeklyEvaluations = uiState.pastEvaluations ?: listOf<BiWeeklyEvaluationEntry>(),
-                onNavigateToSummaryDialog = onNavigateToSummaryDialog
-            )
-        },
-        "Insights" to { }
-    )
-
-    TabbedContent(labelToContent = labelToContent, key = labelToContent.keys.first())
-}
-
-@Composable
-fun BiWeeklyHistoricalAnalytics(
-    biWeeklyEvaluations: List<BiWeeklyEvaluationEntry>,
-    onNavigateToSummaryDialog: (BiWeeklyEvaluationEntry?) -> Unit
-) {
-
-    // Generate results....
-    val biWeeklyEvaluations_ = biWeeklyEvaluations.map { x ->
-        x.copy(
-            depressionResults = findSeverity(x.depressionScore, "depression"),
-            anxietyResults = findSeverity(x.anxietyScore, "anxiety")
-        )
-    }
-
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    val current = LocalDate.now()
-    val currentString = current.format(formatter)
-    val yesterday = current.minusDays(1).format(formatter)
-
-    val todays = biWeeklyEvaluations_.filter {
-        (it.dateCompleted?.toLocalDate() ?: LocalDate.MIN).format(formatter) == currentString
-    }
-
-    val lastWeek = biWeeklyEvaluations_.filter {
-        (it.dateCompleted?.toLocalDate() ?: LocalDate.MIN).format(formatter) == yesterday
-    }
-
-    val other = biWeeklyEvaluations_.filter {
-        (it.dateCompleted?.toLocalDate() ?: LocalDate.MIN) < current.minusDays(2)
-    }
-
-    val state = rememberScrollState()
-    Column(modifier = Modifier.verticalScroll(state)) {
-        //SummaryPopupPreview()
-
-        WeekTitles("Current Week")
-        todays.forEach { SummaryCard(it, onNavigateToSummaryDialog) }
-
-        WeekTitles("Last Week")
-        lastWeek.forEach { SummaryCard(it, onNavigateToSummaryDialog) }
-
-        WeekTitles("Previous Weeks")
-        other.forEach { SummaryCard(it, onNavigateToSummaryDialog) }
     }
 }
 
@@ -427,14 +340,4 @@ fun WeekTitles(title: String) {
         color = MaterialTheme.colorScheme.primary
     )
 
-}
-
-fun Date.toLocalDate(): LocalDate {
-    return java.time.Instant.ofEpochMilli(this.getTime())
-        .atZone(java.time.ZoneId.systemDefault())
-        .toLocalDate()
-}
-
-fun LocalDate.toDate(): Date {
-    return Date.from(this.atStartOfDay(ZoneId.systemDefault()).toInstant())
 }

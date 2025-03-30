@@ -95,6 +95,9 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.firestore)
+
+    //for Charts
+    implementation(libs.himanshoe.charty)
 }
 
 //Add nav host, serial plugin is fine, need implementations

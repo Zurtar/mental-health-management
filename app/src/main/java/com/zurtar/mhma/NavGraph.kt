@@ -217,7 +217,6 @@ fun NavGraph(
                 arguments = listOf(navArgument("entryId") { type = NavType.IntType })
             ) { backStackEntry ->
                 val entryId = backStackEntry.arguments?.getInt("entryId") ?: -1
-
                 EntryViewScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
                     id = entryId,
