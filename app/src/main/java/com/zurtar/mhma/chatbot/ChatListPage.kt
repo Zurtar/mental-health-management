@@ -33,7 +33,6 @@ import androidx.compose.ui.res.painterResource
 import java.text.SimpleDateFormat
 import java.util.Locale
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.text.style.TextAlign
 import com.zurtar.mhma.R
@@ -89,29 +88,27 @@ private fun ChatListPageContent(
     Column(
         modifier = modifier
             .fillMaxSize()
-    ) {
-        Column(
-        ){
-            logList?.let {
-                LazyColumn(
-                    content = {
-                        itemsIndexed(it) { _: Int, item: ChatLog ->
-                            LogItem(
-                                item = item,
-                                onDelete = { deleteLog(item.id) },
-                                onNavigateToChatLog = onNavigateToChatLog
-                            )
-                        }
+            .padding(10.dp)
+    ){
+        logList?.let {
+            LazyColumn(
+                content = {
+                    itemsIndexed(it) { _: Int, item: ChatLog ->
+                        LogItem(
+                            item = item,
+                            onDelete = { deleteLog(item.id) },
+                            onNavigateToChatLog = onNavigateToChatLog
+                        )
                     }
-                )
-            } ?: Text(
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center,
-                text = "No entries found",
-                fontSize = 16.sp
+                }
             )
+        } ?: Text(
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            text = "No entries found",
+            fontSize = 16.sp
+        )
 
-        }
     }
 }
 

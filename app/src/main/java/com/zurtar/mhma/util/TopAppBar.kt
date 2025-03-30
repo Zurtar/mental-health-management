@@ -116,7 +116,7 @@ fun ChatLogTopAppBar(
             Button(
                 onClick = onNavigateBack
             ) {
-                Text(text = "Chat Bot",
+                Text(text = "Back to List",
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             }
