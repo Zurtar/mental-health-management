@@ -23,6 +23,7 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -269,6 +270,7 @@ fun BiWeeklyResult(
     ) {
 
         Text(
+            modifier = Modifier.padding(top = 20.dp, bottom = 10.dp),
             text = "You have completed the Bi-Weekly evaluation!",
             style = MaterialTheme.typography.titleLarge,
             textAlign = TextAlign.Center
@@ -280,58 +282,73 @@ fun BiWeeklyResult(
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
                     text = "Depression Score",
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center
                 )
                 FilledTonalButton(
+                    modifier  = Modifier.width(60.dp).height(60.dp).padding(top = 10.dp),
                     onClick = {},
                     enabled = true,
-                    content = { Text("${evaluation.depressionScore}") })
+                    content = { Text(
+                        text = "${evaluation.depressionScore}",
+                        style = MaterialTheme.typography.bodyLarge
+                    )})
 
             }
-            Spacer(Modifier.width(15.dp))
+            Spacer(Modifier.width(25.dp))
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
                     text = "Anxiety Score",
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center
                 )
                 FilledTonalButton(
+                    modifier  = Modifier.width(60.dp).height(60.dp).padding(top = 10.dp),
                     onClick = {},
                     enabled = true,
-                    content = { Text("${evaluation.anxietyScore}") })
+                    content = { Text(
+                        text = "${evaluation.anxietyScore}",
+                        style = MaterialTheme.typography.bodyLarge
+                    )})
             }
         }
+
+        Spacer(Modifier.height(25.dp))
+
+        Text(
+            text = "Your answers to the PHQ-9 align with those with: ${evaluation.depressionResults}",
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center,
+            fontSize = 17.sp
+        )
 
         ScoreChart(
             score = evaluation.depressionScore,
             scores = depressionScores,
             severities = depressionSeverities
         )
-        Spacer(Modifier.height(15.dp))
+
+        Spacer(Modifier.height(25.dp))
+
         Text(
-            text = "Your answers to the PHQ-9 align with those with: ${evaluation.depressionResults}",
+            text = "Your answers to the GAD-7 align with those with: ${evaluation.anxietyResults}",
             style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            fontSize = 17.sp
         )
-        Spacer(Modifier.height(15.dp))
+        //Spacer(Modifier.height(.dp))
 
         ScoreChart(
             score = evaluation.anxietyScore,
             scores = anxietyScores,
             severities = anxietySeverities
         )
-        Spacer(Modifier.height(15.dp))
-        Text(
-            text = "Your answers to the GAD-7 align with those with: ${evaluation.anxietyResults}",
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center
-        )
         Spacer(Modifier.height(30.dp))
-
+        HorizontalDivider()
         ProceedCard("Proceed to Evaluation Summary") { onNavigateToAnalytics(1) }
-        Spacer(Modifier.height(15.dp))
+        HorizontalDivider()
         ProceedCard("Proceed to Evaluation Analytics") { onNavigateToAnalytics(1) }
+        HorizontalDivider()
 
 
     }
@@ -347,7 +364,7 @@ fun ProceedCard(text: String, navigate: () -> Unit) {
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        border = BorderStroke(1.dp, Color.Black)
+        border = BorderStroke(1.dp, Color.Transparent)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -355,7 +372,8 @@ fun ProceedCard(text: String, navigate: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Text(
-                text = text
+                text = text,
+                style = MaterialTheme.typography.titleMedium
             )
             FilledTonalButton(
                 onClick = { navigate() },
@@ -382,7 +400,7 @@ fun ProceedCard(text: String, navigate: () -> Unit) {
 fun ScoreChart(score: Int, scores: List<String>, severities: List<String>) {
 
     ElevatedCard(
-        Modifier.padding(top = 15.dp),
+        Modifier.padding(top = 15.dp, start = 10.dp, end = 10.dp),
 
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
@@ -427,18 +445,6 @@ fun ScoreChart(score: Int, scores: List<String>, severities: List<String>) {
 
 }
 
-
-@Composable
-fun ScoreColumn(text: String) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.titleMedium,
-        textAlign = TextAlign.Center,
-        modifier = Modifier.padding(start = 15.dp)
-    )
-
-}
-
 @Composable
 fun RowChart(modifier: Modifier = Modifier, score: String, severity: String) {
     Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -448,7 +454,8 @@ fun RowChart(modifier: Modifier = Modifier, score: String, severity: String) {
             modifier = Modifier
                 .padding(start = 5.dp)
                 .width(50.dp),
-            textAlign = TextAlign.Left
+            textAlign = TextAlign.Left,
+            fontSize = 15.sp
         )
         Text(
             text = severity,
@@ -456,7 +463,8 @@ fun RowChart(modifier: Modifier = Modifier, score: String, severity: String) {
             modifier = Modifier
                 .padding(start = 5.dp)
                 .width(180.dp),
-            textAlign = TextAlign.Left
+            textAlign = TextAlign.Left,
+            fontSize = 15.sp
         )
     }
 }
