@@ -85,7 +85,7 @@ fun DailyAnalyticCard(dailyEntry: DailyEvaluationEntry) {
                 contentPadding = PaddingValues(0.dp)
             ) {
                 Text(
-                    text = "${emotionsList[0].second}",
+                    text = "${dailyEntry.strongestEmotion.second}",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -93,7 +93,7 @@ fun DailyAnalyticCard(dailyEntry: DailyEvaluationEntry) {
 
             Text(
                 modifier = Modifier.padding(start = 15.dp),
-                text = emotionsList[0].first,
+                text = dailyEntry.strongestEmotion.first,
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center
             )
@@ -121,7 +121,6 @@ fun DailyAnalyticCard(dailyEntry: DailyEvaluationEntry) {
 fun DailyHistoricalAnalytics(
     dailyEvaluations: List<DailyEvaluationEntry>
 ) {
-
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val current = LocalDate.now()
     val currentString = current.format(formatter)
@@ -136,7 +135,7 @@ fun DailyHistoricalAnalytics(
     }
 
     val other = dailyEvaluations.filter {
-        (it.dateCompleted?.toLocalDate() ?: LocalDate.MIN) < current.minusDays(2)
+        (it.dateCompleted?.toLocalDate() ?: LocalDate.MAX) < current.minusDays(2)
     }
 
     val state = rememberScrollState()
@@ -144,7 +143,8 @@ fun DailyHistoricalAnalytics(
         //SummaryPopupPreview()
 
         WeekTitles("Today")
-        today.forEach { DailyAnalyticCard(it) }
+        if (!today.isNullOrEmpty())
+            DailyAnalyticCard(today.first())
 
         WeekTitles("Yesterday")
         lastWeek.forEach { DailyAnalyticCard(it) }

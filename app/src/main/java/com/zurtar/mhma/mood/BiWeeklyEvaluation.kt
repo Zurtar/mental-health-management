@@ -287,7 +287,7 @@ fun BiWeeklyResult(
                     textAlign = TextAlign.Center
                 )
                 FilledTonalButton(
-                    modifier  = Modifier.width(60.dp).height(60.dp).padding(top = 10.dp),
+                    modifier  = Modifier.width(80.dp).height(60.dp).padding(top = 10.dp),
                     onClick = {},
                     enabled = true,
                     content = { Text(
@@ -304,7 +304,7 @@ fun BiWeeklyResult(
                     textAlign = TextAlign.Center
                 )
                 FilledTonalButton(
-                    modifier  = Modifier.width(60.dp).height(60.dp).padding(top = 10.dp),
+                    modifier  = Modifier.width(80.dp).height(60.dp).padding(top = 10.dp),
                     onClick = {},
                     enabled = true,
                     content = { Text(

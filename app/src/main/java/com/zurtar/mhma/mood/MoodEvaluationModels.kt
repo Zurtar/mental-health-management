@@ -6,6 +6,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zurtar.mhma.analytics.toDate
+import com.zurtar.mhma.analytics.toLocalDate
 import com.zurtar.mhma.data.models.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.data.BiWeeklyMoodRepository
 import com.zurtar.mhma.data.DailyEvaluationEntry
@@ -188,7 +189,7 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
             currentState.copy(page = currentState.page + 1)
         }
 
-        if (_uiState.value.page == _uiState.value.questionResponse.size-1)
+        if (_uiState.value.page == _uiState.value.questionResponse.size - 1)
             submitMoodEntry()
     }
 
@@ -230,21 +231,21 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
 
     private fun submitMoodEntry() {
         debugScore();
-/*
-        val ran = Random(Instant.now().toEpochMilli())
-        val biWeeklyEntries: MutableList<BiWeeklyEvaluationEntry> = mutableListOf()
+        /*
+                val ran = Random(Instant.now().toEpochMilli())
+                val biWeeklyEntries: MutableList<BiWeeklyEvaluationEntry> = mutableListOf()
 
-        for (i in 0..10) {
-            val date = LocalDate.now().minusWeeks(i.toLong()).toDate()
+                for (i in 0..10) {
+                    val date = LocalDate.now().minusWeeks(i.toLong()).toDate()
 
-            biWeeklyEntries.add(
-                BiWeeklyEvaluationEntry(
-                    depressionScore = ran.nextInt(0, 27),
-                    anxietyScore = ran.nextInt(0, 21),
-                    dateCompleted = date
-                )
-            )
-        }*/
+                    biWeeklyEntries.add(
+                        BiWeeklyEvaluationEntry(
+                            depressionScore = ran.nextInt(0, 27),
+                            anxietyScore = ran.nextInt(0, 21),
+                            dateCompleted = date
+                        )
+                    )
+                }*/
 
         viewModelScope.launch {
             biWeeklyMoodRepository.addMoodEntry(
@@ -265,10 +266,27 @@ data class EvaluationMenuUiState(
     val isDailyEntry: Boolean = false
 )
 
-class EvaluationMenuViewModel : ViewModel() {
+@HiltViewModel
+class EvaluationMenuViewModel @Inject constructor(
+    private val dailyMoodRepository: DailyMoodRepository,
+    private val biWeeklyMoodRepository: BiWeeklyMoodRepository
+) : ViewModel() {
     private val _uiState = MutableStateFlow(EvaluationMenuUiState())
     val uiState: StateFlow<EvaluationMenuUiState> = _uiState.asStateFlow()
 
+    init {
+        viewModelScope.launch {
+            _uiState.update { c ->
+                c.copy(
+                    isBiWeeklyCompleted = biWeeklyMoodRepository.fetchLatestMoodEntries()
+                        .any { it.dateCompleted?.toLocalDate()?.equals(LocalDate.now()) == true },
+
+                    isDailyEntry = dailyMoodRepository.fetchMoodEntries()
+                        .any { it.dateCompleted?.toLocalDate()?.equals(LocalDate.now()) == true }
+                )
+            }
+        }
+    }
 
     fun updateBiWeekly() {
         if (!_uiState.value.isBiWeeklyCompleted) {
@@ -280,7 +298,6 @@ class EvaluationMenuViewModel : ViewModel() {
                 currentState.copy(isBiWeeklyCompleted = false)
             }
         }
-
     }
 
 }

@@ -30,11 +30,11 @@ import com.himanshoe.charty.line.model.LineData
 import com.zurtar.mhma.data.models.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.mood.findSeverity
 import java.time.Instant
+
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Date
-import kotlin.random.Random
 
 
 @Composable
@@ -58,7 +58,7 @@ fun BiWeeklyAnalyticsScreenContent(
                 onNavigateToSummaryDialog = onNavigateToSummaryDialog
             )
         },
-       // "Insights" to { }
+        // "Insights" to { }
     )
 
     TabbedContent(labelToContent = labelToContent, key = labelToContent.keys.first())
@@ -70,10 +70,12 @@ fun MoodGraphScreen(biWeeklyEvaluations: List<BiWeeklyEvaluationEntry>) {
     var lineData: MutableList<LineData> = mutableListOf()
 
     biWeeklyEvaluations.forEach { entries ->
+
         lineData.add(
             LineData(
                 yValue = entries.depressionScore.toFloat(),
-                xValue = entries.dateCompleted!!.toLocalDate().format(DateTimeFormatter.ofPattern("d MMM")) + ' '
+                xValue = entries.dateCompleted!!.toLocalDate()
+                    .format(DateTimeFormatter.ofPattern("d MMM")) + ' '
             )
         )
     }
@@ -85,7 +87,8 @@ fun MoodGraphScreen(biWeeklyEvaluations: List<BiWeeklyEvaluationEntry>) {
         lineData.add(
             LineData(
                 yValue = entries.anxietyScore.toFloat(),
-                xValue = entries.dateCompleted!!.toLocalDate().format(DateTimeFormatter.ofPattern("d MMM")) + ' '
+                xValue = entries.dateCompleted!!.toLocalDate()
+                    .format(DateTimeFormatter.ofPattern("d MMM")) + ' '
             )
         )
     }

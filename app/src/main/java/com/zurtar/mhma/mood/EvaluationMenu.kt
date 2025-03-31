@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.zurtar.mhma.util.DefaultTopAppBar
@@ -39,7 +40,7 @@ import com.zurtar.mhma.util.MoodEvaluationTopAppBar
 @Composable
 fun MoodEvaluationScreen(
     modifier: Modifier = Modifier,
-    viewModel: EvaluationMenuViewModel = viewModel(),
+    viewModel: EvaluationMenuViewModel = hiltViewModel(),
     openDrawer: () -> Unit,
     onNavigateToDaily: () -> Unit,
     onNavigateToBiWeekly: () -> Unit
@@ -67,13 +68,15 @@ fun MoodEvaluationScreen(
 @Composable
 private fun MoodEvaluationScreenContent(
     modifier: Modifier = Modifier,
-    dailyCompleted:Boolean,
-    biWeeklyCompleted:Boolean,
+    dailyCompleted: Boolean,
+    biWeeklyCompleted: Boolean,
     onNavigateToDaily: () -> Unit,
     onNavigateToBiWeekly: () -> Unit
 ) {
     Column(
-        modifier = modifier.fillMaxWidth(0.5f).padding(top = 50.dp),
+        modifier = modifier
+            .fillMaxWidth(0.5f)
+            .padding(top = 50.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -81,7 +84,7 @@ private fun MoodEvaluationScreenContent(
         EvaluationCard(
             title = "Daily Evaluation",
             desc = "",
-           completed = dailyCompleted,
+            completed = dailyCompleted,
             onNavigate = { onNavigateToDaily() }
 
         )
@@ -126,9 +129,9 @@ private fun MoodEvaluationScreenContent(
 fun EvaluationCard(
     modifier: Modifier = Modifier,
     title: String,
-    desc:String,
-    completed:Boolean = false,
-    checkMark:Int = 1,
+    desc: String,
+    completed: Boolean = false,
+    checkMark: Int = 1,
     onNavigate: () -> Unit
 
 ) {
@@ -138,12 +141,16 @@ fun EvaluationCard(
             .padding(top = 15.dp, bottom = 15.dp)
             .background(MaterialTheme.colorScheme.background)
             .fillMaxWidth(0.75f),
-           // .fillMaxHeight(0.2f),
-         onClick = { onNavigate() }
+        // .fillMaxHeight(0.2f),
+        onClick = { onNavigate() }
     ) {
 
-        Row(modifier = Modifier.fillMaxWidth().padding(10.dp)) {
-            if(checkMark == 1) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+        ) {
+            if (checkMark == 1) {
                 IsCompletedCheckButton(completed)
                 Text(
                     text = title,
@@ -159,7 +166,6 @@ fun EvaluationCard(
             }
 
 
-
         }
 
 
@@ -169,13 +175,13 @@ fun EvaluationCard(
 }
 
 @Composable
-fun IsCompletedCheckButton(completed:Boolean) {
+fun IsCompletedCheckButton(completed: Boolean) {
 
     IconToggleButton(
         checked = completed,
         onCheckedChange = {}
     ) {
-        if(completed) {
+        if (completed) {
             Icon(
                 Icons.Filled.CheckCircle,
                 contentDescription = ""

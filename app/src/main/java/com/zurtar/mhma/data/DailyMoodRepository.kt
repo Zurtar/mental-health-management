@@ -1,11 +1,13 @@
 package com.zurtar.mhma.data
 
 import android.util.Log
+import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenSource
 import com.google.firebase.firestore.MetadataChanges
+import com.google.firebase.firestore.PropertyName
 import com.google.firebase.firestore.SnapshotListenOptions
 import com.google.firebase.firestore.toObjects
 import com.zurtar.mhma.data.models.DateSerializer
@@ -14,6 +16,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.util.Date
 import javax.inject.Inject
@@ -23,6 +26,7 @@ import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import kotlin.random.Random
 
 
 @Serializable
@@ -33,7 +37,12 @@ data class DailyEvaluationEntryDBSafe(
     val stressLevel: String = "default_initial",
 
 
-    val strongestEmotionFirst: String = "",
+    @PropertyName("strongestEmotion_first")
+    @get:PropertyName("strongestEmotion_first")
+    val strongestEmotionFirst: String? = null,
+
+    @PropertyName("strongestEmotion_second")
+    @get:PropertyName("strongestEmotion_second")
     val strongestEmotionSecond: Float = 0f,
 
     @Serializable(with = DateSerializer::class)
@@ -116,10 +125,10 @@ class DailyMoodRemoteDataSource @Inject constructor(
     }
 
     fun getMoodEntries(): Flow<List<DailyEvaluationEntry>> = callbackFlow {
-      /*  val collectionRef = fireStoreDatasource.collection("users")
-            .document(Firebase.auth.currentUser?.uid!!)
-            .collection("DailyMoodEntries")
-*/
+        /*  val collectionRef = fireStoreDatasource.collection("users")
+              .document(Firebase.auth.currentUser?.uid!!)
+              .collection("DailyMoodEntries")
+  */
         val options = SnapshotListenOptions.Builder()
             .setMetadataChanges(MetadataChanges.INCLUDE)
             .setSource(ListenSource.DEFAULT)
@@ -128,14 +137,15 @@ class DailyMoodRemoteDataSource @Inject constructor(
         val listenerRegistration = fireStoreDatasource.collection("users")
             .document(Firebase.auth.currentUser?.uid!!)
             .collection("DailyMoodEntries").addSnapshotListener(options) { snapshot, e ->
-            if (e != null) {
-                Log.w(TAG, "Listen failed.", e)
-                return@addSnapshotListener
-            }
-            Log.w(TAG, snapshot.toString())
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e)
+                    return@addSnapshotListener
+                }
+                Log.w(TAG, snapshot.toString())
 
-            snapshot?.toObjects<DailyEvaluationEntryDBSafe>()?.let { trySend(it.toNormalList()) }
-        }
+                snapshot?.toObjects<DailyEvaluationEntryDBSafe>()
+                    ?.let { trySend(it.toNormalList()) }
+            }
 
         trySend(listOf<DailyEvaluationEntry>())
         awaitClose { listenerRegistration.remove() }
@@ -157,8 +167,10 @@ fun DailyEvaluationEntry.toDBSafe(): DailyEvaluationEntryDBSafe {
         emotionIntensities = this.emotionIntensities,
         emotionsMap = this.emotionsMap,
         stressLevel = this.stressLevel,
-        strongestEmotionFirst = this.emotionsMap.entries.sortedByDescending { it.value }.first().toPair().first,
-        strongestEmotionSecond = this.emotionsMap.entries.sortedByDescending { it.value }.first().toPair().second,
+        strongestEmotionFirst = this.emotionsMap.entries.sortedByDescending { it.value }?.first()
+            ?.toPair()?.first ?: listOf("Fearful", "Sad", "Angry").shuffled().first(),
+        strongestEmotionSecond = this.emotionsMap.entries.sortedByDescending { it.value }?.first()
+            ?.toPair()?.second ?: Random.nextInt(0, 10).toFloat(),
         dateCompleted = this.dateCompleted
     )
 }
@@ -169,7 +181,7 @@ fun DailyEvaluationEntryDBSafe.toNormal(): DailyEvaluationEntry {
         emotionIntensities = this.emotionIntensities,
         emotionsMap = this.emotionsMap,
         stressLevel = this.stressLevel,
-        strongestEmotion = this.emotionsMap.entries.sortedByDescending { it.value }.first().toPair(),
+        strongestEmotion = Pair(this.strongestEmotionFirst ?: "Other", this.strongestEmotionSecond),
         dateCompleted = this.dateCompleted
     )
 }

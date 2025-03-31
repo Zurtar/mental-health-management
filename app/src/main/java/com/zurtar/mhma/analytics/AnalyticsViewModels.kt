@@ -25,7 +25,6 @@ data class MoodCalendarUIState(
 )
 
 
-
 //@HiltViewModel
 class MoodCalendarViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(MoodCalendarUIState(""))
@@ -91,10 +90,15 @@ class BiWeeklyAnalyticsViewModel @Inject constructor(
 
                 val moodList = biWeeklyMoodRepository.fetchLatestMoodEntries().toMutableList()
 
-                val data = moodList.map{ currentEntry ->
-                    LineData(yValue = currentEntry.depressionScore.toFloat(),
-                        xValue = currentEntry.dateCompleted!!)
-
+                val data = moodList.mapNotNull { currentEntry ->
+                    if (currentEntry.dateCompleted == null)
+                        null
+                    else {
+                        LineData(
+                            yValue = currentEntry.depressionScore.toFloat(),
+                            xValue = currentEntry.dateCompleted!!
+                        )
+                    }
                 }
                 currentState.copy(
                     pastEvaluations = moodList,
