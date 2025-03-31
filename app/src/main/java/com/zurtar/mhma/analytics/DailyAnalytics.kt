@@ -74,7 +74,7 @@ fun DailyAnalyticCard(dailyEntry: DailyEvaluationEntry) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 10.dp),
-            horizontalArrangement = Arrangement.Start,
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             ElevatedButton(
@@ -92,14 +92,14 @@ fun DailyAnalyticCard(dailyEntry: DailyEvaluationEntry) {
             }
 
             Text(
-                modifier = Modifier.padding(start = 15.dp),
+                modifier = Modifier.padding(start = 25.dp),
                 text = dailyEntry.strongestEmotion.first,
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center
             )
 
             Text(
-                modifier = Modifier.padding(start = 180.dp),
+                modifier = Modifier.padding(start = 180.dp, end = 5.dp),
                 text = dailyEntry.dateCompleted?.toLocalDate()?.format(formatter) ?: "null",
                 style = MaterialTheme.typography.bodySmall,
                 textAlign = TextAlign.Start,
@@ -126,15 +126,20 @@ fun DailyHistoricalAnalytics(
     val currentString = current.format(formatter)
     val yesterday = current.minusDays(1).format(formatter)
 
-    val today = dailyEvaluations.filter {
+
+    val dailyEvaluations_ = dailyEvaluations.sortedByDescending { ele ->
+        ele.dateCompleted?.toLocalDate() ?: LocalDate.MIN
+    }
+
+    val today = dailyEvaluations_.filter {
         (it.dateCompleted?.toLocalDate() ?: LocalDate.MIN).format(formatter) == currentString
     }
 
-    val lastWeek = dailyEvaluations.filter {
+    val lastWeek = dailyEvaluations_.filter {
         (it.dateCompleted?.toLocalDate() ?: LocalDate.MIN).format(formatter) == yesterday
     }
 
-    val other = dailyEvaluations.filter {
+    val other = dailyEvaluations_.filter {
         (it.dateCompleted?.toLocalDate() ?: LocalDate.MAX) < current.minusDays(2)
     }
 

@@ -127,21 +127,31 @@ private fun BiWeeklyEvaluationScreenContent(
         ) {
             if (page > 0)
                 FilledTonalButton(
-                    modifier  = Modifier.width(120.dp).height(50.dp).padding(top = 10.dp),
+                    modifier = Modifier
+                        .width(120.dp)
+                        .height(50.dp)
+                        .padding(top = 10.dp),
                     onClick = { onBack() },
-                    content = { Text(
-                        text = "Back",
-                        fontSize = 18.sp
-                    )})
+                    content = {
+                        Text(
+                            text = "Back",
+                            fontSize = 18.sp
+                        )
+                    })
 
             var text = "Next"
             if (page == questions.size - 1) text = "Submit"
-            FilledTonalButton(modifier  = Modifier.width(120.dp).height(50.dp).padding(top = 10.dp),
+            FilledTonalButton(modifier = Modifier
+                .width(120.dp)
+                .height(50.dp)
+                .padding(top = 10.dp),
                 onClick = { onNext() },
-                content = { Text(
-                    text = text,
-                    fontSize = 18.sp
-                ) })
+                content = {
+                    Text(
+                        text = text,
+                        fontSize = 18.sp
+                    )
+                })
         }
         Spacer(modifier = Modifier.height(40.dp))
 
@@ -165,10 +175,10 @@ fun QuestionCard(
 
     var questionNum = "Question ${num + 1}"
 
-    if(num <= 8) {
+    if (num <= 8) {
         questionNum = "Question ${num + 1}: Depression"
     }
-    if(num > 8) {
+    if (num > 8) {
         questionNum = "Question ${num + 1}: Anxiety"
     }
 
@@ -179,7 +189,10 @@ fun QuestionCard(
             .padding(bottom = 15.dp, top = 15.dp)
             .fillMaxWidth(0.85f)
     ) {
-        Column(modifier = Modifier.padding(all = 15.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            modifier = Modifier.padding(all = 15.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text(
                 modifier = Modifier.padding(bottom = 20.dp),
                 text = question,
@@ -287,13 +300,18 @@ fun BiWeeklyResult(
                     textAlign = TextAlign.Center
                 )
                 FilledTonalButton(
-                    modifier  = Modifier.width(80.dp).height(60.dp).padding(top = 10.dp),
+                    modifier = Modifier
+                        .width(80.dp)
+                        .height(60.dp)
+                        .padding(top = 10.dp),
                     onClick = {},
                     enabled = true,
-                    content = { Text(
-                        text = "${evaluation.depressionScore}",
-                        style = MaterialTheme.typography.bodyLarge
-                    )})
+                    content = {
+                        Text(
+                            text = "${evaluation.depressionScore}",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    })
 
             }
             Spacer(Modifier.width(25.dp))
@@ -304,13 +322,18 @@ fun BiWeeklyResult(
                     textAlign = TextAlign.Center
                 )
                 FilledTonalButton(
-                    modifier  = Modifier.width(80.dp).height(60.dp).padding(top = 10.dp),
+                    modifier = Modifier
+                        .width(80.dp)
+                        .height(60.dp)
+                        .padding(top = 10.dp),
                     onClick = {},
                     enabled = true,
-                    content = { Text(
-                        text = "${evaluation.anxietyScore}",
-                        style = MaterialTheme.typography.bodyLarge
-                    )})
+                    content = {
+                        Text(
+                            text = "${evaluation.anxietyScore}",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    })
             }
         }
 
@@ -492,7 +515,7 @@ fun findSeverity(score: Int, evalType: String): String {
             if (score >= scoreRange[0].toInt() && score <= scoreRange[1].toInt()) {
                 return anxietySeverities[i]
             }
-            if(score == 0) {
+            if (score == 0) {
                 return "No anxiety score"
             }
         }
@@ -504,7 +527,7 @@ fun findSeverity(score: Int, evalType: String): String {
                 return depressionSeverities[i]
             }
 
-            if(score == 0) {
+            if (score == 0) {
                 return "No depression score"
             }
         }

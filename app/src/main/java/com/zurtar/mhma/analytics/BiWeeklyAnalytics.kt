@@ -69,6 +69,7 @@ fun MoodGraphScreen(biWeeklyEvaluations: List<BiWeeklyEvaluationEntry>) {
 
     var lineData: MutableList<LineData> = mutableListOf()
 
+
     biWeeklyEvaluations.forEach { entries ->
 
         lineData.add(
@@ -144,12 +145,17 @@ fun BiWeeklyHistoricalAnalytics(
 ) {
 
     // Generate results....
-    val biWeeklyEvaluations_ = biWeeklyEvaluations.map { x ->
+    var biWeeklyEvaluations_ = biWeeklyEvaluations.map { x ->
         x.copy(
             depressionResults = findSeverity(x.depressionScore, "depression"),
             anxietyResults = findSeverity(x.anxietyScore, "anxiety")
         )
     }
+
+    biWeeklyEvaluations_ = biWeeklyEvaluations_.sortedByDescending { ele ->
+        ele.dateCompleted?.toLocalDate() ?: LocalDate.MIN
+    }
+
 
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val current = LocalDate.now()
