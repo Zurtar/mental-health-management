@@ -52,7 +52,8 @@ class DailyEvaluationViewModel @Inject constructor(
                 isSubmitted = 1,
                 dailyEntry = currentState.dailyEntry.copy(
                     emotionsMap = emotionsMap,
-                    dateCompleted = LocalDate.now().toDate()
+                    dateCompleted = LocalDate.now().toDate(),
+                    strongestEmotion = emotionsMap.entries.first().toPair()
                 )
             )
         }
@@ -145,7 +146,6 @@ class DailyEvaluationViewModel @Inject constructor(
     }
 
     fun updateStrongestEmotion() {
-
         val strongest = _uiState.value.dailyEntry.emotionsMap.entries.first().toPair()
 
         _uiState.update { currentState ->
