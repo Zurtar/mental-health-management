@@ -1,6 +1,7 @@
 package com.zurtar.mhma.analytics
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
@@ -90,17 +91,31 @@ fun MoodGraphScreen(biWeeklyEvaluations: List<BiWeeklyEvaluationEntry>) {
         lineData.add(
             LineData(
                 yValue = entries.depressionScore.toFloat(),
-                xValue = entries.dateCompleted!!.toLocalDate().format(DateTimeFormatter.ofPattern("MM-d"))!!
+                xValue = entries.dateCompleted!!.toLocalDate().format(DateTimeFormatter.ofPattern("d MMM")) + ' '
             )
         )
     }
 
-    val data = lineData.toList()
+    val depressionDate = lineData.toList()
+
+    lineData.clear()
+    biWeeklyEvaluations.forEach { entries ->
+        lineData.add(
+            LineData(
+                yValue = entries.anxietyScore.toFloat(),
+                xValue = entries.dateCompleted!!.toLocalDate().format(DateTimeFormatter.ofPattern("d MMM")) + ' '
+            )
+        )
+    }
+    val anxietyData = lineData.toList()
 
     Column(modifier = Modifier.fillMaxWidth()) {
 
-        Text("Mood Graph")
-        DepressionGraph(data)
+        Text("Depression Scores Over Time")
+        DepressionGraph(depressionDate)
+        Spacer(Modifier.height((15.dp)))
+        Text("Anxiety Scores Over Time")
+        DepressionGraph(anxietyData)
     }
 
 }
@@ -112,7 +127,7 @@ fun DepressionGraph(data: List<LineData>) {
         showXLabel = true,
         showYLabel = true,
         textColor = ChartColor.Solid(MaterialTheme.colorScheme.primary),
-        xAxisCharCount = 3,
+        xAxisCharCount = 10,
         labelTextStyle = MaterialTheme.typography.bodyMedium
     )
 
@@ -123,7 +138,6 @@ fun DepressionGraph(data: List<LineData>) {
             colorConfig = LineChartColorConfig.default(),
             labelConfig = labelConfig,
             chartConfig = LineChartConfig(
-
                 lineConfig = LineConfig(showValueOnLine = true)
             )
         )
