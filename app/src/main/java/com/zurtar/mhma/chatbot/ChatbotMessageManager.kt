@@ -384,12 +384,12 @@ class ChatbotMessageManager (
         return when (branchStep) {
             0 -> {
                 branchStep++
-                "Lets start by identifying the situation you would like to model. Could you describe the situation?"
+                "To start, lets identify the situation you want to model using the CBT triangle. Could you describe the situation?"
             }
 
             1 -> {
                 branchStep++
-                "Now, lets explore the thoughts, feelings, and thoughts you hand in response to the situation\n\nFirst, what were you automatic/immediate thoughts in response to this situation?"
+                "Now, lets explore the thoughts, feelings, and thoughts you hand in response to the situation\n\nFirst, what were you immediate thoughts in response to this situation?"
             }
 
             2 -> {
@@ -406,6 +406,7 @@ class ChatbotMessageManager (
                 branchStep++
                 "Finally, are there any relationships you see between your thoughts, feelings, and behaviours? Could you describe those relationships?"
             }
+            //Are there any relationships you see betw
 
             else -> {
                 currentBranch = ChatBranch.Initial
