@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zurtar.mhma.util.DefaultTopAppBar
@@ -105,8 +106,10 @@ private fun BiWeeklyEvaluationScreenContent(
             text = "Over the last 2 weeks, have you felt...",
             modifier = Modifier
                 .align(Alignment.Start)
-                .padding(start = 5.dp, top = 15.dp),
-            style = MaterialTheme.typography.headlineSmall
+                .padding(start = 15.dp, top = 25.dp, bottom = 15.dp),
+            style = MaterialTheme.typography.titleSmall,
+            textAlign = TextAlign.Center,
+            fontSize = 20.sp
         )
 
         QuestionCard(
@@ -122,14 +125,24 @@ private fun BiWeeklyEvaluationScreenContent(
         ) {
             if (page > 0)
                 FilledTonalButton(
+                    modifier  = Modifier.width(120.dp).height(50.dp).padding(top = 10.dp),
                     onClick = { onBack() },
-                    content = { Text("Back") })
+                    content = { Text(
+                        text = "Back",
+                        fontSize = 18.sp
+                    )})
 
             var text = "Next"
             if (page == questions.size - 1) text = "Submit"
-            FilledTonalButton(onClick = { onNext() }, content = { Text(text) })
+            FilledTonalButton(modifier  = Modifier.width(120.dp).height(50.dp).padding(top = 10.dp),
+                onClick = { onNext() },
+                content = { Text(
+                    text = text,
+                    fontSize = 18.sp
+                ) })
         }
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(40.dp))
+
         LinearProgressIndicator(
             progress = { page.toFloat() / questions.size },
             modifier = Modifier.fillMaxWidth(.75f),
@@ -148,14 +161,30 @@ fun QuestionCard(
     val radioOptions =
         listOf("Not at all", "Several days", "More than half the days", "Nearly every day")
 
+    var questionNum = "Question ${num + 1}"
+
+    if(num <= 8) {
+        questionNum = "Question ${num + 1}: Depression"
+    }
+    if(num > 8) {
+        questionNum = "Question ${num + 1}: Anxiety"
+    }
+
+
     ElevatedCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         modifier = modifier
             .padding(bottom = 15.dp, top = 15.dp)
             .fillMaxWidth(0.85f)
     ) {
-        Column(modifier = Modifier.padding(all = 15.dp)) {
-            Text(text = question)
+        Column(modifier = Modifier.padding(all = 15.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                modifier = Modifier.padding(bottom = 20.dp),
+                text = question,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge,
+                fontSize = 18.sp
+            )
             QuestionResponse(radioOptions, selectedOption, onSelect)
 
             Box(
@@ -168,7 +197,7 @@ fun QuestionCard(
                     modifier = Modifier.align(Alignment.BottomCenter),
                     textAlign = TextAlign.Center,
                     color = Color.Gray,
-                    text = "Question ${num + 1}"
+                    text = questionNum
                 )
             }
         }
@@ -208,7 +237,9 @@ fun QuestionResponse(radioOptions: List<String>, selectedOption: Int, onSelect: 
                 Text(
                     modifier = Modifier.align(Alignment.Center),
                     textAlign = TextAlign.Center,
-                    text = text
+                    text = text,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontSize = 18.sp
                 )
             }
         }
