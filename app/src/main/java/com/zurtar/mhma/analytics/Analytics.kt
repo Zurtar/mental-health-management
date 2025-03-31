@@ -176,19 +176,29 @@ fun SummaryCard(
             .padding(10.dp)
             .clickable { onNavigateToSummaryDialog(result) }
     ) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End ) {
+            Text(
+                modifier = Modifier.padding(top = 5.dp, end = 10.dp),
+                text = result.dateCompleted?.toLocalDate()?.format(formatter) ?: "null",
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.End,
+                fontSize = 12.sp
+            )
+        }
+
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 10.dp, bottom = 10.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
 
             ElevatedButton(
                 onClick = {},
                 modifier = Modifier
-                    .width(34.dp)
+                    .width(40.dp)
                     .align(Alignment.CenterVertically),
                 colors = ButtonDefaults.buttonColors(),
                 contentPadding = PaddingValues(0.dp)
@@ -201,20 +211,13 @@ fun SummaryCard(
             }
 
             Text(
-                modifier = Modifier.padding(end = 60.dp),
+                modifier = Modifier.padding(start = 25.dp),
                 text = result.depressionResults,
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
-                fontSize = 18.sp
+                fontSize = 16.sp
             )
 
-            Text(
-                modifier = Modifier.padding(end = 10.dp),
-                text = result.dateCompleted?.toLocalDate()?.format(formatter) ?: "null",
-                style = MaterialTheme.typography.bodySmall,
-                textAlign = TextAlign.Start,
-                fontSize = 15.sp
-            )
         }
 
         Row(
@@ -228,7 +231,7 @@ fun SummaryCard(
             ElevatedButton(
                 onClick = {},
                 modifier = Modifier
-                    .width(34.dp)
+                    .width(40.dp)
                     .align(Alignment.CenterVertically),
                 colors = ButtonDefaults.buttonColors(),
                 contentPadding = PaddingValues(0.dp)
@@ -245,7 +248,7 @@ fun SummaryCard(
                 text = result.anxietyResults,
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
-                fontSize = 18.sp
+                fontSize = 16.sp
             )
         }
     }
