@@ -47,7 +47,6 @@ Relies on helper composables ChatListPage Content and LogItem (ChatListPageConte
 for rendering the content of the page, while LogItem defines the composables that are actually being
 listed on the page)
  */
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ChatListPage(
     modifier: Modifier = Modifier,

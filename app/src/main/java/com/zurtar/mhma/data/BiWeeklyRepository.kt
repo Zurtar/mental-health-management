@@ -33,19 +33,18 @@ class BiWeeklyMoodRepository @Inject constructor(
 class BiWeeklyMoodRemoteDataSource @Inject constructor(
     private val fireStoreDatasource: FirebaseFirestore
 ) {
+    private val collectionRef = fireStoreDatasource.collection("users")
+        .document(Firebase.auth.currentUser?.uid!!)
+        .collection("BiweeklyMoodEntries")
+
     suspend fun addMoodEntry(moodEntry: BiWeeklyEvaluationEntry) {
-        val response = fireStoreDatasource.collection("users")
-            .document(Firebase.auth.currentUser?.uid!!)
-            .collection("BiweeklyMoodEntries")
+        val response = collectionRef
             .add(moodEntry).await()
     }
 
     suspend fun fetchMoodEntries(): List<BiWeeklyEvaluationEntry> {
-        val response = fireStoreDatasource.collection("users")
-            .document(Firebase.auth.currentUser?.uid!!)
-            .collection("BiweeklyMoodEntries")
+        val response = collectionRef
             .get().await()
-
 
         return response.toObjects<BiWeeklyEvaluationEntry>()
     }

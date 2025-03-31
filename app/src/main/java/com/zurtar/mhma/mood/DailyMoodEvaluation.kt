@@ -402,10 +402,10 @@ private fun DailyResult(
         ProceedCard("Proceed to Journal") { onNavigateToJournal() }
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        FilledTonalButton(
-            onClick = { },
-            content = { Text("Exit") })
+//
+//        FilledTonalButton(
+//            onClick = { },
+//            content = { Text("Exit") })
     }
 
 }
@@ -488,33 +488,6 @@ private fun EmotionChip(emotion: String, color: Color, isSelected: Boolean, onCl
     }
 }
 
-
-
-
-
-@Composable
-fun PastEmotionsScreen(modifier: Modifier = Modifier, navController: NavHostController) {
-    Column(modifier = modifier.fillMaxSize()) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text("No past emotions recorded yet.", style = MaterialTheme.typography.bodyMedium)
-        }
-
-        // Back Button at the bottom
-        Spacer(modifier = Modifier.weight(1f)) // This pushes the button to the bottom
-
-        Button(
-            onClick = { navController.popBackStack() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text("Back")
-        }
-    }
-}
 
 /*
 
