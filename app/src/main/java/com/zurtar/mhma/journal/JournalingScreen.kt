@@ -33,10 +33,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.zurtar.mhma.util.DefaultTopAppBar
 import com.zurtar.mhma.R
+import com.zurtar.mhma.util.JournalingTopAppBar
+import com.zurtar.mhma.data.JournalEntry
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.util.Locale
 
 /*
@@ -49,26 +53,17 @@ a lazy column.
 @Composable
 fun JournalingScreen(
     modifier: Modifier = Modifier,
-    viewModel: JournalViewModel = viewModel(),
+    viewModel: JournalViewModel = hiltViewModel(),
     openDrawer: () -> Unit,
     onNavigateToEntryCreation: () -> Unit,
-    onNavigateToEntryView: (Int) -> Unit
+    onNavigateToEntryView: (String) -> Unit
 ) {
-    val entryList by viewModel.entryList.observeAsState()
-    viewModel.getAllEntries()
-
-    //This should be removed in the final version. Only here for
-    //demo purposes
-    if (entryList == null) {
-        for (entry in getExampleEntry()) {
-            viewModel.addEntry(entry)
-        }
-    }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            DefaultTopAppBar(openDrawer = openDrawer)
+            JournalingTopAppBar(openDrawer = openDrawer)
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -82,9 +77,9 @@ fun JournalingScreen(
             modifier = modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
-            entryList = entryList,
+            entryList = uiState.entryList,
             onNavigateToEntryView = onNavigateToEntryView,
-            deleteEntry = viewModel::deleteEntry
+            deleteEntry = viewModel::deleteEntry,
         )
     }
 
@@ -95,19 +90,14 @@ fun JournalingScreen(
 private fun JournalingScreenContent(
     modifier: Modifier = Modifier,
     entryList: List<JournalEntry>?,
-    onNavigateToEntryView: (Int) -> Unit,
-    deleteEntry: (Int) -> Unit
+    onNavigateToEntryView: (String) -> Unit,
+    deleteEntry: (String) -> Unit
 ) {
     Column(
         modifier = modifier
+            .padding(10.dp)
+
     ) {
-        Text(
-            text = "Journal",
-            fontSize = 30.sp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-        )
         entryList?.let {
             LazyColumn(
                 content = {
@@ -133,7 +123,10 @@ private fun JournalingScreenContent(
 fun EntryItem(
     item: JournalEntry,
     onDelete: () -> Unit,
-    onView: () -> Unit) {
+    onView: () -> Unit
+) {
+    if (item.createdAt == null)
+        return
 
     var expanded by remember { mutableStateOf(false) }
     Row(
@@ -152,7 +145,9 @@ fun EntryItem(
                 .padding(8.dp)
         ) {
             Text(
-                text = SimpleDateFormat("HH:mm:aa, dd/mm", Locale.ENGLISH).format(item.createdAt),
+                text = SimpleDateFormat("HH:mm:aa, dd/mm", Locale.ENGLISH).format(
+                    item.createdAt ?: LocalDateTime.MIN
+                ),
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onPrimary
             )
@@ -172,74 +167,6 @@ fun EntryItem(
                 painter = painterResource(id = R.drawable.baseline_arrow_drop_down_circle_24),
                 contentDescription = "Options",
                 tint = MaterialTheme.colorScheme.onPrimary
-            )
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                DropdownMenuItem(
-                    text = { Text("View") },
-                    onClick = {
-                        onView()
-                        expanded = false
-                    }
-                )
-                DropdownMenuItem(
-                    text = { Text("Delete") },
-                    onClick = {
-                        onDelete()
-                        expanded = false
-                    }
-                )
-            }
-        }
-    }
-
-}
-
-@Composable
-fun EntryItemAlt(
-    item: JournalEntry,
-    onDelete: () -> Unit,
-    onView: () -> Unit) {
-
-    var expanded by remember { mutableStateOf(false) }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.onPrimary)
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(8.dp)
-        ) {
-            Text(
-                text = SimpleDateFormat("HH:mm:aa, dd/mm", Locale.ENGLISH).format(item.createdAt),
-                fontSize = 12.sp,
-                color = Color.LightGray
-            )
-            Text(
-                text = item.title,
-                fontSize = 20.sp,
-                color = Color.White
-            )
-            Text(
-                text = item.content.take(200),
-                fontSize = 10.sp,
-                color = Color.White
-            )
-        }
-        IconButton(onClick = { expanded = true }) {
-            Icon(
-                painter = painterResource(id = R.drawable.baseline_arrow_drop_down_circle_24),
-                contentDescription = "Options",
-                tint = Color.White
             )
             DropdownMenu(
                 expanded = expanded,

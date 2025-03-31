@@ -14,6 +14,7 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,6 +22,7 @@ import javax.inject.Singleton
 @Singleton
 class UserRepository @Inject constructor(
     private val accountService: AccountService,
+    private val firestore: FirebaseFirestore,
     private val firebaseAuth: FirebaseAuth
 ) {
 
@@ -37,6 +39,13 @@ class UserRepository @Inject constructor(
         awaitClose { firebaseAuth.removeAuthStateListener(authStateListener) }
     }
 
+    suspend fun getUserEmail(): String {
+        return firestore.collection("users").document(firebaseAuth.currentUser?.uid ?: "").get().await().get("email").toString()
+    }
+
+    suspend fun getDisplayName(): String {
+        return firestore.collection("users").document(firebaseAuth.currentUser?.uid ?: "").get().await().get("display_name").toString()
+    }
 }
 
 

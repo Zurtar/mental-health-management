@@ -6,8 +6,10 @@ import androidx.compose.ui.platform.LocalView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zurtar.mhma.analytics.toDate
-import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
-import com.zurtar.mhma.data.MoodRepository
+import com.zurtar.mhma.data.models.BiWeeklyEvaluationEntry
+import com.zurtar.mhma.data.BiWeeklyMoodRepository
+import com.zurtar.mhma.data.DailyEvaluationEntry
+import com.zurtar.mhma.data.DailyMoodRepository
 import com.zurtar.mhma.theme.EmojiFrown
 import com.zurtar.mhma.theme.EmojiNeutral
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,15 +24,6 @@ import java.time.LocalDate
 import javax.inject.Inject
 import kotlin.random.Random
 
-data class DailyEvaluationEntry(
-    val selectedEmotions: List<String> = listOf(),
-    val emotionIntensities: List<Float> = listOf(0f, 0f, 0f),
-    val emotionsMap: Map<String, Float> = mapOf(),
-    val stressLevel: String = "default_initial",
-    val strongestEmotion: Pair<String, Float> = "" to 0f,
-    val dateCompleted: Date? = null
-)
-
 /**
  * Daily/Quick Evaluation UI State & ViewModel
  */
@@ -40,7 +33,11 @@ data class DailyEvaluationUiState(
     val page: Int = 0
 )
 
-class DailyEvaluationViewModel : ViewModel() {
+@HiltViewModel
+class DailyEvaluationViewModel @Inject constructor(
+    private val dailyMoodRepository: DailyMoodRepository
+) : ViewModel() {
+
     private val _uiState = MutableStateFlow(DailyEvaluationUiState())
     val uiState: StateFlow<DailyEvaluationUiState> = _uiState.asStateFlow()
 
@@ -57,7 +54,18 @@ class DailyEvaluationViewModel : ViewModel() {
                 isSubmitted = 1,
                 dailyEntry = currentState.dailyEntry.copy(
                     emotionsMap = emotionsMap,
-                    dateCompleted = LocalDate.now().toDate()
+                    dateCompleted = LocalDate.now().toDate(),
+                    strongestEmotion = emotionsMap.entries.first().toPair()
+                )
+            )
+        }
+
+        viewModelScope.launch {
+            dailyMoodRepository.addMoodEntry(
+                _uiState.value.dailyEntry.copy(
+                    dateCompleted = Date.from(
+                        Instant.now()
+                    )
                 )
             )
         }
@@ -140,7 +148,6 @@ class DailyEvaluationViewModel : ViewModel() {
     }
 
     fun updateStrongestEmotion() {
-
         val strongest = _uiState.value.dailyEntry.emotionsMap.entries.first().toPair()
 
         _uiState.update { currentState ->
@@ -165,7 +172,7 @@ data class BiWeeklyEvaluationUiState(
 
 @HiltViewModel
 class BiWeeklyEvaluationViewModel @Inject constructor(
-    private val moodRepository: MoodRepository
+    private val biWeeklyMoodRepository: BiWeeklyMoodRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(BiWeeklyEvaluationUiState())
@@ -240,9 +247,6 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
         }*/
 
         viewModelScope.launch {
-//            for (entry in biWeeklyEntries)
-//                moodRepository.addMoodEntry(entry)
-
             moodRepository.addMoodEntry(
                 _uiState.value.biWeeklyEntry.copy(
                     dateCompleted = Date.from(Instant.now())

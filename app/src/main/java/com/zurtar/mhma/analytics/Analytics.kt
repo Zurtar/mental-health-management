@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -47,14 +48,13 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zurtar.mhma.R
-import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
+import com.zurtar.mhma.data.models.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.mood.ScoreChart
 import com.zurtar.mhma.mood.findSeverity
+import com.zurtar.mhma.util.AnalyticsTopAppBar
 import com.zurtar.mhma.util.DefaultTopAppBar
 import java.time.LocalDate
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.Date
 
 
 @Composable
@@ -67,7 +67,7 @@ fun AnalyticsScreen(
 
     Scaffold(modifier = Modifier.fillMaxSize(),
         topBar = {
-            DefaultTopAppBar(openDrawer = openDrawer)
+            AnalyticsTopAppBar(openDrawer = openDrawer)
         }
     ) { innerPadding ->
         AnalyticsScreenContent(
@@ -178,19 +178,29 @@ fun SummaryCard(
             .padding(10.dp)
             .clickable { onNavigateToSummaryDialog(result) }
     ) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End ) {
+            Text(
+                modifier = Modifier.padding(top = 5.dp, end = 10.dp),
+                text = result.dateCompleted?.toLocalDate()?.format(formatter) ?: "null",
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.End,
+                fontSize = 12.sp
+            )
+        }
+
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 10.dp, bottom = 10.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
 
             ElevatedButton(
                 onClick = {},
                 modifier = Modifier
-                    .width(34.dp)
+                    .width(40.dp)
                     .align(Alignment.CenterVertically),
                 colors = ButtonDefaults.buttonColors(),
                 contentPadding = PaddingValues(0.dp)
@@ -203,21 +213,13 @@ fun SummaryCard(
             }
 
             Text(
-                modifier = Modifier.padding(end = 60.dp),
-                text = "${result.depressionResults}",
+                modifier = Modifier.padding(start = 25.dp),
+                text = result.depressionResults,
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
-                fontSize = 18.sp,
-//                textOverflow = TextOverflow.Ellipsis
+                fontSize = 16.sp
             )
 
-            Text(
-                modifier = Modifier.padding(end = 10.dp),
-                text = result.dateCompleted?.toLocalDate()?.format(formatter) ?: "null",
-                style = MaterialTheme.typography.bodySmall,
-                textAlign = TextAlign.Start,
-                fontSize = 15.sp
-            )
         }
 
         Row(
@@ -231,7 +233,7 @@ fun SummaryCard(
             ElevatedButton(
                 onClick = {},
                 modifier = Modifier
-                    .width(34.dp)
+                    .width(40.dp)
                     .align(Alignment.CenterVertically),
                 colors = ButtonDefaults.buttonColors(),
                 contentPadding = PaddingValues(0.dp)
@@ -248,7 +250,7 @@ fun SummaryCard(
                 text = result.anxietyResults,
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
-                fontSize = 18.sp
+                fontSize = 16.sp
             )
         }
     }
@@ -309,6 +311,7 @@ fun SummaryPopup(entry: BiWeeklyEvaluationEntry) {
                 )
             }
             ScoreChart(entry.anxietyScore, anxietyScores, anxietySeverities)
+            Spacer(modifier = Modifier.height(15.dp))
         }
 
     }

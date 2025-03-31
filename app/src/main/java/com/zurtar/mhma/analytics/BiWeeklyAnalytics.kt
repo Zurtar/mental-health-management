@@ -28,6 +28,7 @@ import com.himanshoe.charty.line.config.LineChartConfig
 import com.himanshoe.charty.line.config.LineConfig
 import com.himanshoe.charty.line.model.LineData
 import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
+import com.zurtar.mhma.data.models.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.mood.findSeverity
 import java.time.Instant
 import java.time.LocalDate
@@ -58,28 +59,10 @@ fun BiWeeklyAnalyticsScreenContent(
                 onNavigateToSummaryDialog = onNavigateToSummaryDialog
             )
         },
-        "Insights" to { }
+       // "Insights" to { }
     )
 
     TabbedContent(labelToContent = labelToContent, key = labelToContent.keys.first())
-
-}
-
-@Preview
-@Composable
-fun MoodGraphPrev() {
-
-    val ran = Random(Instant.now().toEpochMilli())
-    val biWeeklyEntries: MutableList<BiWeeklyEvaluationEntry> = mutableListOf()
-
-    val lineData: MutableList<LineData> = mutableListOf()
-    val current = LocalDate.now()
-
-    biWeeklyEntries.forEach { entries ->
-        lineData.add(LineData(entries.depressionScore.toFloat(), entries.dateCompleted!!))
-    }
-
-    //MoodGraphScreen(lineData)
 }
 
 @Composable

@@ -39,19 +39,22 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.zurtar.mhma.data.DailyEvaluationEntry
 import com.zurtar.mhma.util.DefaultTopAppBar
 import com.zurtar.mhma.theme.EmojiFrown
 import com.zurtar.mhma.theme.EmojiNeutral
 import com.zurtar.mhma.theme.EmojiSmile
+import com.zurtar.mhma.util.MoodEvaluationTopAppBar
 
 
 @Composable
 fun DailyMoodEvaluationScreen(
     modifier: Modifier = Modifier,
-    viewModel: DailyEvaluationViewModel = viewModel(),
+    viewModel: DailyEvaluationViewModel = hiltViewModel(),
     openDrawer: () -> Unit,
     onNavigateToAnalytics: (Int) -> Unit,
     onNavigateToJournal: () -> Unit
@@ -59,7 +62,7 @@ fun DailyMoodEvaluationScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(modifier = modifier.fillMaxSize(),
         topBar = {
-            DefaultTopAppBar(openDrawer = openDrawer)
+            MoodEvaluationTopAppBar(openDrawer = openDrawer)
         }
     ) { innerPadding ->
 
@@ -88,7 +91,7 @@ private fun DailyMoodEvaluationScreenContent(
     modifier: Modifier = Modifier,
     dailyEntry: DailyEvaluationEntry,
     isSubmitted: Int,
-    page:Int,
+    page: Int,
     onEmotionSelect: (String) -> Unit,
     onSubmit: () -> Unit,
     onBack: () -> Unit,
@@ -106,7 +109,11 @@ private fun DailyMoodEvaluationScreenContent(
     ) {
 
         if (isSubmitted == 1) {
-            DailyResult(dailyEntry = dailyEntry, onNavigateToAnalytics = onNavigateToAnalytics, onNavigateToJournal = onNavigateToJournal)
+            DailyResult(
+                dailyEntry = dailyEntry,
+                onNavigateToAnalytics = onNavigateToAnalytics,
+                onNavigateToJournal = onNavigateToJournal
+            )
             return
         }
 
@@ -120,7 +127,12 @@ private fun DailyMoodEvaluationScreenContent(
 
         if (page == 1) {
             if (dailyEntry.selectedEmotions.isEmpty()) {
-                DailyResult(modifier = modifier, dailyEntry, onNavigateToAnalytics, onNavigateToJournal = onNavigateToJournal)
+                DailyResult(
+                    modifier = modifier,
+                    dailyEntry,
+                    onNavigateToAnalytics,
+                    onNavigateToJournal = onNavigateToJournal
+                )
                 return
             }
             EmotionRating(dailyEntry, updateIntensity)
@@ -131,22 +143,36 @@ private fun DailyMoodEvaluationScreenContent(
             horizontalArrangement = Arrangement.SpaceAround
         ) {
             if (page > 0)
-                FilledTonalButton(
+                FilledTonalButton(modifier = Modifier.width(120.dp).height(50.dp).padding(top = 10.dp),
                     onClick = { onBack() },
-                    content = { Text("Back") })
+                    content = { Text(
+                        text = "Back",
+                        fontSize = 18.sp
+                    )})
 
             var text = "Next"
             if (page == 1) {
                 text = "Submit"
-                FilledTonalButton(onClick = { onSubmit() }, content = { Text(text) })
+                FilledTonalButton(modifier = Modifier.width(120.dp).height(50.dp).padding(top = 10.dp),
+                    onClick = { onSubmit() },
+                    content = { Text(
+                        text = text,
+                        fontSize = 18.sp
+                    )
+                    })
 
             } else {
-                FilledTonalButton(onClick = { onNext() }, content = { Text(text) })
+                FilledTonalButton(modifier  = Modifier.width(120.dp).height(50.dp).padding(top = 10.dp),
+                    onClick = { onNext() },
+                    content = { Text(
+                                    text = text,
+                                    fontSize = 18.sp
+                                )
+                    })
             }
         }
     }
 }
-
 
 
 //PAGE ONE QUESTIONS
@@ -156,12 +182,15 @@ fun MoodSelectionQuestionPage(
     modifier: Modifier = Modifier,
     dailyEntry: DailyEvaluationEntry,
     emotionSelect: (String) -> Unit,
-    updateEmotion: (ImageVector) -> Unit) {
+    updateEmotion: (ImageVector) -> Unit
+) {
 
-    Column (modifier = modifier) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.Center) {
         StressSelectionCard(modifier = Modifier, updateEmotion = updateEmotion)
-        EmotionSelectionCard(dailyEntry = dailyEntry,
-                emotionSelect = emotionSelect)
+        EmotionSelectionCard(
+            dailyEntry = dailyEntry,
+            emotionSelect = emotionSelect
+        )
     }
 
 }
@@ -194,7 +223,12 @@ private fun EmotionSelectionCard(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text("What emotion have you felt strongest today?")
+            Text(
+                text = "What emotion have you felt strongest today?",
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge,
+                fontSize = 20.sp
+            )
             HorizontalDivider()
             // Vertical Emotion Picker
             Column(
@@ -243,7 +277,12 @@ private fun StressSelectionCard(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text("How stressed are you feeling today?")
+            Text(
+                text = "How stressed are you feeling today?",
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge,
+                fontSize = 20.sp
+            )
             HorizontalDivider()
             Row(
                 modifier = Modifier
@@ -255,13 +294,13 @@ private fun StressSelectionCard(
                     val emoji = p.first
                     var tint = Color.Gray
                     if (emoji == selectedMood)
-                        tint = Color.White
+                        tint = MaterialTheme.colorScheme.primary
 
                     Icon(
                         imageVector = emoji,
                         contentDescription = "Neutral Emoji",
                         modifier = Modifier
-                            .size(35.dp)
+                            .size(40.dp)
                             .clickable(
                                 interactionSource = null,
                                 indication = null,
@@ -329,9 +368,10 @@ fun EmotionRating(
 
         Text(
             modifier = Modifier.padding(15.dp),
-            text = "On a scale from 1-10, how strongly are you feeling these emotion",
-            style = MaterialTheme.typography.titleMedium,
-            textAlign = TextAlign.Center
+            text = "On a scale from 1-10, how strongly are you feeling these emotions",
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.titleLarge,
+            fontSize = 20.sp
         )
 
         repeat(dailyEntry.selectedEmotions.size) { i ->
@@ -340,7 +380,8 @@ fun EmotionRating(
             Column(modifier = Modifier.padding(all = 20.dp)) {
                 Text(
                     text = dailyEntry.selectedEmotions[i],
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontSize = 18.sp
                 )
                 Slider(
                     value = sliderPosition,
@@ -359,7 +400,9 @@ fun EmotionRating(
                 )
                 Text(
                     text = sliderPosition.toInt().toString(),
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontSize = 15.sp,
+                    textAlign = TextAlign.Center
                 )
             }
         }
@@ -397,15 +440,17 @@ private fun DailyResult(
             style = MaterialTheme.typography.titleMedium,
             fontSize = 20.sp
         )
-
+        HorizontalDivider()
         ProceedCard("Proceed to Evaluation Analytics") { onNavigateToAnalytics(0) }
+        HorizontalDivider()
         ProceedCard("Proceed to Journal") { onNavigateToJournal() }
+        HorizontalDivider()
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        FilledTonalButton(
-            onClick = { },
-            content = { Text("Exit") })
+//
+//        FilledTonalButton(
+//            onClick = { },
+//            content = { Text("Exit") })
     }
 
 }
@@ -415,11 +460,16 @@ private fun DailyResult(
 fun EmotionSummaryTable(dailyEntry: DailyEvaluationEntry) {
 
     ElevatedCard(
-        Modifier.padding(top = 5.dp, bottom = 20.dp).fillMaxWidth(0.85f),
+        Modifier
+            .padding(top = 5.dp, bottom = 20.dp)
+            .fillMaxWidth(0.85f),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(top = 10.dp), horizontalArrangement = Arrangement.SpaceEvenly
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Text(
                 modifier = Modifier.width(100.dp),
@@ -438,7 +488,7 @@ fun EmotionSummaryTable(dailyEntry: DailyEvaluationEntry) {
             )
         }
 
-        dailyEntry.emotionsMap.forEach{
+        dailyEntry.emotionsMap.forEach {
             EmotionsChart(emotion = it.key, score = it.value.toString())
         }
     }
@@ -448,7 +498,12 @@ fun EmotionSummaryTable(dailyEntry: DailyEvaluationEntry) {
 @Composable
 fun EmotionsChart(modifier: Modifier = Modifier, emotion: String, score: String) {
 
-    Row(modifier = modifier.fillMaxWidth().padding(bottom = 5.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(bottom = 5.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
         Text(
             modifier = Modifier.padding(start = 5.dp, bottom = 5.dp),
             text = emotion,
@@ -456,8 +511,9 @@ fun EmotionsChart(modifier: Modifier = Modifier, emotion: String, score: String)
             textAlign = TextAlign.Left,
             fontSize = 15.sp
         )
+        Spacer(modifier = Modifier.width(10.dp))
         Text(
-            modifier = Modifier.padding(start = 5.dp,bottom = 5.dp),
+            modifier = Modifier.padding(start = 5.dp, bottom = 5.dp),
             text = score,
             style = MaterialTheme.typography.titleSmall,
             textAlign = TextAlign.Left,
@@ -483,38 +539,12 @@ private fun EmotionChip(emotion: String, color: Color, isSelected: Boolean, onCl
         Text(
             text = emotion,
             style = MaterialTheme.typography.bodyMedium,
+            fontSize = 20.sp,
             maxLines = 1
         )
     }
 }
 
-
-
-
-
-@Composable
-fun PastEmotionsScreen(modifier: Modifier = Modifier, navController: NavHostController) {
-    Column(modifier = modifier.fillMaxSize()) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text("No past emotions recorded yet.", style = MaterialTheme.typography.bodyMedium)
-        }
-
-        // Back Button at the bottom
-        Spacer(modifier = Modifier.weight(1f)) // This pushes the button to the bottom
-
-        Button(
-            onClick = { navController.popBackStack() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text("Back")
-        }
-    }
-}
 
 /*
 

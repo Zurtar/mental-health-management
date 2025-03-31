@@ -1,6 +1,7 @@
 package com.zurtar.mhma
 
 
+import android.util.Log
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
@@ -27,7 +28,7 @@ import com.zurtar.mhma.auth.SignUpScreen
 import com.zurtar.mhma.chatbot.ChatListPage
 import com.zurtar.mhma.chatbot.ChatLogPage
 import com.zurtar.mhma.chatbot.ChatbotPage
-import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
+import com.zurtar.mhma.data.models.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.home.HomeScreen
 import com.zurtar.mhma.journal.EntryModificationScreen
 import com.zurtar.mhma.journal.EntryViewScreen
@@ -160,7 +161,7 @@ fun NavGraph(
             composable("Journal") {
                 JournalingScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
-                    onNavigateToEntryCreation = { navActions.navigateToJournalEntryModification(-1) },
+                    onNavigateToEntryCreation = { navActions.navigateToEntryEdit("null") },
                     onNavigateToEntryView = { id -> navActions.navigateToEntryView(id) },
                 )
             }
@@ -196,9 +197,11 @@ fun NavGraph(
 
             composable(
                 route = "ChatLog/{logId}",
-                arguments = listOf(navArgument("logId") { type = NavType.IntType })
+                arguments = listOf(navArgument("logId") { type = NavType.StringType })
             ) { backStackEntry ->
-                val logId = backStackEntry.arguments?.getInt("logId") ?: 0
+                val logId = backStackEntry.arguments?.getString("logId") ?: ""
+
+                Log.println(Log.DEBUG, "ChatLogRoute", "logId: $logId")
                 ChatLogPage(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
                     logId = logId,
@@ -210,13 +213,11 @@ fun NavGraph(
 
 
             // Directly copied from Journal branch, which is why its different
-//
-
             composable(
                 route = "entryView/{entryId}",
-                arguments = listOf(navArgument("entryId") { type = NavType.IntType })
+                arguments = listOf(navArgument("entryId") { type = NavType.StringType })
             ) { backStackEntry ->
-                val entryId = backStackEntry.arguments?.getInt("entryId") ?: -1
+                val entryId = backStackEntry.arguments?.getString("entryId")
                 EntryViewScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
                     id = entryId,
@@ -228,10 +229,12 @@ fun NavGraph(
             composable(
                 route = "entryEdit/{entryId}",
                 arguments = listOf(navArgument("entryId") {
-                    type = NavType.IntType
+                    type = NavType.StringType
                 })
             ) { backStackEntry ->
-                val entryId = backStackEntry.arguments?.getInt("entryId") ?: -1
+                var entryId = backStackEntry.arguments?.getString("entryId")
+                if (entryId == "null")
+                    entryId = null
 
                 EntryModificationScreen(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },

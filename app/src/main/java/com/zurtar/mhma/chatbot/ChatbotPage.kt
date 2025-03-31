@@ -18,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
@@ -37,18 +36,21 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.zurtar.mhma.util.DefaultTopAppBar
 import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.text.isNotBlank
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.zurtar.mhma.data.ChatMessage
+import com.zurtar.mhma.util.ChatbotTopAppBar
 import java.util.Calendar
 import java.util.Date
 
@@ -57,13 +59,13 @@ import java.util.Date
 @Composable
 fun ChatbotPage(
     modifier: Modifier = Modifier,
-    viewModel: ChatbotViewModel = viewModel(),
+    viewModel: ChatbotViewModel = hiltViewModel(),
     onNavigateToChatList: () -> Unit,
     openDrawer: () -> Unit
 ) {
     Scaffold(modifier = modifier.fillMaxSize(),
         topBar = {
-            DefaultTopAppBar(openDrawer = openDrawer)
+            ChatbotTopAppBar(openDrawer = openDrawer, onNavigateToChatList)
         }
     ) { innerPadding ->
         ChatbotPageContent(
@@ -104,114 +106,118 @@ fun ChatbotPageContent(
     }
     Column(
         modifier = modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .padding(20.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.onPrimaryContainer)
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Chatbot",
-                fontSize = 30.sp,
-                color = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier
-                    .padding(8.dp),
-            )
-            Button(
-                onClick = onNavigateToChatList
-            ) {
-                Text(text = "Chat Log",
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-            }
-        }
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .weight(1f)
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Bottom
+                .fillMaxWidth(),
+            state = listState,
+            reverseLayout = false
         ) {
-            LazyColumn(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-                state = listState,
-                reverseLayout = false
-            ) {
-                items(messages) { message ->
-                    when (message.sender) {
-                        Sender.User -> UserMessageItem(message)
-                        Sender.Bot -> BotMessageItem(message)
-                    }
+            items(messages) { message ->
+                when (message.sender) {
+                    Sender.User -> UserMessageItem(message)
+                    Sender.Bot -> BotMessageItem(message)
+                    Sender.Null -> ""
                 }
-                if (currentBranch == ChatBranch.Initial) {
-                    item {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 16.dp),
-                            horizontalAlignment = Alignment.End,
-                            verticalArrangement = Arrangement.Bottom
-                        ) {
-                            branchList.forEach { branch ->
-                                Button(
-                                    onClick = {
-                                        viewModel.sendMessage(getBranchSelection(branch))
-                                    },
-                                    modifier = Modifier
-                                        .padding(bottom = 8.dp)
-                                ) {
-                                    Text(getBranchSelection(branch))
-                                }
-                            }
-                        }
-                    }
-                }
-                if (currentBranch == ChatBranch.Explanation) {
-                    item {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 16.dp),
-                            horizontalAlignment = Alignment.End,
-                            verticalArrangement = Arrangement.Bottom
-                        ) {
-                            branchList.filter { it != ChatBranch.Explanation }.forEach { branch ->
-                                Button(
-                                    onClick = {
-                                        viewModel.sendMessage(getBranchSelection(branch))
-                                    },
-                                    modifier = Modifier
-                                        .padding(bottom = 8.dp)
-                                ) {
-                                    Text(getBranchSelection(branch))
-                                }
-                            }
+            }
+            if (currentBranch == ChatBranch.Initial) {
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        horizontalAlignment = Alignment.End,
+                        verticalArrangement = Arrangement.Bottom
+                    ) {
+                        branchList.forEach { branch ->
                             Button(
                                 onClick = {
-                                    viewModel.sendMessage("I'd like to do an activity now.")
+                                    viewModel.sendMessage(getBranchSelection(branch))
                                 },
                                 modifier = Modifier
                                     .padding(bottom = 8.dp)
                             ) {
-                                Text("I'd like to do an activity now.")
+                                Text(getBranchSelection(branch))
                             }
                         }
                     }
                 }
             }
-            if ((currentBranch == ChatBranch.ActionPlan && viewModel.getBranchStep() == 2) || (currentBranch == ChatBranch.SmartGoal && viewModel.getBranchStep() == 5)) {
-                var selectedDate = DatePickerFieldToModal()
+            if (currentBranch == ChatBranch.Explanation) {
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        horizontalAlignment = Alignment.End,
+                        verticalArrangement = Arrangement.Bottom
+                    ) {
+                        branchList.filter { it != ChatBranch.Explanation }.forEach { branch ->
+                            Button(
+                                onClick = {
+                                    viewModel.sendMessage(getBranchSelection(branch))
+                                },
+                                modifier = Modifier
+                                    .padding(bottom = 8.dp)
+                            ) {
+                                Text(getBranchSelection(branch))
+                            }
+                        }
+                        Button(
+                            onClick = {
+                                viewModel.sendMessage("I'd like to do an activity now.")
+                            },
+                            modifier = Modifier
+                                .padding(bottom = 8.dp)
+                        ) {
+                            Text("I'd like to do an activity now.")
+                        }
+                    }
+                }
+            }
+        }
+        if ((currentBranch == ChatBranch.ActionPlan && viewModel.getBranchStep() == 2) || (currentBranch == ChatBranch.SmartGoal && viewModel.getBranchStep() == 5)) {
+            var selectedDate = DatePickerFieldToModal()
+            Button(
+                onClick = {
+                    if (selectedDate.isNotBlank()) {
+                        viewModel.sendCompletionDate(convertLongToDate(selectedDate))
+                        viewModel.sendMessage(
+                            SimpleDateFormat(
+                                "EEEE, MMMM dd",
+                                Locale.getDefault()
+                            ).format(selectedDate)
+                        )
+                        userMessage = ""
+                    }
+                },
+                modifier = Modifier.padding(start = 8.dp)
+            ) {
+                Text("Send")
+            }
+
+
+        } else if (currentBranch != ChatBranch.Initial) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+                    .imePadding(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                OutlinedTextField(
+                    value = userMessage,
+                    onValueChange = { userMessage = it },
+                    modifier = Modifier.weight(1f),
+                    label = { Text("Enter message") }
+                )
                 Button(
                     onClick = {
-                        if (selectedDate.isNotBlank()) {
-                            viewModel.sendCompletionDate(convertLongToDate(selectedDate))
-                            viewModel.sendMessage(SimpleDateFormat("EEEE, MMMM dd", Locale.getDefault()).format(selectedDate))
+                        if (userMessage.isNotBlank()) {
+                            viewModel.sendMessage(userMessage)
                             userMessage = ""
                         }
                     },
@@ -219,37 +225,9 @@ fun ChatbotPageContent(
                 ) {
                     Text("Send")
                 }
-
-
-            }
-            else if (currentBranch != ChatBranch.Initial) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp)
-                        .imePadding(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    OutlinedTextField(
-                        value = userMessage,
-                        onValueChange = { userMessage = it },
-                        modifier = Modifier.weight(1f),
-                        label = { Text("Enter message") }
-                    )
-                    Button(
-                        onClick = {
-                            if (userMessage.isNotBlank()) {
-                                viewModel.sendMessage(userMessage)
-                                userMessage = ""
-                            }
-                        },
-                        modifier = Modifier.padding(start = 8.dp)
-                    ) {
-                        Text("Send")
-                    }
-                }
             }
         }
+
     }
 }
 
@@ -263,7 +241,7 @@ fun UserMessageItem(message: ChatMessage) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .padding(vertical = 5.dp),
         horizontalArrangement = Arrangement.End
     ) {
         Column(
@@ -271,6 +249,7 @@ fun UserMessageItem(message: ChatMessage) {
                 .clip(RoundedCornerShape(8.dp))
                 .background(MaterialTheme.colorScheme.onSecondaryContainer)
                 .padding(8.dp)
+                .width(300.dp)
         ) {
             Text(
                 text = message.message,
@@ -280,7 +259,7 @@ fun UserMessageItem(message: ChatMessage) {
                 text = formattedTime,
                 color = MaterialTheme.colorScheme.onSecondary,
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.align(Alignment.End)
+                modifier = Modifier.align(Alignment.Start)
             )
         }
     }
@@ -292,7 +271,7 @@ fun BotMessageItem(message: ChatMessage) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .padding(vertical = 5.dp),
         horizontalArrangement = Arrangement.Start
     ) {
         Column(
@@ -300,6 +279,7 @@ fun BotMessageItem(message: ChatMessage) {
                 .clip(RoundedCornerShape(8.dp))
                 .background(MaterialTheme.colorScheme.onTertiaryContainer)
                 .padding(8.dp)
+                .width(300.dp)
         ) {
             Text(
                 text = message.message,
@@ -416,3 +396,6 @@ fun DatePickerModal(
         DatePicker(state = datePickerState)
     }
 }
+/*
+Date picker functions from android developer tools end
+ */

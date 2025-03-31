@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.zurtar.mhma.util.DefaultTopAppBar
+import com.zurtar.mhma.util.MoodEvaluationTopAppBar
 
 @Composable
 fun MoodEvaluationScreen(
@@ -45,7 +46,7 @@ fun MoodEvaluationScreen(
 ) {
     Scaffold(modifier = modifier.fillMaxSize(),
         topBar = {
-            DefaultTopAppBar(openDrawer = openDrawer)
+            MoodEvaluationTopAppBar(openDrawer = openDrawer)
         }
     ) { innerPadding ->
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -72,7 +73,7 @@ private fun MoodEvaluationScreenContent(
     onNavigateToBiWeekly: () -> Unit
 ) {
     Column(
-        modifier = modifier.fillMaxWidth(0.5f),
+        modifier = modifier.fillMaxWidth(0.5f).padding(top = 50.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -132,15 +133,16 @@ fun EvaluationCard(
 
 ) {
     ElevatedCard(
+        elevation = CardDefaults.cardElevation(6.dp),
         modifier = modifier
-            .padding(bottom = 15.dp)
+            .padding(top = 15.dp, bottom = 15.dp)
             .background(MaterialTheme.colorScheme.background)
             .fillMaxWidth(0.75f),
            // .fillMaxHeight(0.2f),
          onClick = { onNavigate() }
     ) {
 
-        Row(modifier = Modifier.fillMaxWidth()) {
+        Row(modifier = Modifier.fillMaxWidth().padding(10.dp)) {
             if(checkMark == 1) {
                 IsCompletedCheckButton(completed)
                 Text(
