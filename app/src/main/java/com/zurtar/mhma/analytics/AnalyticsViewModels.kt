@@ -4,8 +4,6 @@ import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.himanshoe.charty.line.model.LineData
-import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
-import com.zurtar.mhma.data.MoodRepository
 import com.zurtar.mhma.auth.AuthState
 import com.zurtar.mhma.data.models.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.data.BiWeeklyMoodRepository
@@ -91,7 +89,7 @@ class BiWeeklyAnalyticsViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { currentState ->
 
-                val moodList = moodRepository.fetchLatestMoodEntries().toMutableList()
+                val moodList = biWeeklyMoodRepository.fetchLatestMoodEntries().toMutableList()
 
                 val data = moodList.map{ currentEntry ->
                     LineData(yValue = currentEntry.depressionScore.toFloat(),

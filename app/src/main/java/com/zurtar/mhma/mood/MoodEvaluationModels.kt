@@ -247,7 +247,7 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
         }*/
 
         viewModelScope.launch {
-            moodRepository.addMoodEntry(
+            biWeeklyMoodRepository.addMoodEntry(
                 _uiState.value.biWeeklyEntry.copy(
                     dateCompleted = Date.from(Instant.now())
                 )
