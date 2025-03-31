@@ -173,19 +173,19 @@ class ChatbotMessageManager (
             }
 
             userMessage.contains("anxiety exploration", ignoreCase = true) -> {
-                "Anxiety exploration is an activity used to help people understand their worries better, and how they can be manages. You'll examine a worry that is troubling you, examine evidence for that worry, and develop strategies for handling it.\n\nWould you like me to explain any of the other activities?"
+                "Anxiety exploration, or worry exploration, is an activity used to help people analyze their worries, and ways to manage them, to challenge catastrophization. You'll identify a worry that you believe may happen to you or in your live, examine evidence for and against that worry, and develop strategies for handling it..\n\nWould you like me to explain any of the other activities?"
             }
 
             userMessage.contains("smart goal", ignoreCase = true) -> {
-                "Setting a SMART Goal helps you create achievable objectives. You'll define a goal that's Specific, Measurable, Attainable, Relevant, and Time-bound.\n\nWould you like me to explain any of the other activities?"
+                "SMART goals are used to help create objectives that are more easily realisable. You will create a goal that is Specific, Measurable, Attainable, Relevant, and Time-bound.\n\nWould you like me to explain any of the other activities?"
             }
 
             userMessage.contains("action plan", ignoreCase = true) -> {
-                "An action plan is used to help plan out an activity you would like to do. You will set a time for the activity, address potential obstacles, and plan how to overcome them.\n\nWould you like me to explain any of the other activities?"
+                "An action plan is used to help plan out a positive activity you would like to do for yourself. You'll set out a date to do the activity, address potential obstacles that my prevent you from doing it, and then create plans to overcome those obstacles.\n\nWould you like me to explain any of the other activities?"
             }
 
             userMessage.contains("cbt modeling", ignoreCase = true) -> {
-                "CBT Modeling helps you understand the interplay between your thoughts, feelings, and behaviors. You'll model a situation to examine these relationships in depth.\n\nWould you like me to explain any of the other activities?"
+                "In cognitive behavioural therapy modeling, you will apply the CBT triangle onto a situation you have experienced, analyzing the intimate relations between your thoughts, feelings, and behaviours, for the purpose of disrupting any negative cycles.\n\nWould you like me to explain any of the other activities?"
             }
 
             else -> {
