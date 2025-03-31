@@ -1,5 +1,6 @@
 package com.zurtar.mhma.analytics
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -22,6 +23,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,13 +48,16 @@ import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
+import java.util.Date
 import java.util.Locale
 import kotlin.reflect.KSuspendFunction1
 
 @Composable
 fun AppHorizontalCalendar(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     evaluations: List<DailyEvaluationEntry>,
+    selectedDate: LocalDate? = null,
+    onDateSelect: (LocalDate?) -> Unit
 ) {
     val currentMonth = remember { YearMonth.now() }
     val startMonth = remember { currentMonth.minusMonths(12) } // Adjust as needed
@@ -73,17 +78,25 @@ fun AppHorizontalCalendar(
         "Angry" to Color(0xBAD32F2F), // Red
     )
 
-    var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
+    val foo = evaluations.map {
+        Pair(
+            it.dateCompleted?.toLocalDate(),
+            it.strongestEmotion.first
+        )
+    }
 
     HorizontalCalendar(
         state = state,
-        dayContent = {
+        dayContent = { it ->
+            val moodColor =
+                foo.find { p -> p.first == it.date }?.second?.let { emotions[it] }
+                    ?: Color.Transparent
+
             Day(
                 it,
                 isSelected = it.date == selectedDate,
-                onClick = { d -> selectedDate = d.date },
-                moodColor = emotions.get(evaluations.find { x -> x.dateCompleted?.toLocalDate()?.dayOfYear == it.date.dayOfYear }?.strongestEmotion?.first)
-                    ?: Color.Transparent
+                onClick = { onDateSelect(it?.toLocalDate()) },
+                moodColor = moodColor
             )
         },
         monthHeader = { month ->
@@ -180,8 +193,9 @@ fun Day(
     day: CalendarDay,
     isSelected: Boolean,
     moodColor: Color = Color.Transparent,
-    onClick: (CalendarDay) -> Unit
+    onClick: (Date?) -> Unit
 ) {
+
     val isToday = day.date == LocalDate.now()
     val color = when {
         day.position != DayPosition.MonthDate && !isSelected -> Color.Gray
@@ -199,7 +213,7 @@ fun Day(
         modifier = Modifier
             .aspectRatio(1f) // Keeps all cells square
             .clip(CircleShape)
-            .clickable { onClick(day) }
+            .clickable { onClick(day.date.toDate()) }
             .background(
                 color = background_color,
                 shape = CircleShape

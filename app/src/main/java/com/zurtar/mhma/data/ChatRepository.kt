@@ -117,7 +117,7 @@ class ChatRemoteDataSource @Inject constructor(
                 return@addSnapshotListener
             }
 
-            snapshot?.toObjects<ChatLog>()?.let { trySend(it) }
+            snapshot?.toObjects<ChatLog>()?.let { trySend(it.reversed()) }
         }
 
         trySend(listOf<ChatLog>())
