@@ -81,7 +81,7 @@ class ChatbotMessageManager (
                 getBranch(userMessage)
                 branchStep = 1
                 currentBranchMessages.clear()
-                "Hello! Welcome back. I'm Vibecheck, and I'm here to support you. What would you like to do today?"
+                "Hello! Welcome back. I'm Zeke, and I'm here to support you as best I can. What activity would you like to do today?"
             }
 
             ChatBranch.SmartGoal -> {
@@ -169,23 +169,23 @@ class ChatbotMessageManager (
         }
         return when {
             userMessage.contains("thought record", ignoreCase = true) -> {
-                "A Thought Record helps you identify and challenge negative thought patterns in response to events in your life. You'll explore the event, your emotional responses, automatic/immediate thoughts, and look for alternative perspectives.\n\nWould you like me to explain any of the other activities?"
+                "A thought record is used to help identify and challenge negative thought responses to events in your life. In this activity, you'll choose an event that happened to you and explore it. You'll then identify your emotional responses and your automatic/immediate thoughts to the event. Afterwards, you'll be guided through questions to help you reframe your thoughts and look for alternative perspectives.\n\nWould you like me to explain any of the other activities?"
             }
 
             userMessage.contains("anxiety exploration", ignoreCase = true) -> {
-                "Anxiety exploration is an activity used to help people understand their worries better, and how they can be manages. You'll examine a worry that is troubling you, examine evidence for that worry, and develop strategies for handling it.\n\nWould you like me to explain any of the other activities?"
+                "Anxiety exploration, or worry exploration, is an activity used to help people analyze their worries, and ways to manage them, to challenge catastrophization. You'll identify a worry that you believe may happen to you or in your live, examine evidence for and against that worry, and develop strategies for handling it..\n\nWould you like me to explain any of the other activities?"
             }
 
             userMessage.contains("smart goal", ignoreCase = true) -> {
-                "Setting a SMART Goal helps you create achievable objectives. You'll define a goal that's Specific, Measurable, Attainable, Relevant, and Time-bound.\n\nWould you like me to explain any of the other activities?"
+                "SMART goals are used to help create objectives that are more easily realisable. You will create a goal that is Specific, Measurable, Attainable, Relevant, and Time-bound.\n\nWould you like me to explain any of the other activities?"
             }
 
             userMessage.contains("action plan", ignoreCase = true) -> {
-                "An action plan is used to help plan out an activity you would like to do. You will set a time for the activity, address potential obstacles, and plan how to overcome them.\n\nWould you like me to explain any of the other activities?"
+                "An action plan is used to help plan out a positive activity you would like to do for yourself. You'll set out a date to do the activity, address potential obstacles that my prevent you from doing it, and then create plans to overcome those obstacles.\n\nWould you like me to explain any of the other activities?"
             }
 
             userMessage.contains("cbt modeling", ignoreCase = true) -> {
-                "CBT Modeling helps you understand the interplay between your thoughts, feelings, and behaviors. You'll model a situation to examine these relationships in depth.\n\nWould you like me to explain any of the other activities?"
+                "In cognitive behavioural therapy modeling, you will apply the CBT triangle onto a situation you have experienced, analyzing the intimate relations between your thoughts, feelings, and behaviours, for the purpose of disrupting any negative cycles.\n\nWould you like me to explain any of the other activities?"
             }
 
             else -> {
@@ -203,12 +203,12 @@ class ChatbotMessageManager (
         return when (branchStep) {
             0 -> {
                 branchStep++
-                "What is it that you would like to do? Try to be as specific as you can be, to help make the goal as concrete as possible."
+                "What is it that you would like to do? Try to be as specific as you can be, to help make your goal as concrete as possible."
             }
 
             1 -> {
                 branchStep++
-                "How will you measure your progress towards achieving this goal?"
+                "How will you measure your progress towards achieving your goal?"
             }
 
             2 -> {
@@ -223,7 +223,7 @@ class ChatbotMessageManager (
 
             4 -> {
                 branchStep++
-                "At what time do you want to complete this goal by?"
+                "On what day do you want to complete this goal by?"
             }
 
             else -> {
@@ -231,7 +231,7 @@ class ChatbotMessageManager (
                 addCurrentBranchLogWithDate(currentBranchMessages, ChatBranch.SmartGoal, completionDate)
                 resetCompletionDate()
                 currentBranchMessages.clear()
-                "Great work [user]! Lets save that goal now. Is there anything else you would like to do today?"
+                "Great work! Lets save that goal now. Is there anything else you would like to do today?"
             }
         }
     }
@@ -240,32 +240,32 @@ class ChatbotMessageManager (
         return when (branchStep) {
             0 -> {
                 branchStep++
-                "Lets start by discussing what event(s) led to the negative feelings. Could you describe the situation to me?"
+                "Lets start by discussing what event led to the negative feelings. Could you please describe the situation to me?"
             }
 
             1 -> {
                 branchStep++
-                "Could you describe what kind of emotional experiences you had in response to the event(s)? How intense were those experiences?"
+                "And how would you describe the emotional experiences you had in response to the event? How intense were those experiences?"
             }
 
             2 -> {
                 branchStep++
-                "Next, lets explore the automatic/immediate thoughts you experienced during the situation. How much would you say that you actually believe in these thought?"
+                "Next, lets explore the immediate thoughts you experienced during the situation. How much would you say that you actually believe in these thought?"
             }
 
             3 -> {
                 branchStep++
-                "Now that we have the situation and your response to it modelled, lets move on to reframing the situation. Could you try to identify which of the automatic thoughts you had is responsible for the greatest amount of discomfort? We'll try to explore that thought further."
+                "Now that we've identified the situation and how your experiences from it', lets move on to reframing the situation. Could you try to identify the immediate thought that you feel was the most significant in producing your negative feelings? We'll try to explore that thought further."
             }
 
             4 -> {
                 branchStep++
-                "Could you describe the impact that believing in this thought has on you?"
+                "How would you describe the impact believing in or having this thought has on you?"
             }
 
             5 -> {
                 branchStep++
-                "How do you think things would change if you stopped believing in this thought?"
+                "If you didn't have this thought during the situation, how do you think your feelings would have changed?"
             }
 
             6 -> {
@@ -275,29 +275,29 @@ class ChatbotMessageManager (
 
             7 -> {
                 branchStep++
-                "Is there any evidence against this thought that you could describe?"
+                "And on the other hand, is there any evidence against this thought that you could describe?"
             }
 
             8 -> {
                 branchStep++
-                "Is there an alternative thought or explanation that you feel fits this evidence better?"
+                "Based on what you've described, is there an alternative thought or explanation that you feel fits this evidence better?"
             }
 
             9 -> {
                 branchStep++
-                "If someone you cared for were to experience a similar situation to you, and responded with the same emotional experiences and automatic thoughts, what would you tell them?"
+                "If someone you cared for were to experience a similar situation to you, and responded with the same emotional experiences and immediate thoughts, what would you tell them?"
             }
 
             10 -> {
                 branchStep++
-                "Finally, how do you think think you could formulate a better response to a similar situation in the future? Do you feel that you would be more prepared if this situation were to happen again?"
+                "Finally, if you were to go through a similar situation again in the future, how would you prepare for it? Do you think that you could formulate an alternative response to it?"
             }
 
             else -> {
                 currentBranch = ChatBranch.Initial
                 addCurrentBranchLog(currentBranchMessages, ChatBranch.ThoughtRecord)
                 currentBranchMessages.clear()
-                "Amazing work, [user]!. Lets save that thought record now. Is there anything else you'd like to do?"
+                "Amazing work!. Lets save that thought record now. Is there anything else you'd like to do?"
             }
         }
     }
@@ -306,39 +306,39 @@ class ChatbotMessageManager (
         return when (branchStep) {
             0 -> {
                 branchStep++
-                "What is something that could happen, which you are worried about?"
+                "What is something that could happen to you or in your life that you're worried about?"
             }
 
             1 -> {
                 branchStep++
-                "Is there any evidence that this worry could happen?"
+                "Is there any evidence that this worry will or could happen?"
             }
 
             2 -> {
                 branchStep++
-                "If there any evidence that this worry will not happen?"
+                "Is there any evidence that this worry will not happen?"
             }
 
             3 -> {
                 branchStep++
-                "If your worry doesn't happen, what would happen?"
+                "If your worry doesn't happen, how would that impact you?"
             }
 
             4 -> {
                 branchStep++
-                "If your worry does come true, how could you handle the situation? Could you create some strategies for handling it?"
+                "If your worry does come true, what would happen? How could you handle the situation? Could you create some strategies for handling it?"
             }
 
             5 -> {
                 branchStep++
-                "After answering these questions, has your worry changed? If so, could you describe those changes?"
+                "After answering these questions, has your worry or your perspective on it changed? If so, could you describe those changes?"
             }
 
             else -> {
                 currentBranch = ChatBranch.Initial
                 addCurrentBranchLog(currentBranchMessages, ChatBranch.AnxietyExploration)
                 currentBranchMessages.clear()
-                "Great work, [user]! Lets save this log for now. Is there anything else you would like to do?"
+                "Great work! Lets save this log for now. Is there anything else you would like to do?"
             }
         }
     }
@@ -347,12 +347,12 @@ class ChatbotMessageManager (
         return when (branchStep) {
             0 -> {
                 branchStep++
-                "What activity would you like to do?."
+                "What positive activity would you like to do?."
             }
 
             1 -> {
                 branchStep++
-                "What time do you want to do this activity? Try to set a specific time and date."
+                "What day do you want to try doing this activity on?"
             }
 
             2 -> {
@@ -362,12 +362,12 @@ class ChatbotMessageManager (
 
             3 -> {
                 branchStep++
-                "Are there any obstacles you can think of that could prevent you from doing this activity?"
+                "Are there any obstacles that you can think of, which could prevent you from doing this activity?"
             }
 
             4 -> {
                 branchStep++
-                "What strategies could you use to overcome those obstacles?"
+                "Could you think of some strategies that you could use to overcome those obstacles?"
             }
 
             else -> {
@@ -375,7 +375,7 @@ class ChatbotMessageManager (
                 addCurrentBranchLogWithDate(currentBranchMessages, ChatBranch.SmartGoal, completionDate)
                 resetCompletionDate()
                 currentBranchMessages.clear()
-                "Great work [user]! Lets save that action plan now. Is there anything else you would like to do today?"
+                "Great work! Lets save that action plan now. Is there anything else you would like to do today?"
             }
         }
     }
@@ -384,12 +384,12 @@ class ChatbotMessageManager (
         return when (branchStep) {
             0 -> {
                 branchStep++
-                "Lets start by identifying the situation you would like to model. Could you describe the situation?"
+                "To start, lets identify the situation you want to model using the CBT triangle. Could you describe the situation?"
             }
 
             1 -> {
                 branchStep++
-                "Now, lets explore the thoughts, feelings, and thoughts you hand in response to the situation\n\nFirst, what were you automatic/immediate thoughts in response to this situation?"
+                "Now, lets explore the thoughts, feelings, and thoughts you hand in response to the situation\n\nFirst, what were you immediate thoughts in response to this situation?"
             }
 
             2 -> {
@@ -404,14 +404,29 @@ class ChatbotMessageManager (
 
             4 -> {
                 branchStep++
-                "Finally, are there any relationships you see between your thoughts, feelings, and behaviours? Could you describe those relationships?"
+                "Are there any relationships you see between your thoughts and your feelings?"
+            }
+
+            5 -> {
+                branchStep++
+                "Are there any relationships you see between your feelings and your behaviours?"
+            }
+
+            6 -> {
+                branchStep++
+                "And are there any relationships you see between your behaviours and your thoughts"
+            }
+
+            7 -> {
+                branchStep++
+                "Finally, are there any relationships you see between your thoughts, feelings, and behaviours as a whole? Could you describe those relationships?"
             }
 
             else -> {
                 currentBranch = ChatBranch.Initial
                 addCurrentBranchLog(currentBranchMessages, ChatBranch.CBTModeling)
                 currentBranchMessages.clear()
-                "Great work, [user]! Lets save this log for now. Is there anything else you would like to do?"
+                "Excellent work! Lets save this log for now. Is there anything else you would like to do?"
             }
         }
     }
