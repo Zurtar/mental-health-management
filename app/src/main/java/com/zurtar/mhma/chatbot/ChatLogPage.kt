@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -45,7 +46,6 @@ fun ChatLogPage(
     val log = logList?.find {
         it.id == logId
     }
-    Log.println(Log.DEBUG, "FUCK", "${logList.toString()}, || ${logId} || $log")
     Scaffold(modifier = modifier.fillMaxSize(),
         topBar = {
             ChatLogTopAppBar(openDrawer = openDrawer, onNavigateBack)
@@ -142,11 +142,11 @@ fun ChatLogPageContent(
 
 fun getLogTypeDisplayName(logType: ChatBranch?): String {
     return when (logType) {
-        ChatBranch.SmartGoal -> "Log Type: Smart Goal"
-        ChatBranch.ThoughtRecord -> "Log Type: Thought Record"
-        ChatBranch.AnxietyExploration -> "Log Type: Anxiety Exploration"
-        ChatBranch.ActionPlan -> "Log Type: Action Plan"
-        ChatBranch.CBTModeling -> "Log Type: CBT Modeling"
+        ChatBranch.SmartGoal -> "Activity Type: Smart Goal"
+        ChatBranch.ThoughtRecord -> "Activity Type: Thought Record"
+        ChatBranch.AnxietyExploration -> "Activity Type: Anxiety Exploration"
+        ChatBranch.ActionPlan -> "Activity Type: Action Plan"
+        ChatBranch.CBTModeling -> "Activity Type: CBT Modeling"
         null -> "Error: Unknown log type"
         else -> "Error: Unknown log type"
     }
@@ -158,7 +158,7 @@ fun UserMessageItemReconstruct(message: ChatMessage) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .padding(vertical = 5.dp),
         horizontalArrangement = Arrangement.End
     ) {
         Column(
@@ -166,6 +166,7 @@ fun UserMessageItemReconstruct(message: ChatMessage) {
                 .clip(RoundedCornerShape(8.dp))
                 .background(MaterialTheme.colorScheme.onSecondaryContainer)
                 .padding(8.dp)
+                .width(300.dp)
         ) {
             Text(
                 text = message.message,
@@ -195,6 +196,7 @@ fun BotMessageItemReconstruct(branch: ChatBranch, messageNumber: Int) {
                 .clip(RoundedCornerShape(8.dp))
                 .background(MaterialTheme.colorScheme.onTertiaryContainer)
                 .padding(8.dp)
+                .width(300.dp)
         ) {
             Text(
                 text = botMessage,

@@ -81,7 +81,7 @@ class ChatbotMessageManager (
                 getBranch(userMessage)
                 branchStep = 1
                 currentBranchMessages.clear()
-                "Hello! Welcome back. I'm Vibecheck, and I'm here to support you. What would you like to do today?"
+                "Hello! Welcome back. I'm Zeke, and I'm here to support you as best I can. What activity would you like to do today?"
             }
 
             ChatBranch.SmartGoal -> {
@@ -169,7 +169,7 @@ class ChatbotMessageManager (
         }
         return when {
             userMessage.contains("thought record", ignoreCase = true) -> {
-                "A Thought Record helps you identify and challenge negative thought patterns in response to events in your life. You'll explore the event, your emotional responses, automatic/immediate thoughts, and look for alternative perspectives.\n\nWould you like me to explain any of the other activities?"
+                "A thought record is used to help identify and challenge negative thought responses to events in your life. In this activity, you'll choose an event that happened to you and explore it. You'll then identify your emotional responses and your automatic/immediate thoughts to the event. Afterwards, you'll be guided through questions to help you reframe your thoughts and look for alternative perspectives.\n\nWould you like me to explain any of the other activities?"
             }
 
             userMessage.contains("anxiety exploration", ignoreCase = true) -> {
@@ -231,7 +231,7 @@ class ChatbotMessageManager (
                 addCurrentBranchLogWithDate(currentBranchMessages, ChatBranch.SmartGoal, completionDate)
                 resetCompletionDate()
                 currentBranchMessages.clear()
-                "Great work [user]! Lets save that goal now. Is there anything else you would like to do today?"
+                "Great work! Lets save that goal now. Is there anything else you would like to do today?"
             }
         }
     }
@@ -297,7 +297,7 @@ class ChatbotMessageManager (
                 currentBranch = ChatBranch.Initial
                 addCurrentBranchLog(currentBranchMessages, ChatBranch.ThoughtRecord)
                 currentBranchMessages.clear()
-                "Amazing work, [user]!. Lets save that thought record now. Is there anything else you'd like to do?"
+                "Amazing work!. Lets save that thought record now. Is there anything else you'd like to do?"
             }
         }
     }
@@ -306,7 +306,7 @@ class ChatbotMessageManager (
         return when (branchStep) {
             0 -> {
                 branchStep++
-                "What is something that could happen, which you are worried about?"
+                "What is something that could happen to you or in your life, which you are worried about?"
             }
 
             1 -> {
@@ -331,14 +331,14 @@ class ChatbotMessageManager (
 
             5 -> {
                 branchStep++
-                "After answering these questions, has your worry changed? If so, could you describe those changes?"
+                "After answering these questions, has your worry or your perspective on it changed? If so, could you describe those changes?"
             }
 
             else -> {
                 currentBranch = ChatBranch.Initial
                 addCurrentBranchLog(currentBranchMessages, ChatBranch.AnxietyExploration)
                 currentBranchMessages.clear()
-                "Great work, [user]! Lets save this log for now. Is there anything else you would like to do?"
+                "Great work! Lets save this log for now. Is there anything else you would like to do?"
             }
         }
     }
@@ -375,7 +375,7 @@ class ChatbotMessageManager (
                 addCurrentBranchLogWithDate(currentBranchMessages, ChatBranch.SmartGoal, completionDate)
                 resetCompletionDate()
                 currentBranchMessages.clear()
-                "Great work [user]! Lets save that action plan now. Is there anything else you would like to do today?"
+                "Great work! Lets save that action plan now. Is there anything else you would like to do today?"
             }
         }
     }
@@ -411,7 +411,7 @@ class ChatbotMessageManager (
                 currentBranch = ChatBranch.Initial
                 addCurrentBranchLog(currentBranchMessages, ChatBranch.CBTModeling)
                 currentBranchMessages.clear()
-                "Great work, [user]! Lets save this log for now. Is there anything else you would like to do?"
+                "Great work! Lets save this log for now. Is there anything else you would like to do?"
             }
         }
     }

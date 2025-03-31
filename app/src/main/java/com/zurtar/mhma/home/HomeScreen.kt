@@ -228,7 +228,7 @@ private fun HomeScreenContent(
                         modifier = Modifier.padding(5.dp),
                         textAlign = TextAlign.Start,
                         style = MaterialTheme.typography.titleLarge,
-                        text = "Chat Bot"
+                        text = "Chat"
                     )
                 }
             }

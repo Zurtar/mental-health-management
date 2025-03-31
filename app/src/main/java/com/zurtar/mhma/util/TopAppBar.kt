@@ -44,7 +44,7 @@ fun ChatbotTopAppBar(
     onNavigateToChatList: () -> Unit
 ) {
     TopAppBar(
-        title = { Text("Chat Bot") },
+        title = { Text("Chat With Zeke") },
         colors = topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             titleContentColor = MaterialTheme.colorScheme.primary
@@ -58,7 +58,7 @@ fun ChatbotTopAppBar(
             Button(
                 onClick = onNavigateToChatList
             ) {
-                Text(text = "Chat Log",
+                Text(text = "Chat List",
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             }
@@ -87,7 +87,7 @@ fun ChatListTopAppBar(
             Button(
                 onClick = onNavigateToChatbot
             ) {
-                Text(text = "Chat Bot",
+                Text(text = "Chat",
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             }
@@ -102,7 +102,7 @@ fun ChatLogTopAppBar(
     onNavigateBack: () -> Unit
 ) {
     TopAppBar(
-        title = { Text("Chat Log") },
+        title = { Text("Zeke Log") },
         colors = topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             titleContentColor = MaterialTheme.colorScheme.primary

@@ -396,3 +396,6 @@ fun DatePickerModal(
         DatePicker(state = datePickerState)
     }
 }
+/*
+Date picker functions from android developer tools end
+ */
