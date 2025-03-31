@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.key
+import androidx.compose.ui.Alignment
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zurtar.mhma.data.JournalEntry
@@ -82,24 +83,26 @@ private fun EntryViewScreenContent(
     Column(
         modifier = modifier
             .padding(16.dp)
-            .fillMaxSize()
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(
-            text = entry?.title ?: "Please Try Again",
-            style = MaterialTheme.typography.headlineMedium,
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = entry?.content ?: "",
-            style = MaterialTheme.typography.bodyMedium,
-        )
+        Column(){
+            Text(
+                text = entry?.title ?: "Please Try Again",
+                style = MaterialTheme.typography.headlineMedium,
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = entry?.content ?: "",
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 8.dp),
             horizontalArrangement = Arrangement
                 .spacedBy(8.dp)
-
         ) {
             Button(
                 onClick = onNavigateBack,

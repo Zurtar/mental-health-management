@@ -95,6 +95,8 @@ private fun JournalingScreenContent(
 ) {
     Column(
         modifier = modifier
+            .padding(10.dp)
+
     ) {
         entryList?.let {
             LazyColumn(
