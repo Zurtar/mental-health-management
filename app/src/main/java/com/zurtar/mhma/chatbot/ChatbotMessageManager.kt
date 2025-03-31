@@ -404,15 +404,29 @@ class ChatbotMessageManager (
 
             4 -> {
                 branchStep++
-                "Finally, are there any relationships you see between your thoughts, feelings, and behaviours? Could you describe those relationships?"
+                "Are there any relationships you see between your thoughts and your feelings?"
             }
-            //Are there any relationships you see betw
+
+            5 -> {
+                branchStep++
+                "Are there any relationships you see between your feelings and your behaviours?"
+            }
+
+            6 -> {
+                branchStep++
+                "And are there any relationships you see between your behaviours and your thoughts"
+            }
+
+            7 -> {
+                branchStep++
+                "Finally, are there any relationships you see between your thoughts, feelings, and behaviours as a whole? Could you describe those relationships?"
+            }
 
             else -> {
                 currentBranch = ChatBranch.Initial
                 addCurrentBranchLog(currentBranchMessages, ChatBranch.CBTModeling)
                 currentBranchMessages.clear()
-                "Great work! Lets save this log for now. Is there anything else you would like to do?"
+                "Excellent work! Lets save this log for now. Is there anything else you would like to do?"
             }
         }
     }

@@ -285,7 +285,10 @@ private fun handleCBTModelingItem(messageNumber: Int): String {
         1 -> "Now, lets explore the thoughts, feelings, and thoughts you hand in response to the situation\n\nFirst, what were you automatic/immediate thoughts in response to this situation?"
         2 -> "Next, what feelings did you experience in response to this situation?"
         3 -> "What were your behaviours in response to the situation?"
-        4 -> "Finally, are there any relationships you see between your thoughts, feelings, and behaviours? Could you describe those relationships?"
+        4 -> "Are there any relationships you see between your thoughts and your feelings?"
+        5 -> "Are there any relationships you see between your feelings and your behaviours?"
+        6 -> "And are there any relationships you see between your behaviours and your thoughts"
+        7 -> "Finally, are there any relationships you see between your thoughts, feelings, and behaviours as a whole? Could you describe those relationships?"
         else -> ""
     }
 }
