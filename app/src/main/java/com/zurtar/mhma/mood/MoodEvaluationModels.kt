@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.Instant
 import java.util.Date
 import java.time.LocalDate
 import javax.inject.Inject
@@ -34,6 +35,7 @@ data class DailyEvaluationUiState(
 class DailyEvaluationViewModel @Inject constructor(
     private val dailyMoodRepository: DailyMoodRepository
 ) : ViewModel() {
+
     private val _uiState = MutableStateFlow(DailyEvaluationUiState())
     val uiState: StateFlow<DailyEvaluationUiState> = _uiState.asStateFlow()
 
@@ -56,7 +58,13 @@ class DailyEvaluationViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            dailyMoodRepository.addMoodEntry(_uiState.value.dailyEntry)
+            dailyMoodRepository.addMoodEntry(
+                _uiState.value.dailyEntry.copy(
+                    dateCompleted = Date.from(
+                        Instant.now()
+                    )
+                )
+            )
         }
     }
 
@@ -178,7 +186,12 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
             currentState.copy(page = currentState.page + 1)
         }
 
-        if (_uiState.value.page == _uiState.value.questionResponse.size)
+        Log.println(
+            Log.DEBUG,
+            "WOOOO",
+            "${_uiState.value.page} / ${_uiState.value.questionResponse.size}"
+        )
+        if (_uiState.value.page == _uiState.value.questionResponse.size - 1)
             submitMoodEntry()
     }
 

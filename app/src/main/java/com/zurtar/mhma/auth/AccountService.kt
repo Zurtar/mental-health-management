@@ -8,6 +8,7 @@ import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
+import com.zurtar.mhma.chatbot.UserMessageItemReconstruct
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -67,11 +68,13 @@ class AccountServiceImplementation @Inject constructor(
 
                 val updates = hashMapOf<String, Any>(
                     "email" to user.email!!,
+                    "display_name" to user.email!!.substringBefore('@'),
                     "last_login" to FieldValue.serverTimestamp()
                 )
 
                 firestore.collection("users").document(uid)
                     .set(updates)
+
             }
     }
 

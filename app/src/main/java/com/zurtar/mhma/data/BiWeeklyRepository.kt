@@ -6,6 +6,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObjects
 import com.zurtar.mhma.data.models.BiWeeklyEvaluationEntry
 import kotlinx.coroutines.tasks.await
+import kotlinx.serialization.builtins.PairSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor

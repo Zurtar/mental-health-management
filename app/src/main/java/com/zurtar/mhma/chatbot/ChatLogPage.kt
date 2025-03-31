@@ -45,7 +45,6 @@ fun ChatLogPage(
     val log = logList?.find {
         it.id == logId
     }
-    Log.println(Log.DEBUG, "FUCK", "${logList.toString()}, || ${logId} || $log")
     Scaffold(modifier = modifier.fillMaxSize(),
         topBar = {
             ChatLogTopAppBar(openDrawer = openDrawer, onNavigateBack)
