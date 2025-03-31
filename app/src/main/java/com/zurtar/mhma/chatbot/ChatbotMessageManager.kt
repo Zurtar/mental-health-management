@@ -306,27 +306,27 @@ class ChatbotMessageManager (
         return when (branchStep) {
             0 -> {
                 branchStep++
-                "What is something that could happen to you or in your life, which you are worried about?"
+                "What is something that could happen to you or in your life that you're worried about?"
             }
 
             1 -> {
                 branchStep++
-                "Is there any evidence that this worry could happen?"
+                "Is there any evidence that this worry will or could happen?"
             }
 
             2 -> {
                 branchStep++
-                "If there any evidence that this worry will not happen?"
+                "Is there any evidence that this worry will not happen?"
             }
 
             3 -> {
                 branchStep++
-                "If your worry doesn't happen, what would happen?"
+                "If your worry doesn't happen, how would that impact you?"
             }
 
             4 -> {
                 branchStep++
-                "If your worry does come true, how could you handle the situation? Could you create some strategies for handling it?"
+                "If your worry does come true, what would happen? How could you handle the situation? Could you create some strategies for handling it?"
             }
 
             5 -> {
@@ -347,12 +347,12 @@ class ChatbotMessageManager (
         return when (branchStep) {
             0 -> {
                 branchStep++
-                "What activity would you like to do?."
+                "What positive activity would you like to do?."
             }
 
             1 -> {
                 branchStep++
-                "What time do you want to do this activity? Try to set a specific time and date."
+                "What day do you want to try doing this activity on?"
             }
 
             2 -> {
@@ -362,12 +362,12 @@ class ChatbotMessageManager (
 
             3 -> {
                 branchStep++
-                "Are there any obstacles you can think of that could prevent you from doing this activity?"
+                "Are there any obstacles that you can think of, which could prevent you from doing this activity?"
             }
 
             4 -> {
                 branchStep++
-                "What strategies could you use to overcome those obstacles?"
+                "Could you think of some strategies that you could use to overcome those obstacles?"
             }
 
             else -> {
