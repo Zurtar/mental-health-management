@@ -45,6 +45,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zurtar.mhma.util.DefaultTopAppBar
 import com.zurtar.mhma.R
 import com.zurtar.mhma.data.models.BiWeeklyEvaluationEntry
+import com.zurtar.mhma.util.MoodEvaluationTopAppBar
 
 
 @Composable
@@ -58,7 +59,7 @@ fun BiWeeklyEvaluationScreen(
 
     Scaffold(modifier = modifier.fillMaxSize(),
         topBar = {
-            DefaultTopAppBar(openDrawer = openDrawer)
+            MoodEvaluationTopAppBar(openDrawer = openDrawer)
         }
     ) { innerPadding ->
         BiWeeklyEvaluationScreenContent(

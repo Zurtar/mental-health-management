@@ -48,6 +48,7 @@ import com.zurtar.mhma.util.DefaultTopAppBar
 import com.zurtar.mhma.theme.EmojiFrown
 import com.zurtar.mhma.theme.EmojiNeutral
 import com.zurtar.mhma.theme.EmojiSmile
+import com.zurtar.mhma.util.MoodEvaluationTopAppBar
 
 
 @Composable
@@ -61,7 +62,7 @@ fun DailyMoodEvaluationScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(modifier = modifier.fillMaxSize(),
         topBar = {
-            DefaultTopAppBar(openDrawer = openDrawer)
+            MoodEvaluationTopAppBar(openDrawer = openDrawer)
         }
     ) { innerPadding ->
 
@@ -439,9 +440,11 @@ private fun DailyResult(
             style = MaterialTheme.typography.titleMedium,
             fontSize = 20.sp
         )
-
+        HorizontalDivider()
         ProceedCard("Proceed to Evaluation Analytics") { onNavigateToAnalytics(0) }
+        HorizontalDivider()
         ProceedCard("Proceed to Journal") { onNavigateToJournal() }
+        HorizontalDivider()
 
         Spacer(modifier = Modifier.height(16.dp))
 //
@@ -508,6 +511,7 @@ fun EmotionsChart(modifier: Modifier = Modifier, emotion: String, score: String)
             textAlign = TextAlign.Left,
             fontSize = 15.sp
         )
+        Spacer(modifier = Modifier.width(10.dp))
         Text(
             modifier = Modifier.padding(start = 5.dp, bottom = 5.dp),
             text = score,

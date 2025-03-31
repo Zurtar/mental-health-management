@@ -143,3 +143,41 @@ fun JournalingTopAppBar(
         modifier = Modifier.fillMaxWidth()
     )
 }
+
+@Composable
+fun MoodEvaluationTopAppBar(
+    openDrawer: () -> Unit,
+) {
+    TopAppBar(
+        title = { Text("Mood Evaluation") },
+        colors = topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            titleContentColor = MaterialTheme.colorScheme.primary
+        ),
+        navigationIcon = {
+            IconButton(onClick = openDrawer) {
+                Icon(Icons.Default.Menu, contentDescription = "Menu")
+            }
+        },
+        modifier = Modifier.fillMaxWidth()
+    )
+}
+
+@Composable
+fun AnalyticsTopAppBar(
+    openDrawer: () -> Unit,
+) {
+    TopAppBar(
+        title = { Text("Analytics") },
+        colors = topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            titleContentColor = MaterialTheme.colorScheme.primary
+        ),
+        navigationIcon = {
+            IconButton(onClick = openDrawer) {
+                Icon(Icons.Default.Menu, contentDescription = "Menu")
+            }
+        },
+        modifier = Modifier.fillMaxWidth()
+    )
+}

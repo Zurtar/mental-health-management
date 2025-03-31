@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.zurtar.mhma.util.DefaultTopAppBar
+import com.zurtar.mhma.util.MoodEvaluationTopAppBar
 
 @Composable
 fun MoodEvaluationScreen(
@@ -45,7 +46,7 @@ fun MoodEvaluationScreen(
 ) {
     Scaffold(modifier = modifier.fillMaxSize(),
         topBar = {
-            DefaultTopAppBar(openDrawer = openDrawer)
+            MoodEvaluationTopAppBar(openDrawer = openDrawer)
         }
     ) { innerPadding ->
         val uiState by viewModel.uiState.collectAsStateWithLifecycle()

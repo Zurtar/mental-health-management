@@ -51,6 +51,7 @@ import com.zurtar.mhma.R
 import com.zurtar.mhma.data.models.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.mood.ScoreChart
 import com.zurtar.mhma.mood.findSeverity
+import com.zurtar.mhma.util.AnalyticsTopAppBar
 import com.zurtar.mhma.util.DefaultTopAppBar
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -66,7 +67,7 @@ fun AnalyticsScreen(
 
     Scaffold(modifier = Modifier.fillMaxSize(),
         topBar = {
-            DefaultTopAppBar(openDrawer = openDrawer)
+            AnalyticsTopAppBar(openDrawer = openDrawer)
         }
     ) { innerPadding ->
         AnalyticsScreenContent(
