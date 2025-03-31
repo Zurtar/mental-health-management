@@ -3,11 +3,16 @@ package com.zurtar.mhma.auth
 import com.google.firebase.Firebase
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthSettings
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.google.firebase.firestore.LocalCacheSettings
 import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.firestoreSettings
+import com.google.firebase.firestore.persistentCacheSettings
 import com.zurtar.mhma.chatbot.UserMessageItemReconstruct
 import dagger.Binds
 import dagger.Module
@@ -117,7 +122,13 @@ object FireBaseModule {
     fun providesFireStoreService(
         // Potential dependencies of this type
     ): FirebaseFirestore {
-        return Firebase.firestore
+        val db = Firebase.firestore
+        val settings = firestoreSettings {
+            setLocalCacheSettings(persistentCacheSettings {})
+        }
+
+//        db.firestoreSettings = settings
+        return db
     }
 }
 

@@ -1,5 +1,6 @@
 package com.zurtar.mhma.analytics
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -22,6 +23,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,17 +41,24 @@ import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
+import com.zurtar.mhma.data.DailyEvaluationEntry
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
+import java.util.Date
 import java.util.Locale
 import kotlin.reflect.KSuspendFunction1
 
 @Composable
-fun AppHorizontalCalendar() {
+fun AppHorizontalCalendar(
+    modifier: Modifier = Modifier,
+    evaluations: List<DailyEvaluationEntry>,
+    selectedDate: LocalDate? = null,
+    onDateSelect: (LocalDate?) -> Unit
+) {
     val currentMonth = remember { YearMonth.now() }
     val startMonth = remember { currentMonth.minusMonths(12) } // Adjust as needed
     val endMonth = remember { currentMonth.plusMonths(12) } // Adjust as needed
@@ -62,15 +71,33 @@ fun AppHorizontalCalendar() {
         firstDayOfWeek = firstDayOfWeek,
     )
 
-    var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
+    val emotions = mapOf(
+        "Sad" to Color(0xFF1E88E5), // Blue
+        "Happy" to Color(0xFF4CAF50), // Yellow
+        "Fearful" to Color(0xFF8E24AA), // Purple
+        "Angry" to Color(0xBAD32F2F), // Red
+    )
+
+    val foo = evaluations.map {
+        Pair(
+            it.dateCompleted?.toLocalDate(),
+            it.strongestEmotion.first
+        )
+    }
 
     HorizontalCalendar(
         state = state,
-        dayContent = {
+        dayContent = { it ->
+            val moodColor =
+                foo.find { p -> p.first == it.date }?.second?.let { emotions[it] }
+                    ?: Color.Transparent
+
             Day(
                 it,
                 isSelected = it.date == selectedDate,
-                onClick = { d -> selectedDate = d.date })
+                onClick = { onDateSelect(it?.toLocalDate()) },
+                moodColor = moodColor
+            )
         },
         monthHeader = { month ->
             val daysOfWeek = remember { month.weekDays.first().map { it.date.dayOfWeek } }
@@ -162,7 +189,13 @@ fun MonthHeader(
 }
 
 @Composable
-fun Day(day: CalendarDay, isSelected: Boolean, onClick: (CalendarDay) -> Unit) {
+fun Day(
+    day: CalendarDay,
+    isSelected: Boolean,
+    moodColor: Color = Color.Transparent,
+    onClick: (Date?) -> Unit
+) {
+
     val isToday = day.date == LocalDate.now()
     val color = when {
         day.position != DayPosition.MonthDate && !isSelected -> Color.Gray
@@ -173,14 +206,14 @@ fun Day(day: CalendarDay, isSelected: Boolean, onClick: (CalendarDay) -> Unit) {
     val background_color = when {
         isToday -> MaterialTheme.colorScheme.secondaryContainer
         isSelected -> MaterialTheme.colorScheme.primaryContainer
-        else -> Color.Transparent
+        else -> moodColor
     }
 
     Box(
         modifier = Modifier
             .aspectRatio(1f) // Keeps all cells square
             .clip(CircleShape)
-            .clickable { onClick(day) }
+            .clickable { onClick(day.date.toDate()) }
             .background(
                 color = background_color,
                 shape = CircleShape

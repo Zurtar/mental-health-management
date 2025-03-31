@@ -4,6 +4,9 @@ import android.util.Log
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenSource
+import com.google.firebase.firestore.MetadataChanges
+import com.google.firebase.firestore.SnapshotListenOptions
 import com.google.firebase.firestore.toObjects
 import com.zurtar.mhma.data.models.DateSerializer
 import kotlinx.coroutines.channels.awaitClose
@@ -15,15 +18,11 @@ import kotlinx.serialization.Serializable
 import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlinx.serialization.builtins.PairSerializer
-import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.serializer
-import kotlin.reflect.KType
 
 
 @Serializable
@@ -33,8 +32,9 @@ data class DailyEvaluationEntryDBSafe(
     val emotionsMap: Map<String, Float> = mapOf(),
     val stressLevel: String = "default_initial",
 
-    val strongestEmotion_first: String = "",
-    val strongestEmotion_second: Float = 0f,
+
+    val strongestEmotionFirst: String = "",
+    val strongestEmotionSecond: Float = 0f,
 
     @Serializable(with = DateSerializer::class)
     val dateCompleted: Date? = null
@@ -48,6 +48,7 @@ data class DailyEvaluationEntry(
     val stressLevel: String = "default_initial",
 
     val strongestEmotion: Pair<String, Float> = Pair("", 0f),
+
     @Serializable(with = DateSerializer::class)
     val dateCompleted: Date? = null
 )
@@ -73,6 +74,9 @@ class DailyMoodRepository @Inject constructor(
     private var dailyMoodRemoteDataSource: DailyMoodRemoteDataSource
 ) {
 
+    suspend fun fetchMoodEntries(): List<DailyEvaluationEntry> =
+        dailyMoodRemoteDataSource.fetchMoodEntries()
+
     suspend fun addMoodEntry(moodEntry: DailyEvaluationEntry) =
         dailyMoodRemoteDataSource.addMoodEntry(moodEntry)
 
@@ -93,17 +97,42 @@ class DailyMoodRemoteDataSource @Inject constructor(
             .add(moodEntry.toDBSafe()).await()
     }
 
-    fun getMoodEntries(): Flow<List<DailyEvaluationEntry>> = callbackFlow {
-        val collectionRef = fireStoreDatasource.collection("users")
+    suspend fun fetchMoodEntries(): List<DailyEvaluationEntry> {
+        val documents = fireStoreDatasource.collection("users")
             .document(Firebase.auth.currentUser?.uid!!)
             .collection("DailyMoodEntries")
+            .get().await()
+
+        for (doc in documents) {
+            Log.d("FirestoreDocument", doc.data.toString())
+        }
 
 
-        val listenerRegistration = collectionRef.addSnapshotListener { snapshot, e ->
+        return fireStoreDatasource.collection("users")
+            .document(Firebase.auth.currentUser?.uid!!)
+            .collection("DailyMoodEntries")
+            .get().await().toObjects<DailyEvaluationEntryDBSafe>().toNormalList()
+
+    }
+
+    fun getMoodEntries(): Flow<List<DailyEvaluationEntry>> = callbackFlow {
+      /*  val collectionRef = fireStoreDatasource.collection("users")
+            .document(Firebase.auth.currentUser?.uid!!)
+            .collection("DailyMoodEntries")
+*/
+        val options = SnapshotListenOptions.Builder()
+            .setMetadataChanges(MetadataChanges.INCLUDE)
+            .setSource(ListenSource.DEFAULT)
+            .build();
+
+        val listenerRegistration = fireStoreDatasource.collection("users")
+            .document(Firebase.auth.currentUser?.uid!!)
+            .collection("DailyMoodEntries").addSnapshotListener(options) { snapshot, e ->
             if (e != null) {
                 Log.w(TAG, "Listen failed.", e)
                 return@addSnapshotListener
             }
+            Log.w(TAG, snapshot.toString())
 
             snapshot?.toObjects<DailyEvaluationEntryDBSafe>()?.let { trySend(it.toNormalList()) }
         }
@@ -128,8 +157,8 @@ fun DailyEvaluationEntry.toDBSafe(): DailyEvaluationEntryDBSafe {
         emotionIntensities = this.emotionIntensities,
         emotionsMap = this.emotionsMap,
         stressLevel = this.stressLevel,
-        strongestEmotion_first = this.strongestEmotion.first,
-        strongestEmotion_second = this.strongestEmotion.second,
+        strongestEmotionFirst = this.emotionsMap.entries.sortedByDescending { it.value }.first().toPair().first,
+        strongestEmotionSecond = this.emotionsMap.entries.sortedByDescending { it.value }.first().toPair().second,
         dateCompleted = this.dateCompleted
     )
 }
@@ -140,6 +169,7 @@ fun DailyEvaluationEntryDBSafe.toNormal(): DailyEvaluationEntry {
         emotionIntensities = this.emotionIntensities,
         emotionsMap = this.emotionsMap,
         stressLevel = this.stressLevel,
-        strongestEmotion = Pair(this.strongestEmotion_first, this.strongestEmotion_second)
+        strongestEmotion = this.emotionsMap.entries.sortedByDescending { it.value }.first().toPair(),
+        dateCompleted = this.dateCompleted
     )
 }

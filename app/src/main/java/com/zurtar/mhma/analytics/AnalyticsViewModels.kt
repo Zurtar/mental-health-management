@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.util.Date
 import javax.inject.Inject
 
@@ -31,8 +32,8 @@ class MoodCalendarViewModel : ViewModel() {
 }
 
 data class DailyAnalyticsUIState(
-    val pastEvaluations: List<DailyEvaluationEntry>? = null,
-    val selectedDate: Date? = null
+    val pastEvaluations: List<DailyEvaluationEntry> = listOf(),
+    val selectedDate: LocalDate? = null
 )
 
 
@@ -44,7 +45,16 @@ data class DailyAnalyticsViewModel @Inject constructor(
     val uiState: StateFlow<DailyAnalyticsUIState> = _uiState.asStateFlow()
 
     init {
+
+
         viewModelScope.launch {
+            _uiState.update { c ->
+                c.copy(
+                    pastEvaluations = dailyMoodRepository.fetchMoodEntries()
+                )
+            }
+
+
             dailyMoodRepository.getMoodEntries().collect { entries ->
                 _uiState.update { currentState ->
                     currentState.copy(
@@ -55,8 +65,8 @@ data class DailyAnalyticsViewModel @Inject constructor(
         }
     }
 
-    fun selectDate(date: Date?) {
-        _uiState.update { currentState -> currentState.copy(selectedDate = date) }
+    fun selectDate(localDate: LocalDate?) {
+        _uiState.update { currentState -> currentState.copy(selectedDate = localDate) }
     }
 }
 
