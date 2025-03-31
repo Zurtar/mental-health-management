@@ -72,7 +72,7 @@ private fun MoodEvaluationScreenContent(
     onNavigateToBiWeekly: () -> Unit
 ) {
     Column(
-        modifier = modifier.fillMaxWidth(0.5f),
+        modifier = modifier.fillMaxWidth(0.5f).padding(top = 50.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -132,15 +132,16 @@ fun EvaluationCard(
 
 ) {
     ElevatedCard(
+        elevation = CardDefaults.cardElevation(6.dp),
         modifier = modifier
-            .padding(bottom = 15.dp)
+            .padding(top = 15.dp, bottom = 15.dp)
             .background(MaterialTheme.colorScheme.background)
             .fillMaxWidth(0.75f),
            // .fillMaxHeight(0.2f),
          onClick = { onNavigate() }
     ) {
 
-        Row(modifier = Modifier.fillMaxWidth()) {
+        Row(modifier = Modifier.fillMaxWidth().padding(10.dp)) {
             if(checkMark == 1) {
                 IsCompletedCheckButton(completed)
                 Text(

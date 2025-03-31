@@ -98,9 +98,9 @@ private fun HomeScreenContent(
                     .padding(horizontal = 20.dp, vertical = 25.dp),
             )
 
-            UpcomingScheduleCard()
-
-            SuggestedActionsCard()
+//            UpcomingScheduleCard()
+//
+//            SuggestedActionsCard()
         }
         val cardModifier = Modifier
             .padding(horizontal = 10.dp, vertical = 10.dp)
