@@ -99,7 +99,7 @@ class JournalRemoteDataSource @Inject constructor(
                 return@addSnapshotListener
             }
 
-            snapshot?.toObjects<JournalEntry>()?.let { trySend(it) }
+            snapshot?.toObjects<JournalEntry>()?.let { trySend(it.reversed()) }
         }
 
         trySend(listOf<JournalEntry>())

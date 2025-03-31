@@ -6,6 +6,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObjects
 import com.zurtar.mhma.data.models.BiWeeklyEvaluationEntry
 import kotlinx.coroutines.tasks.await
+import kotlinx.serialization.builtins.PairSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -33,19 +34,18 @@ class BiWeeklyMoodRepository @Inject constructor(
 class BiWeeklyMoodRemoteDataSource @Inject constructor(
     private val fireStoreDatasource: FirebaseFirestore
 ) {
+    private val collectionRef = fireStoreDatasource.collection("users")
+        .document(Firebase.auth.currentUser?.uid!!)
+        .collection("BiweeklyMoodEntries")
+
     suspend fun addMoodEntry(moodEntry: BiWeeklyEvaluationEntry) {
-        val response = fireStoreDatasource.collection("users")
-            .document(Firebase.auth.currentUser?.uid!!)
-            .collection("BiweeklyMoodEntries")
+        val response = collectionRef
             .add(moodEntry).await()
     }
 
     suspend fun fetchMoodEntries(): List<BiWeeklyEvaluationEntry> {
-        val response = fireStoreDatasource.collection("users")
-            .document(Firebase.auth.currentUser?.uid!!)
-            .collection("BiweeklyMoodEntries")
+        val response = collectionRef
             .get().await()
-
 
         return response.toObjects<BiWeeklyEvaluationEntry>()
     }

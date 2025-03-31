@@ -7,6 +7,7 @@ package com.zurtar.mhma.auth
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.auth.api.Auth
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.zurtar.mhma.data.UserRepository
@@ -73,15 +74,21 @@ class LoginViewModel @Inject constructor(
     fun login(onResult: () -> Unit) {
 //      I need to do some checks for empty passwords, and valid emails!
 
-        accountService.authenticate(
-            uiState.value.email,
-            uiState.value.password,
-            onResult = { error ->
-                // OnResult
-                if (error == null)
-                    onResult()
-                //Handle error!
-            })
+        try {
+
+            accountService.authenticate(
+                uiState.value.email,
+                uiState.value.password,
+                onResult = { error ->
+                    // OnResult
+                    if (error == null)
+                        onResult()
+                    else
+                        _uiState.update { c -> c.copy(email = "INVALID_LOGIN", password = "") }
+                })
+        } catch (e: Exception) {
+            _uiState.update { c -> c.copy(email = "INVALID_LOGIN", password = "") }
+        }
     }
 }
 
@@ -143,10 +150,23 @@ class AccountViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             userRepository.getAuthState().collect { authState ->
+
+
                 _uiState.update { currentState ->
-                    currentState.copy(
-                        isLoggedIn = authState != AuthState.Unauthenticated
-                    )
+
+                    when (authState != AuthState.Unauthenticated) {
+                        true -> currentState.copy(
+                            isLoggedIn = true,
+                            displayName = userRepository.getDisplayName(),
+                            email = userRepository.getUserEmail()
+                        )
+
+                        false -> currentState.copy(
+                            isLoggedIn = false,
+                            displayName = "LOGGED_OUT"  ,
+                            email = "LOGGED_OUT"
+                        )
+                    }
                 }
             }
         }

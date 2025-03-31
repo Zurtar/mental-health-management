@@ -39,9 +39,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.zurtar.mhma.data.DailyEvaluationEntry
 import com.zurtar.mhma.util.DefaultTopAppBar
 import com.zurtar.mhma.theme.EmojiFrown
 import com.zurtar.mhma.theme.EmojiNeutral
@@ -51,7 +53,7 @@ import com.zurtar.mhma.theme.EmojiSmile
 @Composable
 fun DailyMoodEvaluationScreen(
     modifier: Modifier = Modifier,
-    viewModel: DailyEvaluationViewModel = viewModel(),
+    viewModel: DailyEvaluationViewModel = hiltViewModel(),
     openDrawer: () -> Unit,
     onNavigateToAnalytics: (Int) -> Unit,
     onNavigateToJournal: () -> Unit
@@ -88,7 +90,7 @@ private fun DailyMoodEvaluationScreenContent(
     modifier: Modifier = Modifier,
     dailyEntry: DailyEvaluationEntry,
     isSubmitted: Int,
-    page:Int,
+    page: Int,
     onEmotionSelect: (String) -> Unit,
     onSubmit: () -> Unit,
     onBack: () -> Unit,
@@ -106,7 +108,11 @@ private fun DailyMoodEvaluationScreenContent(
     ) {
 
         if (isSubmitted == 1) {
-            DailyResult(dailyEntry = dailyEntry, onNavigateToAnalytics = onNavigateToAnalytics, onNavigateToJournal = onNavigateToJournal)
+            DailyResult(
+                dailyEntry = dailyEntry,
+                onNavigateToAnalytics = onNavigateToAnalytics,
+                onNavigateToJournal = onNavigateToJournal
+            )
             return
         }
 
@@ -120,7 +126,12 @@ private fun DailyMoodEvaluationScreenContent(
 
         if (page == 1) {
             if (dailyEntry.selectedEmotions.isEmpty()) {
-                DailyResult(modifier = modifier, dailyEntry, onNavigateToAnalytics, onNavigateToJournal = onNavigateToJournal)
+                DailyResult(
+                    modifier = modifier,
+                    dailyEntry,
+                    onNavigateToAnalytics,
+                    onNavigateToJournal = onNavigateToJournal
+                )
                 return
             }
             EmotionRating(dailyEntry, updateIntensity)
@@ -148,7 +159,6 @@ private fun DailyMoodEvaluationScreenContent(
 }
 
 
-
 //PAGE ONE QUESTIONS
 
 @Composable
@@ -156,12 +166,15 @@ fun MoodSelectionQuestionPage(
     modifier: Modifier = Modifier,
     dailyEntry: DailyEvaluationEntry,
     emotionSelect: (String) -> Unit,
-    updateEmotion: (ImageVector) -> Unit) {
+    updateEmotion: (ImageVector) -> Unit
+) {
 
-    Column (modifier = modifier) {
+    Column(modifier = modifier) {
         StressSelectionCard(modifier = Modifier, updateEmotion = updateEmotion)
-        EmotionSelectionCard(dailyEntry = dailyEntry,
-                emotionSelect = emotionSelect)
+        EmotionSelectionCard(
+            dailyEntry = dailyEntry,
+            emotionSelect = emotionSelect
+        )
     }
 
 }
@@ -402,10 +415,10 @@ private fun DailyResult(
         ProceedCard("Proceed to Journal") { onNavigateToJournal() }
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        FilledTonalButton(
-            onClick = { },
-            content = { Text("Exit") })
+//
+//        FilledTonalButton(
+//            onClick = { },
+//            content = { Text("Exit") })
     }
 
 }
@@ -415,11 +428,16 @@ private fun DailyResult(
 fun EmotionSummaryTable(dailyEntry: DailyEvaluationEntry) {
 
     ElevatedCard(
-        Modifier.padding(top = 5.dp, bottom = 20.dp).fillMaxWidth(0.85f),
+        Modifier
+            .padding(top = 5.dp, bottom = 20.dp)
+            .fillMaxWidth(0.85f),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(top = 10.dp), horizontalArrangement = Arrangement.SpaceEvenly
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Text(
                 modifier = Modifier.width(100.dp),
@@ -438,7 +456,7 @@ fun EmotionSummaryTable(dailyEntry: DailyEvaluationEntry) {
             )
         }
 
-        dailyEntry.emotionsMap.forEach{
+        dailyEntry.emotionsMap.forEach {
             EmotionsChart(emotion = it.key, score = it.value.toString())
         }
     }
@@ -448,7 +466,12 @@ fun EmotionSummaryTable(dailyEntry: DailyEvaluationEntry) {
 @Composable
 fun EmotionsChart(modifier: Modifier = Modifier, emotion: String, score: String) {
 
-    Row(modifier = modifier.fillMaxWidth().padding(bottom = 5.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(bottom = 5.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
         Text(
             modifier = Modifier.padding(start = 5.dp, bottom = 5.dp),
             text = emotion,
@@ -457,7 +480,7 @@ fun EmotionsChart(modifier: Modifier = Modifier, emotion: String, score: String)
             fontSize = 15.sp
         )
         Text(
-            modifier = Modifier.padding(start = 5.dp,bottom = 5.dp),
+            modifier = Modifier.padding(start = 5.dp, bottom = 5.dp),
             text = score,
             style = MaterialTheme.typography.titleSmall,
             textAlign = TextAlign.Left,
@@ -488,33 +511,6 @@ private fun EmotionChip(emotion: String, color: Color, isSelected: Boolean, onCl
     }
 }
 
-
-
-
-
-@Composable
-fun PastEmotionsScreen(modifier: Modifier = Modifier, navController: NavHostController) {
-    Column(modifier = modifier.fillMaxSize()) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text("No past emotions recorded yet.", style = MaterialTheme.typography.bodyMedium)
-        }
-
-        // Back Button at the bottom
-        Spacer(modifier = Modifier.weight(1f)) // This pushes the button to the bottom
-
-        Button(
-            onClick = { navController.popBackStack() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Text("Back")
-        }
-    }
-}
 
 /*
 

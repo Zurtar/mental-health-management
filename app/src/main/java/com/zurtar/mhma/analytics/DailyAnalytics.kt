@@ -1,6 +1,6 @@
 package com.zurtar.mhma.analytics
 
-import androidx.compose.foundation.clickable
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,43 +16,47 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.zurtar.mhma.mood.DailyEvaluationEntry
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zurtar.mhma.data.DailyEvaluationEntry
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Date
 
 
 @Composable
-fun DailyAnalyticsScreenContent() {
+fun DailyAnalyticsScreenContent(
+    modifier: Modifier = Modifier,
+    viewModel: DailyAnalyticsViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    Log.println(Log.DEBUG, "DailyAnalytics", uiState.pastEvaluations.toString())
+
     val labelToContent: Map<String, @Composable () -> Unit> = mapOf(
-        "Mood Calendar" to { DailyEvaluationCalendar() },
-        "History" to { DailyHistoryPrev() } // call DailyHistoricalAnalytics here
+        "Mood Calendar" to {
+            DailyEvaluationCalendar(
+                evaluations = uiState.pastEvaluations,
+                selectedDate = uiState.selectedDate,
+                onDateSelect = { d: LocalDate? -> viewModel.selectDate(d) })
+        },
+        "History" to {
+            DailyHistoricalAnalytics(
+                dailyEvaluations = uiState.pastEvaluations
+            )
+        } // call DailyHistoricalAnalytics here
     )
+
     TabbedContent(labelToContent = labelToContent, key = labelToContent.keys.first())
 }
 
-//This will not be called in the screen content
-//Daily Historical analytics is the main function, this was used for previewing
-
-@Composable
-fun DailyHistoryPrev() {
-    val dailyEntry: DailyEvaluationEntry = DailyEvaluationEntry(
-        emotionsMap = mapOf("Happy" to 7f, "Sad" to 4f, "Angry" to 2.5f),
-        stressLevel = "Mildly Stressed",
-        dateCompleted = LocalDate.now().toDate()
-    )
-
-    val results = makeCardInfoDaily()
-    DailyHistoricalAnalytics(results)
-}
-
+//
 @Composable
 fun DailyAnalyticCard(dailyEntry: DailyEvaluationEntry) {
 
@@ -60,7 +64,8 @@ fun DailyAnalyticCard(dailyEntry: DailyEvaluationEntry) {
     val stress = stressLevel(dailyEntry.stressLevel)
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-    ElevatedCard(elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+    ElevatedCard(
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
@@ -114,15 +119,15 @@ fun DailyAnalyticCard(dailyEntry: DailyEvaluationEntry) {
 
 @Composable
 fun DailyHistoricalAnalytics(
-    dailyEvaluations: List<DailyEvaluationEntry>)
-{
+    dailyEvaluations: List<DailyEvaluationEntry>
+) {
 
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val current = LocalDate.now()
     val currentString = current.format(formatter)
     val yesterday = current.minusDays(1).format(formatter)
 
-    val todays = dailyEvaluations.filter {
+    val today = dailyEvaluations.filter {
         (it.dateCompleted?.toLocalDate() ?: LocalDate.MIN).format(formatter) == currentString
     }
 
@@ -139,7 +144,7 @@ fun DailyHistoricalAnalytics(
         //SummaryPopupPreview()
 
         WeekTitles("Today")
-        todays.forEach { DailyAnalyticCard(it) }
+        today.forEach { DailyAnalyticCard(it) }
 
         WeekTitles("Yesterday")
         lastWeek.forEach { DailyAnalyticCard(it) }
@@ -152,20 +157,37 @@ fun DailyHistoricalAnalytics(
 
 @Composable
 fun DailyEvaluationCalendar(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    evaluations: List<DailyEvaluationEntry>,
+    selectedDate: LocalDate?,
+    onDateSelect: (LocalDate?) -> Unit
 ) {
 
+    val selectedEntry = evaluations.find { it.dateCompleted?.toLocalDate() == selectedDate }
     Column(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.Start
     ) {
-        AppHorizontalCalendar()
-
-        Text(
-            modifier = Modifier.padding(start = 10.dp),
-            text = "Selected Date:",
-            style = MaterialTheme.typography.headlineSmall
+        AppHorizontalCalendar(
+            evaluations = evaluations,
+            selectedDate = selectedDate,
+            onDateSelect = onDateSelect
         )
+        if (selectedEntry != null) {
+            Text(
+                modifier = Modifier.padding(start = 10.dp),
+                text = "Selected Date:",
+                style = MaterialTheme.typography.headlineSmall
+            )
+            DailyAnalyticCard(selectedEntry)
+        } else {
+            Text(
+                modifier = Modifier.padding(start = 10.dp),
+                text = "Selected Date: No Entries",
+                style = MaterialTheme.typography.headlineSmall
+            )
+        }
+
     }
 }
 
