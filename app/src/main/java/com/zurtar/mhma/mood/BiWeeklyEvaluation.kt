@@ -456,6 +456,9 @@ fun findSeverity(score: Int, evalType: String): String {
             if (score >= scoreRange[0].toInt() && score <= scoreRange[1].toInt()) {
                 return anxietySeverities[i]
             }
+            if(score == 0) {
+                return "No anxiety score"
+            }
         }
     } else {
         for (i in depressionScores.indices) {
@@ -463,6 +466,10 @@ fun findSeverity(score: Int, evalType: String): String {
 
             if (score >= scoreRange[0].toInt() && score <= scoreRange[1].toInt()) {
                 return depressionSeverities[i]
+            }
+
+            if(score == 0) {
+                return "No depression score"
             }
         }
     }

@@ -2,6 +2,7 @@ package com.zurtar.mhma.mood
 
 import android.util.Log
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zurtar.mhma.analytics.toDate
@@ -15,9 +16,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.Instant
 import java.util.Date
 import java.time.LocalDate
 import javax.inject.Inject
+import kotlin.random.Random
 
 data class DailyEvaluationEntry(
     val selectedEmotions: List<String> = listOf(),
@@ -27,6 +30,7 @@ data class DailyEvaluationEntry(
     val strongestEmotion: Pair<String, Float> = "" to 0f,
     val dateCompleted: Date? = null
 )
+
 /**
  * Daily/Quick Evaluation UI State & ViewModel
  */
@@ -43,9 +47,10 @@ class DailyEvaluationViewModel : ViewModel() {
     fun onSubmit() {
 
         val emotionsMap: Map<String, Float> =
-            _uiState.value.dailyEntry.selectedEmotions.zip(_uiState.value.dailyEntry.emotionIntensities).sortedByDescending { (_, intensity) ->
-                intensity
-            }.toMap()
+            _uiState.value.dailyEntry.selectedEmotions.zip(_uiState.value.dailyEntry.emotionIntensities)
+                .sortedByDescending { (_, intensity) ->
+                    intensity
+                }.toMap()
 
         _uiState.update { currentState ->
             currentState.copy(
@@ -117,9 +122,10 @@ class DailyEvaluationViewModel : ViewModel() {
         Log.println(Log.DEBUG, "DailyEval:: ", "$value")
 
         val emotionsMap: Map<String, Float> =
-            _uiState.value.dailyEntry.selectedEmotions.zip(intensityList).sortedByDescending { (_, intensity) ->
-                intensity
-            }.toMap()
+            _uiState.value.dailyEntry.selectedEmotions.zip(intensityList)
+                .sortedByDescending { (_, intensity) ->
+                    intensity
+                }.toMap()
 
 
         _uiState.update { currentState ->
@@ -140,7 +146,7 @@ class DailyEvaluationViewModel : ViewModel() {
         _uiState.update { currentState ->
             currentState.copy(
                 dailyEntry = currentState.dailyEntry.copy(
-                   strongestEmotion = strongest
+                    strongestEmotion = strongest
                 )
             )
         }
@@ -175,7 +181,7 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
             currentState.copy(page = currentState.page + 1)
         }
 
-        if (_uiState.value.page == _uiState.value.questionResponse.size)
+        if (_uiState.value.page == _uiState.value.questionResponse.size-1)
             submitMoodEntry()
     }
 
@@ -205,7 +211,8 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
             currentState.copy(
                 biWeeklyEntry = currentState.biWeeklyEntry.copy(
                     depressionScore = depressionScore,
-                    anxietyScore = anxietyScore
+                    anxietyScore = anxietyScore,
+                    dateCompleted = Date.from(Instant.now())
                 )
             )
         }
@@ -216,15 +223,36 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
 
     private fun submitMoodEntry() {
         debugScore();
+/*
+        val ran = Random(Instant.now().toEpochMilli())
+        val biWeeklyEntries: MutableList<BiWeeklyEvaluationEntry> = mutableListOf()
+
+        for (i in 0..10) {
+            val date = LocalDate.now().minusWeeks(i.toLong()).toDate()
+
+            biWeeklyEntries.add(
+                BiWeeklyEvaluationEntry(
+                    depressionScore = ran.nextInt(0, 27),
+                    anxietyScore = ran.nextInt(0, 21),
+                    dateCompleted = date
+                )
+            )
+        }*/
 
         viewModelScope.launch {
+//            for (entry in biWeeklyEntries)
+//                moodRepository.addMoodEntry(entry)
+
             moodRepository.addMoodEntry(
-                _uiState.value.biWeeklyEntry
+                _uiState.value.biWeeklyEntry.copy(
+                    dateCompleted = Date.from(Instant.now())
+                )
             )
         }
     }
 
 }
+
 /**
  * Evaluation Menu/Landing Page UI State & ViewModel
  */

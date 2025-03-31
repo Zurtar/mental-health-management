@@ -1,21 +1,39 @@
 package com.zurtar.mhma.analytics
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Label
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.himanshoe.charty.common.ChartColor
+import com.himanshoe.charty.common.LabelConfig
+import com.himanshoe.charty.line.LineChart
+import com.himanshoe.charty.line.config.LineChartAxisConfig
+import com.himanshoe.charty.line.config.LineChartColorConfig
+import com.himanshoe.charty.line.config.LineChartConfig
+import com.himanshoe.charty.line.config.LineConfig
 import com.himanshoe.charty.line.model.LineData
 import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.mood.findSeverity
+import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Date
+import kotlin.random.Random
 
 
 @Composable
@@ -27,7 +45,12 @@ fun BiWeeklyAnalyticsScreenContent(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val labelToContent: Map<String, @Composable () -> Unit> = mapOf(
-        "Mood Graph" to { MoodGraphScreen() },
+        //MoodGraphScreen(uiState.graphData!!)
+        "Mood Graph" to {
+            MoodGraphScreen(
+                uiState.pastEvaluations ?: listOf<BiWeeklyEvaluationEntry>()
+            )
+        },
         "History" to {
             BiWeeklyHistoricalAnalytics(
                 biWeeklyEvaluations = uiState.pastEvaluations ?: listOf<BiWeeklyEvaluationEntry>(),
@@ -41,22 +64,74 @@ fun BiWeeklyAnalyticsScreenContent(
 
 }
 
+@Preview
 @Composable
-fun MoodGraphScreen() {
-    val depressionScores = listOf(12, 4, 5, 6, 3, 2)
+fun MoodGraphPrev() {
 
-    val results: List<BiWeeklyEvaluationEntry> = listOf()
+    val ran = Random(Instant.now().toEpochMilli())
+    val biWeeklyEntries: MutableList<BiWeeklyEvaluationEntry> = mutableListOf()
 
+    val lineData: MutableList<LineData> = mutableListOf()
+    val current = LocalDate.now()
 
-    results.map { x ->
-        x.dateCompleted to x.depressionScore
+    biWeeklyEntries.forEach { entries ->
+        lineData.add(LineData(entries.depressionScore.toFloat(), entries.dateCompleted!!))
+    }
+
+    //MoodGraphScreen(lineData)
+}
+
+@Composable
+fun MoodGraphScreen(biWeeklyEvaluations: List<BiWeeklyEvaluationEntry>) {
+
+    var lineData: MutableList<LineData> = mutableListOf()
+
+    biWeeklyEvaluations.forEach { entries ->
+        lineData.add(
+            LineData(
+                yValue = entries.depressionScore.toFloat(),
+                xValue = entries.dateCompleted!!.toLocalDate().format(DateTimeFormatter.ofPattern("MM-d"))!!
+            )
+        )
+    }
+
+    val data = lineData.toList()
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+
+        Text("Mood Graph")
+        DepressionGraph(data)
+    }
+
+}
+
+@Composable
+fun DepressionGraph(data: List<LineData>) {
+
+    val labelConfig = LabelConfig(
+        showXLabel = true,
+        showYLabel = true,
+        textColor = ChartColor.Solid(MaterialTheme.colorScheme.primary),
+        xAxisCharCount = 3,
+        labelTextStyle = MaterialTheme.typography.bodyMedium
+    )
+
+    ElevatedCard(modifier = Modifier.height(200.dp)) {
+        LineChart(
+            data = { data },
+            smoothLineCurve = true,
+            colorConfig = LineChartColorConfig.default(),
+            labelConfig = labelConfig,
+            chartConfig = LineChartConfig(
+
+                lineConfig = LineConfig(showValueOnLine = true)
+            )
+        )
     }
 
 
-
-
-    Text("Mood Graph")
 }
+
 
 @Composable
 fun InsightsScreen() {
@@ -81,7 +156,7 @@ fun BiWeeklyHistoricalAnalytics(
     val current = LocalDate.now()
     val currentDay = current.dayOfWeek.ordinal
 
-    val currentWeek = current.minusDays((currentDay-1).toLong())
+    val currentWeek = current.minusDays((currentDay - 1).toLong())
     val currentString = current.format(formatter)
     val previous = currentWeek.minusWeeks(2)
 
@@ -104,7 +179,6 @@ fun BiWeeklyHistoricalAnalytics(
         //SummaryPopupPreview()
 
 
-
         WeekTitles("Current Week")
         todays.forEach { SummaryCard(it, onNavigateToSummaryDialog) }
 
@@ -119,8 +193,8 @@ fun BiWeeklyHistoricalAnalytics(
 }
 
 fun Date.toLocalDate(): LocalDate {
-    return java.time.Instant.ofEpochMilli(this.getTime())
-        .atZone(java.time.ZoneId.systemDefault())
+    return Instant.ofEpochMilli(this.getTime())
+        .atZone(ZoneId.systemDefault())
         .toLocalDate()
 }
 

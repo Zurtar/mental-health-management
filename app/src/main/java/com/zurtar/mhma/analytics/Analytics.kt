@@ -204,10 +204,11 @@ fun SummaryCard(
 
             Text(
                 modifier = Modifier.padding(end = 60.dp),
-                text = result.depressionResults,
+                text = "${result.depressionResults}",
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
-                fontSize = 18.sp
+                fontSize = 18.sp,
+//                textOverflow = TextOverflow.Ellipsis
             )
 
             Text(

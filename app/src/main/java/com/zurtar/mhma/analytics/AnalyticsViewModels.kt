@@ -2,6 +2,7 @@ package com.zurtar.mhma.analytics
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.himanshoe.charty.line.model.LineData
 import com.zurtar.mhma.data.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.data.MoodRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,9 +19,6 @@ data class MoodCalendarUIState(
 )
 
 
-data class MoodGraphUIState(
-   //val graphData: List<LineData >
-)
 
 //@HiltViewModel
 class MoodCalendarViewModel : ViewModel() {
@@ -31,7 +29,8 @@ class MoodCalendarViewModel : ViewModel() {
 }
 
 data class BiWeeklyAnalyticsUIState(
-    val pastEvaluations: List<BiWeeklyEvaluationEntry>? = null
+    val pastEvaluations: List<BiWeeklyEvaluationEntry>? = null,
+    val graphData: List<LineData>? = null
 )
 
 @HiltViewModel
@@ -44,8 +43,18 @@ class BiWeeklyAnalyticsViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             _uiState.update { currentState ->
+
+                val moodList = moodRepository.fetchLatestMoodEntries().toMutableList()
+
+                val data = moodList.map{ currentEntry ->
+                    LineData(yValue = currentEntry.depressionScore.toFloat(),
+                        xValue = currentEntry.dateCompleted!!)
+
+                }
                 currentState.copy(
-                    pastEvaluations = moodRepository.fetchLatestMoodEntries().toMutableList()
+                    pastEvaluations = moodList,
+                    graphData = data
+
                 )
             }
         }
