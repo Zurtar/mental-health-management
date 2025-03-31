@@ -2,6 +2,7 @@ package com.zurtar.mhma.mood
 
 import android.util.Log
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zurtar.mhma.analytics.toDate
@@ -21,6 +22,7 @@ import java.time.Instant
 import java.util.Date
 import java.time.LocalDate
 import javax.inject.Inject
+import kotlin.random.Random
 
 /**
  * Daily/Quick Evaluation UI State & ViewModel
@@ -186,12 +188,7 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
             currentState.copy(page = currentState.page + 1)
         }
 
-        Log.println(
-            Log.DEBUG,
-            "WOOOO",
-            "${_uiState.value.page} / ${_uiState.value.questionResponse.size}"
-        )
-        if (_uiState.value.page == _uiState.value.questionResponse.size - 1)
+        if (_uiState.value.page == _uiState.value.questionResponse.size-1)
             submitMoodEntry()
     }
 
@@ -221,7 +218,8 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
             currentState.copy(
                 biWeeklyEntry = currentState.biWeeklyEntry.copy(
                     depressionScore = depressionScore,
-                    anxietyScore = anxietyScore
+                    anxietyScore = anxietyScore,
+                    dateCompleted = Date.from(Instant.now())
                 )
             )
         }
@@ -232,10 +230,27 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
 
     private fun submitMoodEntry() {
         debugScore();
+/*
+        val ran = Random(Instant.now().toEpochMilli())
+        val biWeeklyEntries: MutableList<BiWeeklyEvaluationEntry> = mutableListOf()
+
+        for (i in 0..10) {
+            val date = LocalDate.now().minusWeeks(i.toLong()).toDate()
+
+            biWeeklyEntries.add(
+                BiWeeklyEvaluationEntry(
+                    depressionScore = ran.nextInt(0, 27),
+                    anxietyScore = ran.nextInt(0, 21),
+                    dateCompleted = date
+                )
+            )
+        }*/
 
         viewModelScope.launch {
-            biWeeklyMoodRepository.addMoodEntry(
-                _uiState.value.biWeeklyEntry
+            moodRepository.addMoodEntry(
+                _uiState.value.biWeeklyEntry.copy(
+                    dateCompleted = Date.from(Instant.now())
+                )
             )
         }
     }
