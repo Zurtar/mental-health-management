@@ -1,6 +1,7 @@
 package com.zurtar.mhma
 
 
+import android.util.Log
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.rememberDrawerState
@@ -196,9 +197,11 @@ fun NavGraph(
 
             composable(
                 route = "ChatLog/{logId}",
-                arguments = listOf(navArgument("logId") { type = NavType.IntType })
+                arguments = listOf(navArgument("logId") { type = NavType.StringType })
             ) { backStackEntry ->
-                val logId = backStackEntry.arguments?.getInt("logId") ?: 0
+                val logId = backStackEntry.arguments?.getString("logId") ?: ""
+
+                Log.println(Log.DEBUG, "ChatLogRoute", "logId: $logId")
                 ChatLogPage(
                     openDrawer = { coroutineScope.launch { drawerState.open() } },
                     logId = logId,
@@ -230,7 +233,7 @@ fun NavGraph(
                 })
             ) { backStackEntry ->
                 var entryId = backStackEntry.arguments?.getString("entryId")
-                if(entryId =="null")
+                if (entryId == "null")
                     entryId = null
 
                 EntryModificationScreen(

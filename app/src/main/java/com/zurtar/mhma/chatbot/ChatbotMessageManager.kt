@@ -2,6 +2,7 @@ package com.zurtar.mhma.chatbot
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.zurtar.mhma.data.ChatMessage
 import kotlinx.coroutines.delay
 import java.util.Date
 

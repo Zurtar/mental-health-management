@@ -18,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
@@ -49,6 +48,8 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.zurtar.mhma.data.ChatMessage
 import com.zurtar.mhma.util.ChatbotTopAppBar
 import java.util.Calendar
 import java.util.Date
@@ -58,7 +59,7 @@ import java.util.Date
 @Composable
 fun ChatbotPage(
     modifier: Modifier = Modifier,
-    viewModel: ChatbotViewModel = viewModel(),
+    viewModel: ChatbotViewModel = hiltViewModel(),
     onNavigateToChatList: () -> Unit,
     openDrawer: () -> Unit
 ) {
@@ -119,6 +120,7 @@ fun ChatbotPageContent(
                 when (message.sender) {
                     Sender.User -> UserMessageItem(message)
                     Sender.Bot -> BotMessageItem(message)
+                    Sender.Null -> ""
                 }
             }
             if (currentBranch == ChatBranch.Initial) {

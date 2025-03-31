@@ -1,22 +1,28 @@
 package com.zurtar.mhma.chatbot
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zurtar.mhma.data.ChatLog
+import com.zurtar.mhma.data.ChatMessage
+import com.zurtar.mhma.data.ChatRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.Date
+import java.util.UUID
+import javax.inject.Inject
 
-@RequiresApi(Build.VERSION_CODES.O)
-class ChatbotViewModel : ViewModel() {
+@HiltViewModel
+class ChatbotViewModel @Inject constructor(
+    private val chatRepository: ChatRepository
+) : ViewModel() {
 
     //message manager for handling chat messages and responses
     private val messageManager = ChatbotMessageManager(
-        ::addCurrentBranchLog,
-        ::addCurrentBranchLogWithDate
+        this::addCurrentBranchLog,
+        this::addCurrentBranchLog
     )
 
     //Used for list of all messages
@@ -29,12 +35,18 @@ class ChatbotViewModel : ViewModel() {
 
     //initialisation of view model
     init {
+        viewModelScope.launch {
+            chatRepository.getChatLogs().collect { logs ->
+                _logList.postValue(logs)
+            }
+        }
+
         _allMessages.value = messageManager.allMessages
         viewModelScope.launch {
             messageManager.simulateBotResponse("")
             _allMessages.postValue(messageManager.allMessages)
         }
-        getAllLogs()
+
     }
 
     fun getBranchStep(): Int {
@@ -59,7 +71,7 @@ class ChatbotViewModel : ViewModel() {
         }
     }
 
-    fun sendCompletionDate(selectedDate: Date?){
+    fun sendCompletionDate(selectedDate: Date?) {
         messageManager.sendCompletionDate(selectedDate)
     }
 
@@ -73,18 +85,10 @@ class ChatbotViewModel : ViewModel() {
         return messageManager.getBranchList()
     }
 
-    /*
-    gets all available logs stored in the logList. Reverses order so they are displayed
-    in order of most recent user creation.
-     */
-    fun getAllLogs(){
-        _logList.value = ChatbotLogManager.getAllLogs().reversed()
-    }
 
-    //add a new log from a log object. not currently in use, but may be used for demonstration purposes
-    fun addLog(log: ChatLog) {
-        ChatbotLogManager.addLog(log)
-        getAllLogs()
+    fun addCurrentBranchLog(log: ChatLog) {
+        viewModelScope.launch { chatRepository.addLog(log) }
+        messageManager.currentBranchMessages.clear()
     }
 
     /*
@@ -92,35 +96,34 @@ class ChatbotViewModel : ViewModel() {
     directly storing the message list. After producing a copy of the message list, it clears
     the currentBranchMessages.
      */
-    fun addCurrentBranchLog(messageList: List<ChatMessage>, logType: ChatBranch) {
+    fun addCurrentBranchLog(
+        messageList: List<ChatMessage>,
+        logType: ChatBranch,
+        toBeCompleted: Date? = null
+    ) {
         val copiedMessageList = messageList.map { it.copy() }
 
-        val log = ChatLog(ChatbotLogManager.getAllLogs().size, logType, copiedMessageList, Date.from(Instant.now()))
-        ChatbotLogManager.addLog(log)
-        getAllLogs()
+        val log = ChatLog(
+            id = UUID.randomUUID().toString(),
+            logType = logType,
+            content = copiedMessageList,
+            createdAt = Date.from(Instant.now()),
+            toBeCompleted = toBeCompleted
+        )
 
-        messageManager.currentBranchMessages.clear()
+        addCurrentBranchLog(log)
     }
 
-    //addCurrentBranchLog for action plan and smart goal
-    fun addCurrentBranchLogWithDate(messageList: List<ChatMessage>, logType: ChatBranch, toBeCompleted: Date?) {
-        val copiedMessageList = messageList.map { it.copy() }
-
-        val log = ChatLog(ChatbotLogManager.getAllLogs().size, logType, copiedMessageList, Date.from(Instant.now()), toBeCompleted)
-        ChatbotLogManager.addLog(log)
-        getAllLogs()
-
-        messageManager.currentBranchMessages.clear()
-    }
 
     //retrieves log based on id
-    fun getLog(id: Int): ChatLog? {
-        return ChatbotLogManager.getLog(id)
+    fun getLog(id: String): ChatLog? {
+        return logList.value?.find {
+            it.id == id
+        }
     }
 
     //deletes log based on id
-    fun deleteLog(id : Int) {
-        ChatbotLogManager.deleteLog(id)
-        getAllLogs()
+    fun deleteLog(id: String) {
+        viewModelScope.launch { chatRepository.deleteLog(id) }
     }
 }

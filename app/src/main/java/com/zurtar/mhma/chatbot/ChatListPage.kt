@@ -5,7 +5,6 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,7 +34,9 @@ import java.util.Locale
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.text.style.TextAlign
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.zurtar.mhma.R
+import com.zurtar.mhma.data.ChatLog
 import com.zurtar.mhma.util.ChatListTopAppBar
 
 /*
@@ -50,9 +51,9 @@ listed on the page)
 @Composable
 fun ChatListPage(
     modifier: Modifier = Modifier,
-    viewModel: ChatbotViewModel = viewModel(),
+    viewModel: ChatbotViewModel = hiltViewModel(),
     onNavigateToChatbot: () -> Unit,
-    onNavigateToChatLog: (Int) -> Unit,
+    onNavigateToChatLog: (String) -> Unit,
     openDrawer: () -> Unit
 ) {
     val logList by viewModel.logList.observeAsState()
@@ -81,22 +82,22 @@ Composable function used to display the contents of the ChatListPage.
 private fun ChatListPageContent(
     modifier: Modifier = Modifier,
     logList: List<ChatLog>?,
-    deleteLog: (Int) -> Unit,
+    deleteLog: (String) -> Unit,
     onNavigateToChatbot: () -> Unit,
-    onNavigateToChatLog: (Int) -> Unit
+    onNavigateToChatLog: (String) -> Unit
 ) {
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(10.dp)
-    ){
+    ) {
         logList?.let {
             LazyColumn(
                 content = {
                     itemsIndexed(it) { _: Int, item: ChatLog ->
                         LogItem(
                             item = item,
-                            onDelete = { deleteLog(item.id) },
+                            onDelete = { item.id?.let { it1 -> deleteLog(it1) } },
                             onNavigateToChatLog = onNavigateToChatLog
                         )
                     }
@@ -119,7 +120,7 @@ Composable to create "card" for ChatLog object
 fun LogItem(
     item: ChatLog,
     onDelete: () -> Unit,
-    onNavigateToChatLog: (Int) -> Unit
+    onNavigateToChatLog: (String) -> Unit
 ) {
 
     var expanded by remember { mutableStateOf(false) }
@@ -162,7 +163,7 @@ fun LogItem(
                 DropdownMenuItem(
                     text = { Text("View") },
                     onClick = {
-                        onNavigateToChatLog(item.id)
+                        item.id?.let { onNavigateToChatLog(it) }
                         expanded = false
                     }
                 )
@@ -182,13 +183,14 @@ fun LogItem(
 Helper function for the display of the different chat branches
 on buttons
  */
-fun getBranchDisplayName(logType: ChatBranch): String {
+fun getBranchDisplayName(logType: ChatBranch?): String {
     return when (logType) {
         ChatBranch.SmartGoal -> "Smart Goal "
         ChatBranch.ThoughtRecord -> "Thought Record"
         ChatBranch.AnxietyExploration -> "Anxiety Exploration"
         ChatBranch.ActionPlan -> "Action Plan"
         ChatBranch.CBTModeling -> "CBT Modeling"
+        null -> "Error: Unknown log type"
         else -> "Error: Unknown log type"
     }
 }

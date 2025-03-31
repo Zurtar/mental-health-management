@@ -110,8 +110,8 @@ class Navigation(private val navController: NavHostController) {
         }
     }
 
-    fun navigateToChatLog(logId: Int) {
-        navController.navigate("chatlog/$logId")
+    fun navigateToChatLog(logId: String) {
+        navController.navigate("ChatLog/$logId")
     }
 }
 
