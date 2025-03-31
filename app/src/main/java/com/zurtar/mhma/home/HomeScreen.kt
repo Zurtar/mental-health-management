@@ -194,7 +194,7 @@ fun NavigationCard(text:String, icon:ImageVector, navigate:() -> Unit) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = "Favorite",
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(30.dp)
                 )
             }
         }
