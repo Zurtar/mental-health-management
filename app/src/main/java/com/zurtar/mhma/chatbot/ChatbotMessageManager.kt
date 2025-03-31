@@ -240,12 +240,12 @@ class ChatbotMessageManager (
         return when (branchStep) {
             0 -> {
                 branchStep++
-                "Lets start by discussing what event(s) led to the negative feelings. Could you please describe the situation to me?"
+                "Lets start by discussing what event led to the negative feelings. Could you please describe the situation to me?"
             }
 
             1 -> {
                 branchStep++
-                "And how would you describe the emotional experiences you had in response to the event(s)? How intense were those experiences?"
+                "And how would you describe the emotional experiences you had in response to the event? How intense were those experiences?"
             }
 
             2 -> {

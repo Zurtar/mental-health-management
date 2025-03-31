@@ -230,51 +230,51 @@ to select the appropriate output String for that respective branch
 
 private fun handleSmartGoalItem(messageNumber: Int): String {
     return when (messageNumber) {
-        0 -> "What is it that you would like to do? Try to be as specific as you can be, to help make the goal as concrete as possible."
-        1 -> "How will you measure your progress towards achieving this goal?"
+        0 -> "What is it that you would like to do? Try to be as specific as you can be, to help make your goal as concrete as possible."
+        1 -> "How will you measure your progress towards achieving your goal?"
         2 -> "Is this goal attainable? What will you need to do to complete it?"
         3 -> "Why is this goal relevant to you? What makes it important for you?"
-        4 -> "At what time do you want to complete this goal by?"
+        4 -> "On what day do you want to complete this goal by?"
         else -> ""
     }
 }
 
 private fun handleThoughtRecordItem(messageNumber: Int): String {
     return when (messageNumber) {
-        0 -> "Lets start by discussing what event(s) led to the negative feelings. Could you describe the situation to me?"
-        1 -> "Could you describe what kind of emotional experiences you had in response to the event(s)? How intense were those experiences?"
-        2 -> "Next, lets explore the automatic/immediate thoughts you experienced during the situation. How much would you say that you actually believe in these thought?"
-        3 -> "Now that we have the situation and your response to it modelled, lets move on to reframing the situation. Could you try to identify which of the automatic thoughts you had is responsible for the greatest amount of discomfort? We'll try to explore that thought further."
-        4 -> "Could you describe the impact that believing in this thought has on you?"
-        5 -> "How do you think things would change if you stopped believing in this thought?"
+        0 -> "Lets start by discussing what event led to the negative feelings. Could you please describe the situation to me?"
+        1 -> "And how would you describe the emotional experiences you had in response to the event? How intense were those experiences?"
+        2 -> "Next, lets explore the immediate thoughts you experienced during the situation. How much would you say that you actually believe in these thought?"
+        3 -> "Now that we've identified the situation and how your experiences from it', lets move on to reframing the situation. Could you try to identify the immediate thought that you feel was the most significant in producing your negative feelings? We'll try to explore that thought further."
+        4 -> "How would you describe the impact believing in or having this thought has on you?"
+        5 -> "If you didn't have this thought during the situation, how do you think your feelings would have changed?"
         6 -> "Do you feel that there is any evidence for this thought? Could you describe it?"
-        7 -> "Is there any evidence against this thought that you could describe?"
-        8 -> "Is there an alternative thought or explanation that you feel fits this evidence better?"
-        9 -> "If someone you cared for were to experience a similar situation to you, and responded with the same emotional experiences and automatic thoughts, what would you tell them?"
-        10 -> "Finally, how do you think think you could formulate a better response to a similar situation in the future? Do you feel that you would be more prepared if this situation were to happen again?"
+        7 -> "And on the other hand, is there any evidence against this thought that you could describe?"
+        8 -> "Based on what you've described, is there an alternative thought or explanation that you feel fits this evidence better?"
+        9 -> "If someone you cared for were to experience a similar situation to you, and responded with the same emotional experiences and immediate thoughts, what would you tell them?"
+        10 -> "Finally, if you were to go through a similar situation again in the future, how would you prepare for it? Do you think that you could formulate an alternative response to it?"
         else -> ""
     }
 }
 
 private fun handleAnxietyExplorationItem(messageNumber: Int): String {
     return when (messageNumber) {
-        0 -> "What is something that could happen, which you are worried about?"
-        1 -> "Is there any evidence that this worry could happen?"
-        2 -> "If there any evidence that this worry will not happen?"
-        3 -> "If your worry doesn't happen, what would happen?"
-        4 -> "If your worry does come true, how could you handle the situation? Could you create some strategies for handling it?"
-        5 -> "After answering these questions, has your worry changed? If so, could you describe those changes?"
+        0 -> "What is something that could happen to you or in your life that you're worried about?"
+        1 -> "Is there any evidence that this worry will or could happen?"
+        2 -> "Is there any evidence that this worry will not happen?"
+        3 -> "If your worry doesn't happen, how would that impact you?"
+        4 -> "If your worry does come true, what would happen? How could you handle the situation? Could you create some strategies for handling it?"
+        5 -> "After answering these questions, has your worry or your perspective on it changed? If so, could you describe those changes?"
         else -> ""
     }
 }
 
 private fun handleActionPlanItem(messageNumber: Int): String {
     return when (messageNumber) {
-        0 -> "What activity would you like to do?."
-        1 -> "What time do you want to do this activity? Try to set a specific time and date."
+        0 -> "What positive activity would you like to do?."
+        1 -> "What day do you want to try doing this activity on?"
         2 -> "Why do you want to do this activity? Why is it important to you?"
-        3 -> "Are there any obstacles you can think of that could prevent you from doing this activity?"
-        4 -> "What strategies could you use to overcome those obstacles?"
+        3 -> "Are there any obstacles that you can think of, which could prevent you from doing this activity?"
+        4 -> "Could you think of some strategies that you could use to overcome those obstacles?"
         else -> ""
     }
 }
