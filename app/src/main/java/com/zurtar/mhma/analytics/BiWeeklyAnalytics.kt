@@ -33,7 +33,7 @@ fun BiWeeklyAnalyticsScreenContent(
                 onNavigateToSummaryDialog = onNavigateToSummaryDialog
             )
         },
-        "Insights" to { }
+       // "Insights" to { }
     )
 
     TabbedContent(labelToContent = labelToContent, key = labelToContent.keys.first())

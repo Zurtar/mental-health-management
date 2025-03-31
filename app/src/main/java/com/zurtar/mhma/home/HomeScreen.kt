@@ -1,6 +1,8 @@
 package com.zurtar.mhma.home
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,20 +18,31 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.rounded.Call
+import androidx.compose.material.icons.rounded.Create
 import androidx.compose.material.icons.rounded.DateRange
+import androidx.compose.material.icons.rounded.Share
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.zurtar.mhma.mood.ProceedCard
 import com.zurtar.mhma.util.DefaultTopAppBar
 import java.sql.Date
 import java.text.SimpleDateFormat
@@ -86,21 +99,22 @@ private fun HomeScreenContent(
                 fontSize = 27.sp,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 20.dp),
-                textAlign = TextAlign.Center
+                    .padding(top = 20.dp, start = 10.dp),
+                textAlign = TextAlign.Start
             )
 
             Text(
                 text = formattedDate,
                 fontSize = 20.sp,
+                textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp, vertical = 25.dp),
             )
 
-            UpcomingScheduleCard()
-
-            SuggestedActionsCard()
+//            UpcomingScheduleCard()
+//
+//            SuggestedActionsCard()
         }
         val cardModifier = Modifier
             .padding(horizontal = 10.dp, vertical = 10.dp)
@@ -109,7 +123,7 @@ private fun HomeScreenContent(
             .weight(1f)
             .align(Alignment.CenterHorizontally)
 
-        Row (
+      /*  Row (
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
@@ -123,11 +137,71 @@ private fun HomeScreenContent(
             NavigationCard(cardModifier,"Journal", onNavigateToJournal)
             NavigationCard(cardModifier,"Analytics", onNavigateToAnalytics)
 
+        }*/
+
+        Column (modifier = Modifier.fillMaxWidth().padding(top = 20.dp)) {
+            HorizontalDivider()
+            NavigationCard("Mood Evaluation", Icons.Rounded.DateRange, onNavigateToMoodEvaluation)
+            HorizontalDivider()
+            NavigationCard("Chat", Icons.Rounded.Call ,onNavigateToChatbot)
+            HorizontalDivider()
+            NavigationCard("Journal",Icons.Rounded.Create, onNavigateToJournal)
+            HorizontalDivider()
+            NavigationCard("Analytics", Icons.Rounded.Share ,onNavigateToAnalytics)
+            HorizontalDivider()
         }
     }
 
 }
 
+@Composable
+fun NavigationCard(text:String, icon:ImageVector, navigate:() -> Unit) {
+    OutlinedCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { navigate() },
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        border = BorderStroke(1.dp, Color.Transparent)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = "Favorite",
+                modifier = Modifier.size(30.dp)
+            )
+
+            Text(
+                modifier = Modifier.width(170.dp),
+                text = text,
+                style = MaterialTheme.typography.titleLarge
+            )
+            FilledTonalButton(
+                onClick = { navigate() },
+                colors = ButtonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = Color.Black,
+                    disabledContainerColor = Color.Transparent,
+                    disabledContentColor = Color.Transparent
+                )
+            ) {
+
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = "Favorite",
+                    modifier = Modifier.size(30.dp)
+                )
+            }
+        }
+    }
+}
+
+/*
 @Composable
 fun NavigationCard(cardModifier:Modifier, title: String, onNavigateTo: () -> Unit) {
 
@@ -156,7 +230,7 @@ fun NavigationCard(cardModifier:Modifier, title: String, onNavigateTo: () -> Uni
 //            )
         }
     }
-}
+}*/
 
 fun getGreetingFromDate(date: java.util.Date): String {
     val calendar = java.util.Calendar.getInstance()

@@ -23,6 +23,7 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -38,11 +39,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zurtar.mhma.util.DefaultTopAppBar
 import com.zurtar.mhma.R
 import com.zurtar.mhma.data.models.BiWeeklyEvaluationEntry
+import com.zurtar.mhma.util.MoodEvaluationTopAppBar
 
 
 @Composable
@@ -56,7 +59,7 @@ fun BiWeeklyEvaluationScreen(
 
     Scaffold(modifier = modifier.fillMaxSize(),
         topBar = {
-            DefaultTopAppBar(openDrawer = openDrawer)
+            MoodEvaluationTopAppBar(openDrawer = openDrawer)
         }
     ) { innerPadding ->
         BiWeeklyEvaluationScreenContent(
@@ -105,8 +108,10 @@ private fun BiWeeklyEvaluationScreenContent(
             text = "Over the last 2 weeks, have you felt...",
             modifier = Modifier
                 .align(Alignment.Start)
-                .padding(start = 5.dp, top = 15.dp),
-            style = MaterialTheme.typography.headlineSmall
+                .padding(start = 15.dp, top = 25.dp, bottom = 15.dp),
+            style = MaterialTheme.typography.titleSmall,
+            textAlign = TextAlign.Center,
+            fontSize = 20.sp
         )
 
         QuestionCard(
@@ -122,14 +127,24 @@ private fun BiWeeklyEvaluationScreenContent(
         ) {
             if (page > 0)
                 FilledTonalButton(
+                    modifier  = Modifier.width(120.dp).height(50.dp).padding(top = 10.dp),
                     onClick = { onBack() },
-                    content = { Text("Back") })
+                    content = { Text(
+                        text = "Back",
+                        fontSize = 18.sp
+                    )})
 
             var text = "Next"
             if (page == questions.size - 1) text = "Submit"
-            FilledTonalButton(onClick = { onNext() }, content = { Text(text) })
+            FilledTonalButton(modifier  = Modifier.width(120.dp).height(50.dp).padding(top = 10.dp),
+                onClick = { onNext() },
+                content = { Text(
+                    text = text,
+                    fontSize = 18.sp
+                ) })
         }
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(40.dp))
+
         LinearProgressIndicator(
             progress = { page.toFloat() / questions.size },
             modifier = Modifier.fillMaxWidth(.75f),
@@ -148,14 +163,30 @@ fun QuestionCard(
     val radioOptions =
         listOf("Not at all", "Several days", "More than half the days", "Nearly every day")
 
+    var questionNum = "Question ${num + 1}"
+
+    if(num <= 8) {
+        questionNum = "Question ${num + 1}: Depression"
+    }
+    if(num > 8) {
+        questionNum = "Question ${num + 1}: Anxiety"
+    }
+
+
     ElevatedCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         modifier = modifier
             .padding(bottom = 15.dp, top = 15.dp)
             .fillMaxWidth(0.85f)
     ) {
-        Column(modifier = Modifier.padding(all = 15.dp)) {
-            Text(text = question)
+        Column(modifier = Modifier.padding(all = 15.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                modifier = Modifier.padding(bottom = 20.dp),
+                text = question,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge,
+                fontSize = 18.sp
+            )
             QuestionResponse(radioOptions, selectedOption, onSelect)
 
             Box(
@@ -168,7 +199,7 @@ fun QuestionCard(
                     modifier = Modifier.align(Alignment.BottomCenter),
                     textAlign = TextAlign.Center,
                     color = Color.Gray,
-                    text = "Question ${num + 1}"
+                    text = questionNum
                 )
             }
         }
@@ -208,7 +239,9 @@ fun QuestionResponse(radioOptions: List<String>, selectedOption: Int, onSelect: 
                 Text(
                     modifier = Modifier.align(Alignment.Center),
                     textAlign = TextAlign.Center,
-                    text = text
+                    text = text,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontSize = 18.sp
                 )
             }
         }
@@ -238,6 +271,7 @@ fun BiWeeklyResult(
     ) {
 
         Text(
+            modifier = Modifier.padding(top = 20.dp, bottom = 10.dp),
             text = "You have completed the Bi-Weekly evaluation!",
             style = MaterialTheme.typography.titleLarge,
             textAlign = TextAlign.Center
@@ -249,58 +283,73 @@ fun BiWeeklyResult(
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
                     text = "Depression Score",
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center
                 )
                 FilledTonalButton(
+                    modifier  = Modifier.width(60.dp).height(60.dp).padding(top = 10.dp),
                     onClick = {},
                     enabled = true,
-                    content = { Text("${evaluation.depressionScore}") })
+                    content = { Text(
+                        text = "${evaluation.depressionScore}",
+                        style = MaterialTheme.typography.bodyLarge
+                    )})
 
             }
-            Spacer(Modifier.width(15.dp))
+            Spacer(Modifier.width(25.dp))
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
                     text = "Anxiety Score",
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center
                 )
                 FilledTonalButton(
+                    modifier  = Modifier.width(60.dp).height(60.dp).padding(top = 10.dp),
                     onClick = {},
                     enabled = true,
-                    content = { Text("${evaluation.anxietyScore}") })
+                    content = { Text(
+                        text = "${evaluation.anxietyScore}",
+                        style = MaterialTheme.typography.bodyLarge
+                    )})
             }
         }
+
+        Spacer(Modifier.height(25.dp))
+
+        Text(
+            text = "Your answers to the PHQ-9 align with those with: ${evaluation.depressionResults}",
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center,
+            fontSize = 17.sp
+        )
 
         ScoreChart(
             score = evaluation.depressionScore,
             scores = depressionScores,
             severities = depressionSeverities
         )
-        Spacer(Modifier.height(15.dp))
+
+        Spacer(Modifier.height(25.dp))
+
         Text(
-            text = "Your answers to the PHQ-9 align with those with: ${evaluation.depressionResults}",
+            text = "Your answers to the GAD-7 align with those with: ${evaluation.anxietyResults}",
             style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            fontSize = 17.sp
         )
-        Spacer(Modifier.height(15.dp))
+        //Spacer(Modifier.height(.dp))
 
         ScoreChart(
             score = evaluation.anxietyScore,
             scores = anxietyScores,
             severities = anxietySeverities
         )
-        Spacer(Modifier.height(15.dp))
-        Text(
-            text = "Your answers to the GAD-7 align with those with: ${evaluation.anxietyResults}",
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center
-        )
         Spacer(Modifier.height(30.dp))
-
+        HorizontalDivider()
         ProceedCard("Proceed to Evaluation Summary") { onNavigateToAnalytics(1) }
-        Spacer(Modifier.height(15.dp))
+        HorizontalDivider()
         ProceedCard("Proceed to Evaluation Analytics") { onNavigateToAnalytics(1) }
+        HorizontalDivider()
 
 
     }
@@ -316,7 +365,7 @@ fun ProceedCard(text: String, navigate: () -> Unit) {
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        border = BorderStroke(1.dp, Color.Black)
+        border = BorderStroke(1.dp, Color.Transparent)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -324,7 +373,8 @@ fun ProceedCard(text: String, navigate: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Text(
-                text = text
+                text = text,
+                style = MaterialTheme.typography.titleMedium
             )
             FilledTonalButton(
                 onClick = { navigate() },
@@ -351,7 +401,7 @@ fun ProceedCard(text: String, navigate: () -> Unit) {
 fun ScoreChart(score: Int, scores: List<String>, severities: List<String>) {
 
     ElevatedCard(
-        Modifier.padding(top = 15.dp),
+        Modifier.padding(top = 15.dp, start = 10.dp, end = 10.dp),
 
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
@@ -396,18 +446,6 @@ fun ScoreChart(score: Int, scores: List<String>, severities: List<String>) {
 
 }
 
-
-@Composable
-fun ScoreColumn(text: String) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.titleMedium,
-        textAlign = TextAlign.Center,
-        modifier = Modifier.padding(start = 15.dp)
-    )
-
-}
-
 @Composable
 fun RowChart(modifier: Modifier = Modifier, score: String, severity: String) {
     Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -417,7 +455,8 @@ fun RowChart(modifier: Modifier = Modifier, score: String, severity: String) {
             modifier = Modifier
                 .padding(start = 5.dp)
                 .width(50.dp),
-            textAlign = TextAlign.Left
+            textAlign = TextAlign.Left,
+            fontSize = 15.sp
         )
         Text(
             text = severity,
@@ -425,7 +464,8 @@ fun RowChart(modifier: Modifier = Modifier, score: String, severity: String) {
             modifier = Modifier
                 .padding(start = 5.dp)
                 .width(180.dp),
-            textAlign = TextAlign.Left
+            textAlign = TextAlign.Left,
+            fontSize = 15.sp
         )
     }
 }
