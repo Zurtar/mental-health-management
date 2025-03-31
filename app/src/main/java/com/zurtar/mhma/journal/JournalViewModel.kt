@@ -34,7 +34,7 @@ class JournalViewModel @Inject constructor(
             journalRepository.getJournalEntries().collect { entries ->
                 _uiState.update { currentState ->
                     currentState.copy(
-                        entryList = entries
+                        entryList = entries.reversed()
                     )
                 }
             }
