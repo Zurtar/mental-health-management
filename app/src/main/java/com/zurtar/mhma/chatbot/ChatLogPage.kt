@@ -1,6 +1,7 @@
 package com.zurtar.mhma.chatbot
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -12,18 +13,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.zurtar.mhma.data.ChatLog
+import com.zurtar.mhma.data.ChatMessage
 import com.zurtar.mhma.util.ChatLogTopAppBar
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -31,11 +36,16 @@ import java.util.Locale
 @Composable
 fun ChatLogPage(
     modifier: Modifier = Modifier,
-    logId: Int,
+    logId: String,
     onNavigateBack: () -> Unit,
-    viewModel: ChatbotViewModel = viewModel(),
+    viewModel: ChatbotViewModel = hiltViewModel(),
     openDrawer: () -> Unit,
 ) {
+    val logList by viewModel.logList.observeAsState()
+    val log = logList?.find {
+        it.id == logId
+    }
+    Log.println(Log.DEBUG, "FUCK", "${logList.toString()}, || ${logId} || $log")
     Scaffold(modifier = modifier.fillMaxSize(),
         topBar = {
             ChatLogTopAppBar(openDrawer = openDrawer, onNavigateBack)
@@ -45,14 +55,11 @@ fun ChatLogPage(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
-            viewModel = viewModel,
-            logId = logId,
+            log = log,
             onNavigateBack = onNavigateBack,
         )
     }
 }
-
-
 
 
 /*
@@ -68,15 +75,16 @@ Title of the log is created using the helper function getLogTypeDisplayName
 For the actual logic of the contents of the bot messages, handleBotMessage function is used in
 tandem with various other handle..Branch functions
  */
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ChatLogPageContent(
     modifier: Modifier = Modifier,
-    logId: Int,
+    log: ChatLog?,
     onNavigateBack: () -> Unit,
-    viewModel: ChatbotViewModel = viewModel(),
 ) {
-    val chatLog = viewModel.getLog(logId)
+    if (log == null) {
+        Text("sad")
+        return
+    }
 
     Column(
         modifier = modifier
@@ -87,43 +95,59 @@ fun ChatLogPageContent(
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            chatLog?.let { log ->
+            log.let { log ->
                 Text(
                     text = getLogTypeDisplayName(log.logType),
                     fontSize = 20.sp,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 Text(
-                    text = "Created At: ${SimpleDateFormat("HH:mm:aa, MMMM dd", Locale.ENGLISH).format(log.createdAt)}",
+                    text = "Created At: ${
+                        log.createdAt?.let {
+                            SimpleDateFormat(
+                                "HH:mm:aa, MMMM dd",
+                                Locale.ENGLISH
+                            ).format(it)
+                        }
+                    }",
                     fontSize = 14.sp,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
                 if (log.toBeCompleted != null) {
                     Text(
-                        text = "To be completed At: ${SimpleDateFormat("EEEE, MMMM dd", Locale.getDefault()).format(log.toBeCompleted)}",
+                        text = "To be completed At: ${
+                            log.toBeCompleted?.let {
+                                SimpleDateFormat(
+                                    "EEEE, MMMM dd",
+                                    Locale.getDefault()
+                                ).format(it)
+                            }
+                        }",
                         fontSize = 14.sp,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                 }
 
                 for ((index, userMessage) in log.content.withIndex()) {
-                    BotMessageItemReconstruct(branch = log.logType, messageNumber = index)
-                    UserMessageItemReconstruct(message = userMessage)
-
+                    if (log.logType != null) {
+                        BotMessageItemReconstruct(branch = log.logType!!, messageNumber = index)
+                        UserMessageItemReconstruct(message = userMessage)
+                    }
                 }
-            } ?: Text("Log not found")
+            }
         }
     }
 }
 
 
-fun getLogTypeDisplayName(logType: ChatBranch): String {
+fun getLogTypeDisplayName(logType: ChatBranch?): String {
     return when (logType) {
         ChatBranch.SmartGoal -> "Log Type: Smart Goal"
         ChatBranch.ThoughtRecord -> "Log Type: Thought Record"
         ChatBranch.AnxietyExploration -> "Log Type: Anxiety Exploration"
         ChatBranch.ActionPlan -> "Log Type: Action Plan"
         ChatBranch.CBTModeling -> "Log Type: CBT Modeling"
+        null -> "Error: Unknown log type"
         else -> "Error: Unknown log type"
     }
 }
@@ -145,7 +169,8 @@ fun UserMessageItemReconstruct(message: ChatMessage) {
         ) {
             Text(
                 text = message.message,
-                color = MaterialTheme.colorScheme.onSecondary)
+                color = MaterialTheme.colorScheme.onSecondary
+            )
             Text(
                 text = formattedTime,
                 color = Color.White,
@@ -173,7 +198,8 @@ fun BotMessageItemReconstruct(branch: ChatBranch, messageNumber: Int) {
         ) {
             Text(
                 text = botMessage,
-                color = MaterialTheme.colorScheme.onTertiary)
+                color = MaterialTheme.colorScheme.onTertiary
+            )
         }
     }
 }
@@ -251,7 +277,7 @@ private fun handleActionPlanItem(messageNumber: Int): String {
     }
 }
 
-private fun handleCBTModelingItem(messageNumber: Int): String{
+private fun handleCBTModelingItem(messageNumber: Int): String {
     return when (messageNumber) {
         0 -> "Lets start by identifying the situation you would like to model. Could you describe the situation?"
         1 -> "Now, lets explore the thoughts, feelings, and thoughts you hand in response to the situation\n\nFirst, what were you automatic/immediate thoughts in response to this situation?"
