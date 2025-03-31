@@ -1,6 +1,5 @@
 package com.zurtar.mhma.analytics
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,25 +15,36 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.zurtar.mhma.mood.DailyEvaluationEntry
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.zurtar.mhma.data.DailyEvaluationEntry
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 
 @Composable
-fun DailyAnalyticsScreenContent() {
+fun DailyAnalyticsScreenContent(
+    modifier: Modifier = Modifier,
+    viewModel: DailyAnalyticsViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
     val labelToContent: Map<String, @Composable () -> Unit> = mapOf(
         "Mood Calendar" to { DailyEvaluationCalendar() },
-        "History" to { DailyHistoryPrev() } // call DailyHistoricalAnalytics here
+        "History" to {
+            DailyHistoricalAnalytics(
+                dailyEvaluations = uiState.pastEvaluations ?: listOf()
+            )
+        } // call DailyHistoricalAnalytics here
     )
+
     TabbedContent(labelToContent = labelToContent, key = labelToContent.keys.first())
 }
 
@@ -60,7 +70,8 @@ fun DailyAnalyticCard(dailyEntry: DailyEvaluationEntry) {
     val stress = stressLevel(dailyEntry.stressLevel)
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
-    ElevatedCard(elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+    ElevatedCard(
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         modifier = Modifier
             .fillMaxWidth()
             .padding(10.dp)
@@ -114,15 +125,15 @@ fun DailyAnalyticCard(dailyEntry: DailyEvaluationEntry) {
 
 @Composable
 fun DailyHistoricalAnalytics(
-    dailyEvaluations: List<DailyEvaluationEntry>)
-{
+    dailyEvaluations: List<DailyEvaluationEntry>
+) {
 
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val current = LocalDate.now()
     val currentString = current.format(formatter)
     val yesterday = current.minusDays(1).format(formatter)
 
-    val todays = dailyEvaluations.filter {
+    val today = dailyEvaluations.filter {
         (it.dateCompleted?.toLocalDate() ?: LocalDate.MIN).format(formatter) == currentString
     }
 
@@ -139,7 +150,7 @@ fun DailyHistoricalAnalytics(
         //SummaryPopupPreview()
 
         WeekTitles("Today")
-        todays.forEach { DailyAnalyticCard(it) }
+        today.forEach { DailyAnalyticCard(it) }
 
         WeekTitles("Yesterday")
         lastWeek.forEach { DailyAnalyticCard(it) }

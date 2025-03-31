@@ -47,7 +47,8 @@ fun AccountScreen(
                 .padding(innerPadding)
                 .fillMaxSize(),
             onLogout = { viewModel.signOut(onLogoutResult) },
-            email = uiState.email
+            email = uiState.email,
+            name = uiState.displayName
         )
     }
 }
@@ -56,7 +57,8 @@ fun AccountScreen(
 private fun AccountScreenContent(
     modifier: Modifier = Modifier,
     onLogout: () -> Unit,
-    email: String
+    email: String,
+    name: String
 ) {
     Column(
         modifier = modifier.fillMaxHeight(.75f),
@@ -69,7 +71,7 @@ private fun AccountScreenContent(
             "Email: ${email}"
         )
         Text(
-            text = "Welcome!"
+            text = "Welcome ${name}!"
         )
         Spacer(Modifier.height(10.dp))
         OutlinedButton(
