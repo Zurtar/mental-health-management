@@ -584,22 +584,10 @@ $dokka.location:com.zurtar.mhma.util/NavigationViewModel/uiState/#/PointingToDec
 $dokka.location:com.zurtar.mhma////PointingToDeclaration/app/com.zurtar.mhma/index.html
 $dokka.location:com.zurtar.mhma//MyApp/#/PointingToDeclaration/app/com.zurtar.mhma/-my-app.html
 $dokka.location:com.zurtar.mhma//NavGraph/#androidx.compose.ui.Modifier#androidx.navigation.NavHostController#androidx.compose.material3.DrawerState#kotlinx.coroutines.CoroutineScope#com.zurtar.mhma.util.NavigationViewModel#kotlin.Any#com.zurtar.mhma.Navigation/PointingToDeclaration/app/com.zurtar.mhma/-nav-graph.html
-$dokka.location:com.zurtar.mhma/Account///PointingToDeclaration/app/com.zurtar.mhma/-account/index.html
-$dokka.location:com.zurtar.mhma/Analytics///PointingToDeclaration/app/com.zurtar.mhma/-analytics/index.html
-$dokka.location:com.zurtar.mhma/BiWeeklyEvaluation///PointingToDeclaration/app/com.zurtar.mhma/-bi-weekly-evaluation/index.html
-$dokka.location:com.zurtar.mhma/ChatList///PointingToDeclaration/app/com.zurtar.mhma/-chat-list/index.html
-$dokka.location:com.zurtar.mhma/ChatLog///PointingToDeclaration/app/com.zurtar.mhma/-chat-log/index.html
-$dokka.location:com.zurtar.mhma/Chatbot///PointingToDeclaration/app/com.zurtar.mhma/-chatbot/index.html
-$dokka.location:com.zurtar.mhma/DailyEvaluation///PointingToDeclaration/app/com.zurtar.mhma/-daily-evaluation/index.html
-$dokka.location:com.zurtar.mhma/Home///PointingToDeclaration/app/com.zurtar.mhma/-home/index.html
-$dokka.location:com.zurtar.mhma/Journal///PointingToDeclaration/app/com.zurtar.mhma/-journal/index.html
-$dokka.location:com.zurtar.mhma/JournalEntryR///PointingToDeclaration/app/com.zurtar.mhma/-journal-entry-r/index.html
-$dokka.location:com.zurtar.mhma/Login///PointingToDeclaration/app/com.zurtar.mhma/-login/index.html
 $dokka.location:com.zurtar.mhma/MainActivity///PointingToDeclaration/app/com.zurtar.mhma/-main-activity/index.html
 $dokka.location:com.zurtar.mhma/MainActivity/MainActivity/#/PointingToDeclaration/app/com.zurtar.mhma/-main-activity/-main-activity.html
 $dokka.location:com.zurtar.mhma/MainApplication///PointingToDeclaration/app/com.zurtar.mhma/-main-application/index.html
 $dokka.location:com.zurtar.mhma/MainApplication/MainApplication/#/PointingToDeclaration/app/com.zurtar.mhma/-main-application/-main-application.html
-$dokka.location:com.zurtar.mhma/MoodEvaluation///PointingToDeclaration/app/com.zurtar.mhma/-mood-evaluation/index.html
 $dokka.location:com.zurtar.mhma/Navigation///PointingToDeclaration/app/com.zurtar.mhma/-navigation/index.html
 $dokka.location:com.zurtar.mhma/Navigation/Navigation/#androidx.navigation.NavHostController/PointingToDeclaration/app/com.zurtar.mhma/-navigation/-navigation.html
 $dokka.location:com.zurtar.mhma/Navigation/navigateToAccount/#/PointingToDeclaration/app/com.zurtar.mhma/-navigation/navigate-to-account.html
@@ -618,8 +606,6 @@ $dokka.location:com.zurtar.mhma/Navigation/navigateToLogin/#/PointingToDeclarati
 $dokka.location:com.zurtar.mhma/Navigation/navigateToMoodEvaluation/#/PointingToDeclaration/app/com.zurtar.mhma/-navigation/navigate-to-mood-evaluation.html
 $dokka.location:com.zurtar.mhma/Navigation/navigateToSignup/#/PointingToDeclaration/app/com.zurtar.mhma/-navigation/navigate-to-signup.html
 $dokka.location:com.zurtar.mhma/Navigation/navigateToSummaryDialog/#com.zurtar.mhma.data.models.BiWeeklyEvaluationEntry?/PointingToDeclaration/app/com.zurtar.mhma/-navigation/navigate-to-summary-dialog.html
-$dokka.location:com.zurtar.mhma/SignUp///PointingToDeclaration/app/com.zurtar.mhma/-sign-up/index.html
-$dokka.location:com.zurtar.mhma/SummaryDialog///PointingToDeclaration/app/com.zurtar.mhma/-summary-dialog/index.html
 com.zurtar.mhma
 com.zurtar.mhma.analytics
 com.zurtar.mhma.auth

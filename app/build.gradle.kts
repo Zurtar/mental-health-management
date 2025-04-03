@@ -102,10 +102,24 @@ dependencies {
 }
 
 tasks.dokkaHtml {
+    doFirst {
+        // Clear the existing docs directory before generating new documentation
+        val outputDir = layout.projectDirectory.dir("docs/html")
+        if (outputDir.asFile.exists()) {
+            outputDir.asFile.deleteRecursively()
+        }
+    }
     outputDirectory.set(layout.projectDirectory.dir("docs/html"))
-
 }
+
 tasks.dokkaJekyll {
+    doFirst {
+        // Clear the existing docs directory before generating new documentation
+        val outputDir = layout.projectDirectory.dir("docs/jekyll")
+        if (outputDir.asFile.exists()) {
+            outputDir.asFile.deleteRecursively()
+        }
+    }
     outputDirectory.set(layout.projectDirectory.dir("docs/jekyll"))
 }
 //Add nav host, serial plugin is fine, need implementations
