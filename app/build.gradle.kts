@@ -102,6 +102,6 @@ dependencies {
 }
 
 tasks.dokkaHtml {
-    outputDirectory.set(layout.projectDirectory.dir("docs/html"))
+    outputDirectory.set(layout.projectDirectory.dir("docs/"))
 }
 //Add nav host, serial plugin is fine, need implementations
