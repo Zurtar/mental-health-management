@@ -3,7 +3,6 @@ package com.zurtar.mhma
 import android.util.Log
 import androidx.navigation.NavHostController
 import com.zurtar.mhma.data.models.BiWeeklyEvaluationEntry
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -166,7 +165,7 @@ class Navigation(private val navController: NavHostController) {
      * @param id The optional identifier for the analytics data. Default is `0`.
      */
     fun navigateToAnalytics(id: Int = 0) {
-        navController.navigate(route = "${Analytics}/${id}") {
+        navController.navigate(route = "Analytics/${id}") {
             restoreState = true
         }
     }
@@ -204,50 +203,3 @@ class Navigation(private val navController: NavHostController) {
         navController.navigate("ChatLog/$logId")
     }
 }
-
-/**
- * Nav Host Objects
- */
-@Serializable
-object Login
-
-@Serializable
-object SignUp
-
-@Serializable
-object Account
-
-@Serializable
-object Home
-
-@Serializable
-object MoodEvaluation
-
-@Serializable
-object BiWeeklyEvaluation
-
-@Serializable
-object DailyEvaluation
-
-@Serializable
-object Journal
-
-@Serializable
-object JournalEntryR
-
-@Serializable
-object Chatbot
-
-@Serializable
-object ChatList
-
-@Serializable
-object ChatLog
-
-//Added Anayltics for navigation
-@Serializable
-object Analytics
-
-//Added dialog navigation for biweekly summary page
-@Serializable
-object SummaryDialog

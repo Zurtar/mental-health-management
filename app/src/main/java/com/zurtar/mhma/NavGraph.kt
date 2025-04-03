@@ -166,7 +166,7 @@ fun NavGraph(
                 )
             }
 
-            composable(route = "${Analytics}/{id}",
+            composable(route = "Analytics/{id}",
                 arguments = listOf(
                     navArgument("id") { type = NavType.IntType }
                 )
