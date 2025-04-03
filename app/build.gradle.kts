@@ -101,4 +101,7 @@ dependencies {
     implementation(libs.himanshoe.charty)
 }
 
+tasks.dokkaHtml {
+    outputDirectory.set(layout.projectDirectory.dir("docs/html"))
+}
 //Add nav host, serial plugin is fine, need implementations
