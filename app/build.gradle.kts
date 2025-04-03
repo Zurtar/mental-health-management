@@ -103,5 +103,9 @@ dependencies {
 
 tasks.dokkaHtml {
     outputDirectory.set(layout.projectDirectory.dir("docs/html"))
+
+}
+tasks.dokkaJekyll {
+    outputDirectory.set(layout.projectDirectory.dir("docs/jekyll"))
 }
 //Add nav host, serial plugin is fine, need implementations
