@@ -54,8 +54,14 @@ import com.zurtar.mhma.util.ChatbotTopAppBar
 import java.util.Calendar
 import java.util.Date
 
-
-
+/**
+ * Composable function for displaying the chatbot page.
+ *
+ * @param modifier The modifier to be applied to the ChatbotPage.
+ * @param viewModel The ViewModel that provides the data and logic for the chatbot.
+ * @param onNavigateToChatList Lambda function for navigating to the chat list.
+ * @param openDrawer Lambda function for opening the app drawer.
+ */
 @Composable
 fun ChatbotPage(
     modifier: Modifier = Modifier,
@@ -78,14 +84,19 @@ fun ChatbotPage(
     }
 }
 
-/*
-Composable function for the main Chatbot page. It relies on two additional composables and
-a helper function.
 
-The two other composables it uses are UserMessageItem and BotMessageItem. These get presented in
-a lazy column, and are called on based on the Sender (Bot or User) parameter of the message being sent.
+/**
+ * Composable function for displaying the content of the Chatbot page. It handles the layout
+ * of messages between the user and the bot, along with the display of branch selection buttons
+ * and message input. It relies on additional composables such as `UserMessageItem` and `BotMessageItem`.
+ *
+ * The function also manages the automatic scroll to the latest message, updates based on the
+ * current branch, and handles message sending and date selection for specific branches.
+ *
+ * @param modifier The modifier to be applied to the ChatbotPageContent.
+ * @param viewModel The ViewModel that provides the data and logic for the chatbot.
+ * @param onNavigateToChatList Lambda function for navigating to the chat list.
  */
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ChatbotPageContent(
     modifier: Modifier = Modifier,
@@ -231,10 +242,20 @@ fun ChatbotPageContent(
     }
 }
 
+/**
+ * Checks whether the `Long?` value is not null.
+ *
+ * @return `true` if the `Long?` value is not null, `false` otherwise.
+ */
 private fun Long?.isNotBlank(): Boolean {
     return this != null
 }
 
+/**
+ * Composable function to display a user message in the chat.
+ *
+ * @param message The chat message to display.
+ */
 @Composable
 fun UserMessageItem(message: ChatMessage) {
     val formattedTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(message.createdAt)
@@ -265,6 +286,12 @@ fun UserMessageItem(message: ChatMessage) {
     }
 }
 
+
+/**
+ * Composable function to display a bot message in the chat.
+ *
+ * @param message The chat message to display.
+ */
 @Composable
 fun BotMessageItem(message: ChatMessage) {
     val formattedTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(message.createdAt)
@@ -295,15 +322,22 @@ fun BotMessageItem(message: ChatMessage) {
     }
 }
 
+/**
+ * Converts a `Long` representing milliseconds since the epoch to a `Date` object.
+ *
+ * @param date The time in milliseconds to convert.
+ * @return The corresponding `Date` object, or null if the input is null.
+ */
 fun convertLongToDate(date: Long?): Date? {
     return date?.let { Date(it) }
 }
 
-
-/*
-Used for branch selection from buttons. Determines what string is passed
-when button is pressed.
-*/
+/**
+ * Returns the string description for the specified `ChatBranch` to be used in button selections.
+ *
+ * @param logType The type of chat branch.
+ * @return The corresponding string representation of the branch.
+ */
 fun getBranchSelection(logType: ChatBranch): String {
     return when (logType) {
         ChatBranch.SmartGoal -> "Smart Goal "
@@ -316,6 +350,12 @@ fun getBranchSelection(logType: ChatBranch): String {
     }
 }
 
+/**
+ * Corrects the date offset by adding one day to the provided date in milliseconds.
+ *
+ * @param date The date in milliseconds to adjust.
+ * @return The adjusted date in milliseconds, or null if the input is null.
+ */
 fun correctDateOffset(date: Long?): Long? {
     val calendar = Calendar.getInstance()
     calendar.time = Date(date ?: 0)
@@ -323,10 +363,11 @@ fun correctDateOffset(date: Long?): Long? {
     return calendar.time.time
 }
 
-
-/*
-Date picker functions from android developer tools
-
+/**
+ * Composable for a date picker field that triggers a modal dialog to select a date.
+ *
+ * @param modifier Optional modifier for the composable.
+ * @return The selected date in milliseconds, or null if no date is selected.
  */
 @Composable
 fun DatePickerFieldToModal(modifier: Modifier = Modifier): Long? {
@@ -364,11 +405,23 @@ fun DatePickerFieldToModal(modifier: Modifier = Modifier): Long? {
     return selectedDate
 }
 
+/**
+ * Converts milliseconds to a date string in "MM/dd/yyyy" format.
+ *
+ * @param millis The date in milliseconds to convert.
+ * @return The formatted date string.
+ */
 fun convertMillisToDate(millis: Long): String {
     val formatter = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
     return formatter.format(Date(millis))
 }
 
+/**
+ * Composable for a modal date picker dialog, used to select a date.
+ *
+ * @param onDateSelected Callback function for when a date is selected.
+ * @param onDismiss Callback function for dismissing the date picker modal.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerModal(
@@ -396,6 +449,3 @@ fun DatePickerModal(
         DatePicker(state = datePickerState)
     }
 }
-/*
-Date picker functions from android developer tools end
- */

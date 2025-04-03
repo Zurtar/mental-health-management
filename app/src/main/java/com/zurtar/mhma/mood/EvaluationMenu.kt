@@ -37,6 +37,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.zurtar.mhma.util.DefaultTopAppBar
 import com.zurtar.mhma.util.MoodEvaluationTopAppBar
 
+/**
+ * Composable that displays the main Mood Evaluation screen with a top app bar and navigation options.
+ *
+ * @param modifier Modifier for customizations to the layout.
+ * @param viewModel The ViewModel to provide the UI state for mood evaluations.
+ * @param openDrawer A function to open the navigation drawer.
+ * @param onNavigateToDaily A function to navigate to the daily evaluation screen.
+ * @param onNavigateToBiWeekly A function to navigate to the bi-weekly evaluation screen.
+ */
 @Composable
 fun MoodEvaluationScreen(
     modifier: Modifier = Modifier,
@@ -65,6 +74,15 @@ fun MoodEvaluationScreen(
 }
 
 
+/**
+ * Composable that contains the content of the Mood Evaluation screen, including evaluation options.
+ *
+ * @param modifier Modifier for customizations to the layout.
+ * @param dailyCompleted Boolean flag to indicate if the daily evaluation is completed.
+ * @param biWeeklyCompleted Boolean flag to indicate if the bi-weekly evaluation is completed.
+ * @param onNavigateToDaily A function to navigate to the daily evaluation screen.
+ * @param onNavigateToBiWeekly A function to navigate to the bi-weekly evaluation screen.
+ */
 @Composable
 private fun MoodEvaluationScreenContent(
     modifier: Modifier = Modifier,
@@ -103,28 +121,17 @@ private fun MoodEvaluationScreenContent(
         )
     }
 }
-//
-//@Preview
-//@Composable
-//fun EvalFormCardPreview() {
-//    val mod = Modifier.fillMaxWidth()
-//    val dailyCompleted = false
-//    val biweeklyCompleted = false
-//
-//    Column() {
-//        EvaluationCard(modifier = mod,
-//            title = "Quick Evaluation",
-//            completed = dailyCompleted,
-//            onNavigate = {})
-//        EvaluationCard(mod, "Bi-Weekly Evaluation", biweeklyCompleted,  onNavigate = {})
-//        EvaluationCard(mod, "Analytics", biweeklyCompleted, 0, onNavigate = {})
-//
-//    }
-//
-//}
 
-
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Composable for an individual evaluation card, including a checkmark if completed.
+ *
+ * @param modifier Modifier for customizations to the layout.
+ * @param title The title of the evaluation (e.g., Daily Evaluation, Bi-Weekly Evaluation).
+ * @param desc A description for the evaluation (can be left empty).
+ * @param completed Boolean flag to indicate if the evaluation is completed.
+ * @param checkMark An integer to control whether a checkmark is shown.
+ * @param onNavigate A function to navigate when the card is clicked.
+ */
 @Composable
 fun EvaluationCard(
     modifier: Modifier = Modifier,
@@ -133,7 +140,6 @@ fun EvaluationCard(
     completed: Boolean = false,
     checkMark: Int = 1,
     onNavigate: () -> Unit
-
 ) {
     ElevatedCard(
         elevation = CardDefaults.cardElevation(6.dp),
@@ -168,15 +174,18 @@ fun EvaluationCard(
 
         }
 
-
         HorizontalDivider()
-        //Text(text = desc)
     }
 }
 
+
+/**
+ * Composable for a checkmark icon button that indicates if an evaluation is completed.
+ *
+ * @param completed Boolean flag to show if the evaluation is completed.
+ */
 @Composable
 fun IsCompletedCheckButton(completed: Boolean) {
-
     IconToggleButton(
         checked = completed,
         onCheckedChange = {}

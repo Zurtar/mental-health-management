@@ -6,23 +6,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.Label
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.himanshoe.charty.common.ChartColor
 import com.himanshoe.charty.common.LabelConfig
 import com.himanshoe.charty.line.LineChart
-import com.himanshoe.charty.line.config.LineChartAxisConfig
 import com.himanshoe.charty.line.config.LineChartColorConfig
 import com.himanshoe.charty.line.config.LineChartConfig
 import com.himanshoe.charty.line.config.LineConfig
@@ -30,13 +25,20 @@ import com.himanshoe.charty.line.model.LineData
 import com.zurtar.mhma.data.models.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.mood.findSeverity
 import java.time.Instant
-
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Date
 
-
+/**
+ * A composable function that displays the Bi-Weekly Analytics screen.
+ * It uses `TabbedContent` to present different sections such as the mood graph and evaluation history.
+ * The content is dynamically updated based on the data from the ViewModel.
+ *
+ * @param modifier The modifier to be applied to the root composable.
+ * @param viewModel The ViewModel that provides the UI state and manages the bi-weekly evaluations.
+ * @param onNavigateToSummaryDialog A lambda function that handles navigation to a summary dialog for each evaluation entry.
+ */
 @Composable
 fun BiWeeklyAnalyticsScreenContent(
     modifier: Modifier = Modifier,
@@ -64,6 +66,12 @@ fun BiWeeklyAnalyticsScreenContent(
     TabbedContent(labelToContent = labelToContent, key = labelToContent.keys.first())
 }
 
+/**
+ * A composable function that displays the mood graph screen for bi-weekly evaluations.
+ * It generates line charts showing depression and anxiety scores over time, grouped by evaluation entries.
+ *
+ * @param biWeeklyEvaluations The list of bi-weekly evaluation entries used to plot the graph.
+ */
 @Composable
 fun MoodGraphScreen(biWeeklyEvaluations: List<BiWeeklyEvaluationEntry>) {
 
@@ -106,6 +114,11 @@ fun MoodGraphScreen(biWeeklyEvaluations: List<BiWeeklyEvaluationEntry>) {
 
 }
 
+/**
+ * A composable function that renders a line graph for either depression or anxiety scores over time.
+ *
+ * @param data The list of [LineData] representing the scores and dates.
+ */
 @Composable
 fun DepressionGraph(data: List<LineData>) {
 
@@ -128,16 +141,16 @@ fun DepressionGraph(data: List<LineData>) {
             )
         )
     }
-
-
 }
 
-
-@Composable
-fun InsightsScreen() {
-    Text("Insights")
-}
-
+/**
+ * A composable function that displays a list of bi-weekly evaluations, categorized by the current week,
+ * last week, and previous weeks. It also computes the severity for depression and anxiety scores and
+ * displays them accordingly.
+ *
+ * @param biWeeklyEvaluations The list of bi-weekly evaluation entries to display.
+ * @param onNavigateToSummaryDialog A lambda function that handles navigation to a summary dialog for each evaluation.
+ */
 @Composable
 fun BiWeeklyHistoricalAnalytics(
     biWeeklyEvaluations: List<BiWeeklyEvaluationEntry>,
@@ -181,9 +194,6 @@ fun BiWeeklyHistoricalAnalytics(
 
     val state = rememberScrollState()
     Column(modifier = Modifier.verticalScroll(state)) {
-        //SummaryPopupPreview()
-
-
         WeekTitles("Current Week")
         todays.forEach { SummaryCard(it, onNavigateToSummaryDialog) }
 
@@ -192,17 +202,29 @@ fun BiWeeklyHistoricalAnalytics(
 
         WeekTitles("Previous Weeks")
         other.forEach { SummaryCard(it, onNavigateToSummaryDialog) }
-
-
     }
 }
 
+/**
+ * Extension function to convert a [Date] object to a [LocalDate].
+ * This function converts the date's epoch time to an Instant, then uses the system's default time zone
+ * to convert it to a [LocalDate].
+ *
+ * @return The corresponding [LocalDate] representation of the [Date] object.
+ */
 fun Date.toLocalDate(): LocalDate {
     return Instant.ofEpochMilli(this.getTime())
         .atZone(ZoneId.systemDefault())
         .toLocalDate()
 }
 
+/**
+ * Extension function to convert a [LocalDate] to a [Date].
+ * This function converts the [LocalDate] to a [Date] by first setting it to the start of the day,
+ * then converting it to an Instant and finally to a [Date] object.
+ *
+ * @return The corresponding [Date] representation of the [LocalDate].
+ */
 fun LocalDate.toDate(): Date {
     return Date.from(this.atStartOfDay(ZoneId.systemDefault()).toInstant())
 }

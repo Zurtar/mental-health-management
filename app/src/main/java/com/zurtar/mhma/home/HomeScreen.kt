@@ -49,6 +49,17 @@ import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.Locale
 
+/**
+ * Composable for the Home screen, which serves as the main dashboard. It includes navigation options
+ * to different sections of the app such as mood evaluation, journaling, chatbot, and analytics.
+ *
+ * @param modifier Modifier to be applied to the composable.
+ * @param openDrawer A lambda function to open the navigation drawer.
+ * @param onNavigateToMoodEvaluation A lambda function for navigating to the mood evaluation screen.
+ * @param onNavigateToJournal A lambda function for navigating to the journal screen.
+ * @param onNavigateToChatbot A lambda function for navigating to the chatbot screen.
+ * @param onNavigateToAnalytics A lambda function for navigating to the analytics screen.
+ */
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -75,6 +86,18 @@ fun HomeScreen(
     }
 }
 
+/**
+ * Composable function for displaying the content of the Home screen. This includes:
+ * - A greeting based on the current time of day.
+ * - The current date in a readable format.
+ * - Navigation options to various sections of the app (Mood Evaluation, Journal, Chat, Analytics).
+ *
+ * @param modifier Modifier to be applied to the composable.
+ * @param onNavigateToMoodEvaluation A lambda function for navigating to the mood evaluation screen.
+ * @param onNavigateToJournal A lambda function for navigating to the journal screen.
+ * @param onNavigateToAnalytics A lambda function for navigating to the analytics screen.
+ * @param onNavigateToChatbot A lambda function for navigating to the chatbot screen.
+ */
 @Composable
 private fun HomeScreenContent(
     modifier: Modifier = Modifier,
@@ -90,7 +113,7 @@ private fun HomeScreenContent(
 
     Column(modifier = modifier.fillMaxWidth()) {
         Column(
-          //  modifier = modifier.fillMaxWidth(0.5f),
+            //  modifier = modifier.fillMaxWidth(0.5f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -123,39 +146,50 @@ private fun HomeScreenContent(
             .weight(1f)
             .align(Alignment.CenterHorizontally)
 
-      /*  Row (
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
+        /*  Row (
+              modifier = Modifier.fillMaxWidth(),
+              horizontalArrangement = Arrangement.Center
+          ) {
+              NavigationCard(cardModifier,"Mood Evaluation", onNavigateToMoodEvaluation)
+              NavigationCard(cardModifier,"Chat", onNavigateToChatbot)
+          }
+
+          Row(modifier = Modifier.fillMaxWidth(),
+              horizontalArrangement = Arrangement.Center)
+          {
+              NavigationCard(cardModifier,"Journal", onNavigateToJournal)
+              NavigationCard(cardModifier,"Analytics", onNavigateToAnalytics)
+
+          }*/
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp)
         ) {
-            NavigationCard(cardModifier,"Mood Evaluation", onNavigateToMoodEvaluation)
-            NavigationCard(cardModifier,"Chat", onNavigateToChatbot)
-        }
-
-        Row(modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center)
-        {
-            NavigationCard(cardModifier,"Journal", onNavigateToJournal)
-            NavigationCard(cardModifier,"Analytics", onNavigateToAnalytics)
-
-        }*/
-
-        Column (modifier = Modifier.fillMaxWidth().padding(top = 20.dp)) {
             HorizontalDivider()
             NavigationCard("Mood Evaluation", Icons.Rounded.DateRange, onNavigateToMoodEvaluation)
             HorizontalDivider()
-            NavigationCard("Chat", Icons.Rounded.Call ,onNavigateToChatbot)
+            NavigationCard("Chat", Icons.Rounded.Call, onNavigateToChatbot)
             HorizontalDivider()
-            NavigationCard("Journal",Icons.Rounded.Create, onNavigateToJournal)
+            NavigationCard("Journal", Icons.Rounded.Create, onNavigateToJournal)
             HorizontalDivider()
-            NavigationCard("Analytics", Icons.Rounded.Share ,onNavigateToAnalytics)
+            NavigationCard("Analytics", Icons.Rounded.Share, onNavigateToAnalytics)
             HorizontalDivider()
         }
     }
-
 }
 
+/**
+ * Composable function that creates a navigation card with an icon, text, and a forward arrow button.
+ * The card is clickable and triggers the provided navigation action when clicked.
+ *
+ * @param text The text to be displayed on the card.
+ * @param icon The icon to be displayed next to the text.
+ * @param navigate The lambda function that will be invoked when the card is clicked, typically used for navigation.
+ */
 @Composable
-fun NavigationCard(text:String, icon:ImageVector, navigate:() -> Unit) {
+fun NavigationCard(text: String, icon: ImageVector, navigate: () -> Unit) {
     OutlinedCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -166,7 +200,9 @@ fun NavigationCard(text:String, icon:ImageVector, navigate:() -> Unit) {
         border = BorderStroke(1.dp, Color.Transparent)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(10.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
@@ -201,37 +237,14 @@ fun NavigationCard(text:String, icon:ImageVector, navigate:() -> Unit) {
     }
 }
 
-/*
-@Composable
-fun NavigationCard(cardModifier:Modifier, title: String, onNavigateTo: () -> Unit) {
-
-    ElevatedCard(
-        modifier = cardModifier.background(Color.Transparent),
-        onClick = { onNavigateTo() }
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(10.dp)
-                .background(Color.Transparent),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleLarge,
-                text = title
-
-            )
-
-//            Icon(imageVector = Icons.Rounded.DateRange,
-//                contentDescription = "",
-//                modifier = Modifier.size(100.dp)
-//            )
-        }
-    }
-}*/
-
+/**
+ * Returns a greeting based on the time of day.
+ * It checks the hour of the day and returns a corresponding greeting:
+ * "Good Morning!", "Good Afternoon!", or "Good Evening!".
+ *
+ * @param date The current date and time used to determine the greeting.
+ * @return A greeting string based on the time of day.
+ */
 fun getGreetingFromDate(date: java.util.Date): String {
     val calendar = java.util.Calendar.getInstance()
     calendar.time = date
@@ -240,119 +253,5 @@ fun getGreetingFromDate(date: java.util.Date): String {
         in 0..11 -> "Good Morning!"
         in 12..17 -> "Good Afternoon!"
         else -> "Good Evening!"
-    }
-}
-
-@Composable
-fun UpcomingScheduleCard() {
-
-    ElevatedCard(
-        modifier = Modifier
-            .padding(horizontal = 10.dp, vertical = 10.dp)
-            .width(350.dp)
-            .height(150.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(10.dp),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.Top
-        ) {
-            Text(
-                textAlign = TextAlign.Start,
-                style = MaterialTheme.typography.titleLarge,
-                text = "To-do:"
-            )
-            Text(
-                modifier = Modifier.padding(horizontal = 15.dp),
-                textAlign = TextAlign.Start,
-                style = MaterialTheme.typography.bodyMedium,
-                text = getToDo()
-            )
-            Spacer(
-                modifier = Modifier.height(20.dp)
-            )
-            Text(
-                textAlign = TextAlign.Start,
-                style = MaterialTheme.typography.titleLarge,
-                text = "Upcoming:"
-            )
-            Text(
-                modifier = Modifier.padding(horizontal = 15.dp),
-                textAlign = TextAlign.Start,
-                style = MaterialTheme.typography.bodyMedium,
-                text = getUpcoming()
-            )
-        }
-
-    }
-}
-
-@Composable
-fun SuggestedActionsCard() {
-    ElevatedCard(
-        modifier = Modifier
-            .padding(horizontal = 10.dp, vertical = 10.dp)
-            .fillMaxWidth()
-            .height(100.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(10.dp),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.Top
-        ) {
-            Text(
-                textAlign = TextAlign.Start,
-                style = MaterialTheme.typography.titleLarge,
-                text = "Suggested Actions:"
-            )
-            Text(
-                modifier = Modifier.padding(horizontal = 15.dp),
-                textAlign = TextAlign.Start,
-                style = MaterialTheme.typography.bodyMedium,
-                text = getSuggestedActions()
-            )
-        }
-
-    }
-
-
-}
-
-
-fun getToDo(): String {
-    return "• Quick Evaluation"
-}
-
-fun getUpcoming(): String {
-    return "• Bi-Weekly Evaluation"
-}
-
-fun getSuggestedActions(): String {
-    return "• Suggested Actions"
-}
-
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenContentPreview() {
-    MaterialTheme {
-        Scaffold(modifier = Modifier.fillMaxSize(),
-            topBar = {
-                DefaultTopAppBar(openDrawer = { })
-            }
-        ) { innerPadding ->
-            HomeScreenContent(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize(),
-                onNavigateToMoodEvaluation = {},
-                onNavigateToJournal = {},
-                onNavigateToAnalytics = {},
-                onNavigateToChatbot = {},
-            )
-        }
     }
 }

@@ -24,12 +24,16 @@ import com.zurtar.mhma.data.JournalEntry
 import com.zurtar.mhma.util.DefaultTopAppBar
 import com.zurtar.mhma.util.JournalingTopAppBar
 
-/*
-EntryModification page can be called upon in two different ways: a version where it is
-given an id number, and one where it is not given an id number. If it is not given an
-id, then title anc content boxes will be empty: this is used for new entry creation. If
-it is given an id, then title and content boxes will be filled from the associated
-entry's data: this is used for entry editing.
+/**
+ * Composable for the EntryModification page. It can be used for either creating a new entry or editing an existing one.
+ * If no entry ID is provided, the fields will be empty for a new entry. If an ID is provided, the fields will be populated
+ * with the data from the existing entry.
+ *
+ * @param modifier Modifier to be applied to the composable.
+ * @param viewModel The ViewModel providing the UI state.
+ * @param id The ID of the journal entry to modify, or null for new entry creation.
+ * @param openDrawer A lambda to open the navigation drawer.
+ * @param onNavigateBack A lambda to navigate back to the previous screen.
  */
 @Composable
 fun EntryModificationScreen(
@@ -38,7 +42,6 @@ fun EntryModificationScreen(
     id: String? = null,
     openDrawer: () -> Unit,
     onNavigateBack: () -> Unit
-
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val list = uiState.entryList
@@ -73,6 +76,14 @@ fun EntryModificationScreen(
     }
 }
 
+/**
+ * Composable for the content of the EntryModification screen when adding a new entry. Displays text fields for the title
+ * and content of the journal entry.
+ *
+ * @param modifier Modifier to be applied to the composable.
+ * @param onAddEntry A lambda to handle the creation of a new entry.
+ * @param onNavigateBack A lambda to handle navigation back action.
+ */
 @Composable
 private fun EntryModificationScreenContent(
     modifier: Modifier = Modifier,
@@ -112,8 +123,10 @@ private fun EntryModificationScreenContent(
                 Text("Cancel")
             }
             Button(
-                onClick = {onAddEntry(title, content)
-                    onNavigateBack()},
+                onClick = {
+                    onAddEntry(title, content)
+                    onNavigateBack()
+                },
                 modifier = Modifier.weight(1f)
             ) {
                 Text("Save")
@@ -122,6 +135,15 @@ private fun EntryModificationScreenContent(
     }
 }
 
+/**
+ * Composable for the content of the Journal Entry when editing an existing entry. Displays text fields for the title
+ * and content, pre-filled with the existing entry’s data.
+ *
+ * @param modifier Modifier to be applied to the composable.
+ * @param entry The journal entry to edit.
+ * @param onEditEntry A lambda to handle the editing of an existing entry.
+ * @param onNavigateBack A lambda to handle navigation back action.
+ */
 @Composable
 private fun EntryModificationScreenContent(
     modifier: Modifier = Modifier,

@@ -47,7 +47,15 @@ import com.zurtar.mhma.R
 import com.zurtar.mhma.data.models.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.util.MoodEvaluationTopAppBar
 
-
+/**
+ * Composable that displays the BiWeekly Evaluation screen with a series of questions about mental health over the past two weeks.
+ * The user can navigate through the questions and submit the responses at the end.
+ *
+ * @param modifier Modifier for customizations to the layout.
+ * @param viewModel The view model for the bi-weekly evaluation.
+ * @param openDrawer A function to open the app's side drawer.
+ * @param onNavigateToAnalytics A function to navigate to the analytics screen.
+ */
 @Composable
 fun BiWeeklyEvaluationScreen(
     modifier: Modifier = Modifier,
@@ -77,6 +85,15 @@ fun BiWeeklyEvaluationScreen(
     }
 }
 
+/**
+ * Composable that displays the BiWeekly Evaluation screen with a series of questions about mental health over the past two weeks.
+ * The user can navigate through the questions and submit the responses at the end.
+ *
+ * @param modifier Modifier for customizations to the layout.
+ * @param viewModel The view model for the bi-weekly evaluation.
+ * @param openDrawer A function to open the app's side drawer.
+ * @param onNavigateToAnalytics A function to navigate to the analytics screen.
+ */
 @Composable
 private fun BiWeeklyEvaluationScreenContent(
     modifier: Modifier = Modifier,
@@ -162,6 +179,15 @@ private fun BiWeeklyEvaluationScreenContent(
     }
 }
 
+/**
+ * Composable that displays a question card for a specific question, allowing the user to select an answer.
+ *
+ * @param modifier Modifier for customizations to the layout.
+ * @param num The index of the current question.
+ * @param question The text of the question.
+ * @param selectedOption The current selected option for the question.
+ * @param onSelect Function to handle selecting an answer.
+ */
 @Composable
 fun QuestionCard(
     modifier: Modifier = Modifier,
@@ -219,6 +245,20 @@ fun QuestionCard(
     }
 }
 
+
+/**
+ * Composable function to display a list of radio button options for a question.
+ *
+ * displays a list of radio options and allows the user to select one.
+ * selected option is visually highlighted, and the `onSelect` lambda is called
+ * whenever an option is clicked.
+ *
+ * @param radioOptions A list of strings representing the options available to the user.
+ * @param selectedOption The index of the currently selected option. This will determine
+ *                       which option is visually highlighted.
+ * @param onSelect A lambda function to handle the selection of an option. It takes the
+ *                 index of the selected option as a parameter.
+ */
 @Composable
 fun QuestionResponse(radioOptions: List<String>, selectedOption: Int, onSelect: (Int) -> Unit) {
     Column(
@@ -261,7 +301,19 @@ fun QuestionResponse(radioOptions: List<String>, selectedOption: Int, onSelect: 
     }
 }
 
-
+/**
+ * Composable function that displays the result of a bi-weekly evaluation.
+ *
+ * This function shows the user's depression and anxiety scores along with their severity
+ * results based on the PHQ-9 and GAD-7 questionnaires. It also provides options to proceed
+ * to evaluation summary or analytics.
+ *
+ * @param modifier The modifier to be applied to the outer Column.
+ * @param evaluation The evaluation result containing the user's depression and anxiety scores
+ *                   along with the severity results.
+ * @param onNavigateToAnalytics A lambda function to handle navigation when the user proceeds
+ *                              to the evaluation summary or analytics.
+ */
 @Composable
 fun BiWeeklyResult(
     modifier: Modifier = Modifier,
@@ -378,6 +430,15 @@ fun BiWeeklyResult(
     }
 }
 
+/**
+ * Composable function that displays a clickable card to navigate to another screen.
+ *
+ * This function creates a card with a text label and an icon button. When clicked, it triggers
+ * the provided `navigate` lambda to navigate to a different screen.
+ *
+ * @param text The text to be displayed inside the card.
+ * @param navigate A lambda function to handle the navigation when the card is clicked.
+ */
 @Composable
 fun ProceedCard(text: String, navigate: () -> Unit) {
 
@@ -419,7 +480,18 @@ fun ProceedCard(text: String, navigate: () -> Unit) {
     }
 }
 
-
+/**
+ * Composable function that displays a score chart to show the user's score and severity.
+ *
+ * This function shows the score and severity levels for both depression and anxiety based
+ * on the provided score. The score is compared to predefined ranges to determine the severity
+ * level.
+ *
+ * @param score The score value to be displayed.
+ * @param scores A list of string values representing the different score ranges.
+ * @param severities A list of string values representing the corresponding severity levels
+ *                   for each score range.
+ */
 @Composable
 fun ScoreChart(score: Int, scores: List<String>, severities: List<String>) {
 
@@ -469,6 +541,17 @@ fun ScoreChart(score: Int, scores: List<String>, severities: List<String>) {
 
 }
 
+
+/**
+ * Composable function that displays a row with a score and its corresponding severity.
+ *
+ * This function creates a horizontal row containing the score and its corresponding severity.
+ * It is used within the `ScoreChart` to display individual score ranges.
+ *
+ * @param modifier The modifier to be applied to the Row.
+ * @param score The score value to be displayed.
+ * @param severity The severity level corresponding to the score.
+ */
 @Composable
 fun RowChart(modifier: Modifier = Modifier, score: String, severity: String) {
     Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -493,11 +576,15 @@ fun RowChart(modifier: Modifier = Modifier, score: String, severity: String) {
     }
 }
 
-
-//HELPER FUNCTIONS
-
 /**
+ * Finds the severity level based on the given score and evaluation type (anxiety or depression).
  *
+ * This function checks the provided score against predefined ranges for either anxiety or
+ * depression, depending on the evaluation type, and returns the corresponding severity level.
+ *
+ * @param score The score value to be checked.
+ * @param evalType The type of evaluation, either "anxiety" or "depression".
+ * @return The severity level corresponding to the given score and evaluation type.
  */
 @Composable
 fun findSeverity(score: Int, evalType: String): String {

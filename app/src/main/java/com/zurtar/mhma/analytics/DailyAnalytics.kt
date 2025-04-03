@@ -31,6 +31,13 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 
 
+/**
+ * Displays the content for the daily analytics screen.
+ * This includes a calendar of daily evaluations and historical analytics.
+ *
+ * @param modifier A [Modifier] to customize the UI.
+ * @param viewModel The [DailyAnalyticsViewModel] to provide UI state.
+ */
 @Composable
 fun DailyAnalyticsScreenContent(
     modifier: Modifier = Modifier,
@@ -56,7 +63,11 @@ fun DailyAnalyticsScreenContent(
     TabbedContent(labelToContent = labelToContent, key = labelToContent.keys.first())
 }
 
-//
+/**
+ * Displays a card with daily evaluation details such as the strongest emotion and stress level.
+ *
+ * @param dailyEntry The [DailyEvaluationEntry] that contains the data for the daily evaluation.
+ */
 @Composable
 fun DailyAnalyticCard(dailyEntry: DailyEvaluationEntry) {
 
@@ -117,6 +128,13 @@ fun DailyAnalyticCard(dailyEntry: DailyEvaluationEntry) {
     }
 }
 
+
+/**
+ * Displays a historical analytics view of the user's daily evaluations.
+ * The evaluations are grouped by today, yesterday, and previous days.
+ *
+ * @param dailyEvaluations The list of [DailyEvaluationEntry] to display.
+ */
 @Composable
 fun DailyHistoricalAnalytics(
     dailyEvaluations: List<DailyEvaluationEntry>
@@ -159,7 +177,14 @@ fun DailyHistoricalAnalytics(
     }
 }
 
-
+/**
+ * Displays a calendar for daily evaluations and allows the user to select a date.
+ *
+ * @param modifier A [Modifier] to customize the UI.
+ * @param evaluations A list of [DailyEvaluationEntry] to display on the calendar.
+ * @param selectedDate The currently selected date in the calendar.
+ * @param onDateSelect A lambda function that handles the date selection.
+ */
 @Composable
 fun DailyEvaluationCalendar(
     modifier: Modifier = Modifier,
@@ -196,33 +221,12 @@ fun DailyEvaluationCalendar(
     }
 }
 
-
-@Composable
-fun makeCardInfoDaily(): List<DailyEvaluationEntry> {
-    val results = mutableListOf<DailyEvaluationEntry>()
-
-    val map = mapOf(
-        "Happy" to 7f,
-        "Sad" to 3f
-    )
-
-    val current = LocalDate.now()
-    for (i in 0..8) {
-
-        val localDate = current.minusDays(i.toLong())
-
-        results.add(
-            DailyEvaluationEntry(
-                emotionsMap = map,
-                stressLevel = "Very Stressed",
-                dateCompleted = localDate.toDate()
-            )
-        )
-    }
-    return results.toList()
-}
-
-
+/**
+ * Maps the stress level description to a general stress level.
+ *
+ * @param currentStress The current stress description, e.g., "Very Stressed", "Mildly Stressed".
+ * @return A string representing the mapped stress level, such as "High", "Low", or "None".
+ */
 fun stressLevel(currentStress: String): String {
     var level = ""
 

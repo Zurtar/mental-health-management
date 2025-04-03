@@ -1,0 +1,219 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AccountService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.zurtar.mhma.auth</a>
+</div>
+
+<h1>Coverage Summary for Class: AccountService (com.zurtar.mhma.auth)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">AccountService</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.zurtar.mhma.auth
+&nbsp;
+&nbsp;import com.google.firebase.Firebase
+&nbsp;import com.google.firebase.auth.EmailAuthProvider
+&nbsp;import com.google.firebase.auth.FirebaseAuth
+&nbsp;import com.google.firebase.auth.FirebaseAuthSettings
+&nbsp;import com.google.firebase.auth.FirebaseUser
+&nbsp;import com.google.firebase.auth.auth
+&nbsp;import com.google.firebase.firestore.FieldValue
+&nbsp;import com.google.firebase.firestore.FirebaseFirestore
+&nbsp;import com.google.firebase.firestore.FirebaseFirestoreSettings
+&nbsp;import com.google.firebase.firestore.LocalCacheSettings
+&nbsp;import com.google.firebase.firestore.firestore
+&nbsp;import com.google.firebase.firestore.firestoreSettings
+&nbsp;import com.google.firebase.firestore.persistentCacheSettings
+&nbsp;import com.zurtar.mhma.chatbot.UserMessageItemReconstruct
+&nbsp;import dagger.Binds
+&nbsp;import dagger.Module
+&nbsp;import dagger.Provides
+&nbsp;import dagger.hilt.InstallIn
+&nbsp;import dagger.hilt.components.SingletonComponent
+&nbsp;import javax.inject.Inject
+&nbsp;import javax.inject.Singleton
+&nbsp;
+&nbsp;/**
+&nbsp; * Let me ask you a question, you don&#39;t look like a dancer but would be make an exception?
+&nbsp; */
+&nbsp;
+&nbsp;
+&nbsp;interface AccountService {
+&nbsp;    fun createAnonymousAccount(onResult: (Throwable?) -&gt; Unit)
+&nbsp;    fun createAccount(email: String, password: String, onResult: (Throwable?) -&gt; Unit)
+&nbsp;    fun authenticate(email: String, password: String, onResult: (Throwable?) -&gt; Unit)
+&nbsp;    fun linkAccount(email: String, password: String, onResult: (Throwable?) -&gt; Unit)
+&nbsp;    fun logout(onResult: (Throwable?) -&gt; Unit)
+&nbsp;}
+&nbsp;
+&nbsp;/*
+&nbsp;interface AccountService {
+&nbsp;    fun createAnonymousAccount()
+&nbsp;    suspend fun createAccount(email: String, password: String): Result&lt;Unit&gt;
+&nbsp;    suspend fun authenticate(email: String, password: String): Result&lt;FirebaseUser&gt;
+&nbsp;    suspend fun linkAccount(email: String, password: String): Result&lt;Unit&gt;
+&nbsp;    suspend fun signOut(): Result&lt;Unit&gt;
+&nbsp;}*/
+&nbsp;
+&nbsp;@Singleton
+&nbsp;class AccountServiceImplementation @Inject constructor(
+&nbsp;    private val firebaseAuth: FirebaseAuth,
+&nbsp;    private val firestore: FirebaseFirestore
+&nbsp;) : AccountService {
+&nbsp;
+&nbsp;    override fun createAnonymousAccount(onResult: (Throwable?) -&gt; Unit) {
+&nbsp;        firebaseAuth.signInAnonymously()
+&nbsp;            .addOnCompleteListener { onResult(it.exception) }
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    override fun createAccount(email: String, password: String, onResult: (Throwable?) -&gt; Unit) {
+&nbsp;        firebaseAuth.createUserWithEmailAndPassword(email, password)
+&nbsp;            .addOnCompleteListener {
+&nbsp;                onResult(it.exception)
+&nbsp;            }
+&nbsp;    }
+&nbsp;
+&nbsp;    override fun authenticate(email: String, password: String, onResult: (Throwable?) -&gt; Unit) {
+&nbsp;        firebaseAuth.signInWithEmailAndPassword(email, password)
+&nbsp;            .addOnCompleteListener {
+&nbsp;                onResult(it.exception)
+&nbsp;                val uid = it.result.user?.uid ?: return@addOnCompleteListener
+&nbsp;                val user = it.result.user!!
+&nbsp;                user.email!!
+&nbsp;
+&nbsp;                val updates = hashMapOf&lt;String, Any&gt;(
+&nbsp;                    &quot;email&quot; to user.email!!,
+&nbsp;                    &quot;display_name&quot; to user.email!!.substringBefore(&#39;@&#39;),
+&nbsp;                    &quot;last_login&quot; to FieldValue.serverTimestamp()
+&nbsp;                )
+&nbsp;
+&nbsp;                firestore.collection(&quot;users&quot;).document(uid)
+&nbsp;                    .set(updates)
+&nbsp;
+&nbsp;            }
+&nbsp;    }
+&nbsp;
+&nbsp;    override fun linkAccount(email: String, password: String, onResult: (Throwable?) -&gt; Unit) {
+&nbsp;        val credential = EmailAuthProvider.getCredential(email, password)
+&nbsp;
+&nbsp;        firebaseAuth.currentUser!!.linkWithCredential(credential)
+&nbsp;            .addOnCompleteListener { onResult(it.exception) }
+&nbsp;    }
+&nbsp;
+&nbsp;    override fun logout(onResult: (Throwable?) -&gt; Unit) {
+&nbsp;        firebaseAuth.signOut()
+&nbsp;        onResult(null)
+&nbsp;    }
+&nbsp;}
+&nbsp;
+&nbsp;
+&nbsp;@Module
+&nbsp;@InstallIn(SingletonComponent::class)
+&nbsp;abstract class AccountServiceModule {
+&nbsp;    @Binds
+&nbsp;    @Singleton
+&nbsp;    abstract fun bindAccountService(
+&nbsp;        accountServiceImplementation: AccountServiceImplementation
+&nbsp;    ): AccountService
+&nbsp;}
+&nbsp;
+&nbsp;
+&nbsp;@Module
+&nbsp;@InstallIn(SingletonComponent::class)
+&nbsp;object FireBaseModule {
+&nbsp;    @Provides
+&nbsp;    fun provideFirebaseAuthService(
+&nbsp;        // Potential dependencies of this type
+&nbsp;    ): FirebaseAuth {
+&nbsp;        return Firebase.auth
+&nbsp;    }
+&nbsp;
+&nbsp;    @Provides
+&nbsp;    fun providesFireStoreService(
+&nbsp;        // Potential dependencies of this type
+&nbsp;    ): FirebaseFirestore {
+&nbsp;        val db = Firebase.firestore
+&nbsp;        val settings = firestoreSettings {
+&nbsp;            setLocalCacheSettings(persistentCacheSettings {})
+&nbsp;        }
+&nbsp;
+&nbsp;//        db.firestoreSettings = settings
+&nbsp;        return db
+&nbsp;    }
+&nbsp;}
+&nbsp;
+&nbsp;
+&nbsp;sealed class AuthState {
+&nbsp;    object Unauthenticated : AuthState()
+&nbsp;    data class Authenticated(val user: FirebaseUser) : AuthState()
+&nbsp;}
+&nbsp;
+&nbsp;/*
+&nbsp;@Module
+&nbsp;@InstallIn(ActivityComponent::class)
+&nbsp;object AccountServiceModule {
+&nbsp;    @Provides
+&nbsp;    fun provideAccountService(
+&nbsp;        // Potential dependencies of this type
+&nbsp;    ): AccountService {
+&nbsp;        return AccountServiceImplementation()
+&nbsp;    }
+&nbsp;}*/
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-04-03 12:43</div>
+</div>
+</body>
+</html>

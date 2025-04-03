@@ -1,6 +1,5 @@
 package com.zurtar.mhma.analytics
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,9 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ButtonColors
+
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedButton
@@ -37,26 +34,29 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zurtar.mhma.R
 import com.zurtar.mhma.data.models.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.mood.ScoreChart
 import com.zurtar.mhma.mood.findSeverity
 import com.zurtar.mhma.util.AnalyticsTopAppBar
-import com.zurtar.mhma.util.DefaultTopAppBar
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 
+/**
+ * Displays the main Analytics screen, which includes navigation and a top bar.
+ *
+ * @param modifier Modifier to be applied to the root composable.
+ * @param id The current tab index, defaulting to 0.
+ * @param openDrawer A lambda function to open the navigation drawer.
+ * @param onNavigateToSummaryDialog A lambda function to handle navigation to the summary dialog for a selected bi-weekly evaluation entry.
+ */
 @Composable
 fun AnalyticsScreen(
     modifier: Modifier = Modifier,
@@ -80,7 +80,13 @@ fun AnalyticsScreen(
     }
 }
 
-
+/**
+ * Displays the content of the Analytics screen, including a tabbed interface for Quick and BiWeekly tabs.
+ *
+ * @param modifier Modifier to be applied to the content layout.
+ * @param id The current tab index, defaulting to 0.
+ * @param onNavigateToSummaryDialog A lambda function to handle navigation to the summary dialog for a selected bi-weekly evaluation entry.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnalyticsScreenContent(
@@ -126,6 +132,14 @@ fun AnalyticsScreenContent(
     }
 }
 
+/**
+ * A composable that displays tabbed content where the active tab's content is displayed below the tab options.
+ *
+ * @param modifier Modifier to be applied to the layout.
+ * @param key The current active key to decide the content to display.
+ * @param labelToContent A map where keys represent labels and values are composable content associated with each label.
+ * @param wrapperComposable A wrapper composable to surround the label/content layout, optional.
+ */
 @Composable
 fun TabbedContent(
     modifier: Modifier = Modifier,
@@ -161,7 +175,12 @@ fun TabbedContent(
     }
 }
 
-
+/**
+ * Displays a card with the details of a bi-weekly evaluation entry, including depression and anxiety scores.
+ *
+ * @param result The [BiWeeklyEvaluationEntry] whose data will be displayed in the card.
+ * @param onNavigateToSummaryDialog A lambda function to handle navigation to the summary dialog for the selected entry.
+ */
 @Composable
 fun SummaryCard(
     result: BiWeeklyEvaluationEntry,
@@ -178,7 +197,7 @@ fun SummaryCard(
             .padding(10.dp)
             .clickable { onNavigateToSummaryDialog(result) }
     ) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End ) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             Text(
                 modifier = Modifier.padding(top = 5.dp, end = 10.dp),
                 text = result.dateCompleted?.toLocalDate()?.format(formatter) ?: "null",
@@ -256,7 +275,11 @@ fun SummaryCard(
     }
 }
 
-
+/**
+ * Displays a popup showing detailed information about a bi-weekly evaluation entry, including depression and anxiety scores.
+ *
+ * @param entry The [BiWeeklyEvaluationEntry] whose detailed information will be shown.
+ */
 @Composable
 fun SummaryPopup(entry: BiWeeklyEvaluationEntry) {
 
@@ -267,7 +290,7 @@ fun SummaryPopup(entry: BiWeeklyEvaluationEntry) {
     val anxietyScores: List<String> = stringArrayResource(R.array.anxiety_scores).toList()
     val anxietySeverities: List<String> = stringArrayResource(R.array.anxiety_severities).toList()
 
-    ElevatedCard() {
+    ElevatedCard {
         Column(
             Modifier.fillMaxWidth(),
             // horizontalAlignment = Alignment.CenterHorizontally
@@ -318,17 +341,11 @@ fun SummaryPopup(entry: BiWeeklyEvaluationEntry) {
 
 }
 
-@Preview
-@Composable
-fun SummaryPopupScreen() {
-    val results = makeCardInfo()
-    Log.println(Log.DEBUG, "BiWeeklyEvalVM", "Depression Score: ${results[0].depressionScore}")
-
-    SummaryPopup(results[0])
-}
-
-//HELPER FUNCTIONS
-
+/**
+ * Helper function to generate mock bi-weekly evaluation entries with sequential scores.
+ *
+ * @return A list of mock [BiWeeklyEvaluationEntry] entries for the preview.
+ */
 @Composable
 fun makeCardInfo(): List<BiWeeklyEvaluationEntry> {
     val results = mutableListOf<BiWeeklyEvaluationEntry>()
@@ -354,6 +371,11 @@ fun makeCardInfo(): List<BiWeeklyEvaluationEntry> {
     return results.toList()
 }
 
+/**
+ * Displays a title for a given week category in the analytics view.
+ *
+ * @param title The title text to be displayed (e.g., "Current Week", "Last Week").
+ */
 @Composable
 fun WeekTitles(title: String) {
     Text(

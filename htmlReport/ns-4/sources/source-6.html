@@ -1,0 +1,393 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ChatbotViewModel</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.zurtar.mhma.chatbot</a>
+</div>
+
+<h1>Coverage Summary for Class: ChatbotViewModel (com.zurtar.mhma.chatbot)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ChatbotViewModel</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/37)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ChatbotViewModel$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ChatbotViewModel$1$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ChatbotViewModel$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ChatbotViewModel$addCurrentBranchLog$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ChatbotViewModel$deleteLog$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ChatbotViewModel$messageManager$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ChatbotViewModel$sendMessage$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/46)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.zurtar.mhma.chatbot
+&nbsp;
+&nbsp;import androidx.lifecycle.LiveData
+&nbsp;import androidx.lifecycle.MutableLiveData
+&nbsp;import androidx.lifecycle.ViewModel
+&nbsp;import androidx.lifecycle.viewModelScope
+&nbsp;import com.zurtar.mhma.data.ChatLog
+&nbsp;import com.zurtar.mhma.data.ChatMessage
+&nbsp;import com.zurtar.mhma.data.ChatRepository
+&nbsp;import dagger.hilt.android.lifecycle.HiltViewModel
+&nbsp;import kotlinx.coroutines.launch
+&nbsp;import java.time.Instant
+&nbsp;import java.util.Date
+&nbsp;import java.util.UUID
+&nbsp;import javax.inject.Inject
+&nbsp;
+&nbsp;@HiltViewModel
+&nbsp;class ChatbotViewModel @Inject constructor(
+<b class="nc">&nbsp;    private val chatRepository: ChatRepository</b>
+<b class="nc">&nbsp;) : ViewModel() {</b>
+&nbsp;
+&nbsp;    //message manager for handling chat messages and responses
+<b class="nc">&nbsp;    private val messageManager = ChatbotMessageManager(</b>
+<b class="nc">&nbsp;        this::addCurrentBranchLog,</b>
+<b class="nc">&nbsp;        this::addCurrentBranchLog</b>
+&nbsp;    )
+&nbsp;
+&nbsp;    //Used for list of all messages
+<b class="nc">&nbsp;    private val _allMessages = MutableLiveData&lt;List&lt;ChatMessage&gt;&gt;()</b>
+<b class="nc">&nbsp;    val allMessages: LiveData&lt;List&lt;ChatMessage&gt;&gt; = _allMessages</b>
+&nbsp;
+&nbsp;    //used for list of main chat logs
+<b class="nc">&nbsp;    private val _logList = MutableLiveData&lt;List&lt;ChatLog&gt;&gt;()</b>
+<b class="nc">&nbsp;    val logList: LiveData&lt;List&lt;ChatLog&gt;&gt; = _logList</b>
+&nbsp;
+&nbsp;    //initialisation of view model
+<b class="nc">&nbsp;    init {</b>
+<b class="nc">&nbsp;        viewModelScope.launch {</b>
+<b class="nc">&nbsp;            chatRepository.getChatLogs().collect { logs -&gt;</b>
+<b class="nc">&nbsp;                _logList.postValue(logs)</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        _allMessages.value = messageManager.allMessages</b>
+<b class="nc">&nbsp;        viewModelScope.launch {</b>
+<b class="nc">&nbsp;            messageManager.simulateBotResponse(&quot;&quot;)</b>
+<b class="nc">&nbsp;            _allMessages.postValue(messageManager.allMessages)</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;    }</b>
+&nbsp;
+&nbsp;    fun getBranchStep(): Int {
+<b class="nc">&nbsp;        return messageManager.getBranchStep()</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /*
+&nbsp;    Sends a message to the chatbot, also calls on simulate bot responses
+&nbsp;    to generate appropriate response. Buttons in the Chatbot page call on this
+&nbsp;    function as well, passing specific strings.
+&nbsp;     */
+&nbsp;    fun sendMessage(userMessage: String) {
+<b class="nc">&nbsp;        val message = ChatMessage(Sender.User, userMessage, Date())</b>
+<b class="nc">&nbsp;        messageManager.addMessage(message)</b>
+<b class="nc">&nbsp;        _allMessages.value = messageManager.allMessages</b>
+&nbsp;
+<b class="nc">&nbsp;        messageManager.currentBranchMessages.add(message)</b>
+&nbsp;
+<b class="nc">&nbsp;        viewModelScope.launch {</b>
+<b class="nc">&nbsp;            messageManager.simulateBotResponse(userMessage)</b>
+<b class="nc">&nbsp;            _allMessages.postValue(messageManager.allMessages)</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    fun sendCompletionDate(selectedDate: Date?) {
+<b class="nc">&nbsp;        messageManager.sendCompletionDate(selectedDate)</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //gets currently active branch/dialogue activity
+&nbsp;    fun getCurrentBranch(): ChatBranch {
+<b class="nc">&nbsp;        return messageManager.getCurrentBranch()</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //gets list of all available chat branches
+&nbsp;    fun getBranchList(): List&lt;ChatBranch&gt; {
+<b class="nc">&nbsp;        return messageManager.getBranchList()</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    fun addCurrentBranchLog(log: ChatLog) {
+<b class="nc">&nbsp;        viewModelScope.launch { chatRepository.addLog(log) }</b>
+<b class="nc">&nbsp;        messageManager.currentBranchMessages.clear()</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /*
+&nbsp;    Creates a new chatlog. It copies a message list provided to it rather than
+&nbsp;    directly storing the message list. After producing a copy of the message list, it clears
+&nbsp;    the currentBranchMessages.
+&nbsp;     */
+&nbsp;    fun addCurrentBranchLog(
+&nbsp;        messageList: List&lt;ChatMessage&gt;,
+&nbsp;        logType: ChatBranch,
+<b class="nc">&nbsp;        toBeCompleted: Date? = null</b>
+&nbsp;    ) {
+<b class="nc">&nbsp;        val copiedMessageList = messageList.map { it.copy() }</b>
+&nbsp;
+<b class="nc">&nbsp;        val log = ChatLog(</b>
+<b class="nc">&nbsp;            id = UUID.randomUUID().toString(),</b>
+<b class="nc">&nbsp;            logType = logType,</b>
+<b class="nc">&nbsp;            content = copiedMessageList,</b>
+<b class="nc">&nbsp;            createdAt = Date.from(Instant.now()),</b>
+<b class="nc">&nbsp;            toBeCompleted = toBeCompleted</b>
+&nbsp;        )
+&nbsp;
+<b class="nc">&nbsp;        addCurrentBranchLog(log)</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    //retrieves log based on id
+&nbsp;    fun getLog(id: String): ChatLog? {
+<b class="nc">&nbsp;        return logList.value?.find {</b>
+<b class="nc">&nbsp;            it.id == id</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    //deletes log based on id
+&nbsp;    fun deleteLog(id: String) {
+<b class="nc">&nbsp;        viewModelScope.launch { chatRepository.deleteLog(id) }</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-04-03 12:43</div>
+</div>
+</body>
+</html>

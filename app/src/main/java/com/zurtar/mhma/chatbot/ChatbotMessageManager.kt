@@ -6,19 +6,22 @@ import com.zurtar.mhma.data.ChatMessage
 import kotlinx.coroutines.delay
 import java.util.Date
 
-/*
- Manages the flow of messages (sending and generating bot replies), and the logic
- for the different activities of the chatbot.
 
-addCurrentBranchLog Function is used to add the log the user is currently doing into the main
-log list. This avoids accidentally adding all existing messages into the log, including branch
-selection messages or messages from previous logs.
+/**
+ * Manages the flow of messages (sending and generating bot replies) and the logic
+ * for different activities in the chatbot.
+ *
+ * This class is responsible for maintaining the list of all messages, handling
+ * different branches (like Smart Goal, Thought Record, etc.), and simulating
+ * bot responses based on the user's input.
+ *
+ * @param addCurrentBranchLog A function that adds the current branch log to the main log list.
+ * @param addCurrentBranchLogWithDate A function that adds the current branch log with a date to the main log list.
  */
-@RequiresApi(Build.VERSION_CODES.O)
-class ChatbotMessageManager (
+class ChatbotMessageManager(
     private val addCurrentBranchLog: (List<ChatMessage>, ChatBranch) -> Unit,
     private val addCurrentBranchLogWithDate: (List<ChatMessage>, ChatBranch, Date?) -> Unit
-){
+) {
     //Used to list of all messages in the chatbot dialogue. Used for presenting messages in the ChatbotPage
     private val _allMessages = mutableListOf<ChatMessage>()
     val allMessages: List<ChatMessage> get() = _allMessages.toList()
@@ -41,15 +44,27 @@ class ChatbotMessageManager (
         return currentBranch
     }
 
-    //adds new message to total message list by taking a ChatMessage object
+    /**
+     * Adds a new message to the total message list by taking a [ChatMessage] object.
+     *
+     * @param message The [ChatMessage] to be added.
+     */
     fun addMessage(message: ChatMessage) {
         _allMessages.add(message)
     }
 
-    fun sendCompletionDate(selectedDate: Date?){
+    /**
+     * Sends the selected completion date to the chatbot manager.
+     *
+     * @param selectedDate The date the user selected for completion.
+     */
+    fun sendCompletionDate(selectedDate: Date?) {
         completionDate = selectedDate
     }
 
+    /**
+     * Resets the completion date to null.
+     */
     private fun resetCompletionDate() {
         completionDate = null
     }
@@ -60,19 +75,31 @@ class ChatbotMessageManager (
     interrupting dialogue branch logic (this has not occurred to me while testing, so I don't know
     if this is actually something that can happen)
      */
+
+
+    /**
+     * Simulates the bot's response to the user's input. This introduces a small delay
+     * before the bot replies to make the interaction feel more natural.
+     *
+     *  Currently there is a delay of 500 ms, It may need to be removed, as could be possible for
+     *  the user to send messages too quickly, interrupting dialogue branch logic
+     *  (this has not occurred to me while testing, so I don't know if this is actually something that can happen)
+     * @param userMessage The user's input message.
+     */
     suspend fun simulateBotResponse(userMessage: String) {
         val botResponse = getBotDialogue(userMessage)
         delay(500)
         addMessage(ChatMessage(Sender.Bot, botResponse, Date()))
     }
 
-    /*
-    Retrieves the appropriate response from the bot given a message from the user.
-    In ChatbotPage, there are buttons that the user presses which send specific strings
-    that activate different branches.
+    /**
+     * Retrieves the appropriate response from the bot based on the user's input.
+     *
+     * @param userMessage The message sent by the user to trigger the bot's response.
+     * @return The bot's response to the user message.
      */
     private fun getBotDialogue(userMessage: String): String {
-        if (currentBranch == ChatBranch.Initial && branchStep != 0){
+        if (currentBranch == ChatBranch.Initial && branchStep != 0) {
             currentBranchMessages.clear()
             getBranch(userMessage)
         }
@@ -110,7 +137,11 @@ class ChatbotMessageManager (
         }
     }
 
-    //Returns list of all available branches
+    /**
+     * Returns a list of all available branches for the chatbot.
+     *
+     * @return A list of [ChatBranch] representing all available branches.
+     */
     fun getBranchList(): List<ChatBranch> {
         return listOf(
             ChatBranch.SmartGoal,
@@ -122,8 +153,12 @@ class ChatbotMessageManager (
         )
     }
 
-    //updates current branch/activity based on string value
-     fun getBranch(userMessage: String) {
+    /**
+     * Updates the current branch/activity based on the user's input message.
+     *
+     * @param userMessage The message sent by the user to determine which branch to activate.
+     */
+    fun getBranch(userMessage: String) {
         when {
             userMessage.contains("thought record", ignoreCase = true) -> {
                 currentBranch = ChatBranch.ThoughtRecord
@@ -157,10 +192,13 @@ class ChatbotMessageManager (
         }
     }
 
-    /*
-    Handles logic for explanation branch. Explains different branches based on string
-    value passed to it. In ChatbotPage, string values are determined based on buttons
-    inputs.
+
+    /**
+     * Handles the logic for the explanation branch. This explains the different activities
+     * based on the user's input.
+     *
+     * @param userMessage The user's input message that determines which activity to explain.
+     * @return The response that explains the selected activity.
      */
     private fun handleExplanationBranch(userMessage: String): String {
         if (branchStep == 0) {
@@ -195,9 +233,12 @@ class ChatbotMessageManager (
         }
     }
 
-    /*
-    The following handle..Branch functions all work based on the branchStep value.
-    Using the branch step value, they return the appropriate string.
+
+    /**
+     * Handles the logic for the smart goal branch. Each step in the smart goal process
+     * leads to a new question being asked.
+     *
+     * @return The bot's response for the current step in the smart goal process.
      */
     private fun handleSmartGoalBranch(): String {
         return when (branchStep) {
@@ -228,7 +269,11 @@ class ChatbotMessageManager (
 
             else -> {
                 currentBranch = ChatBranch.Initial
-                addCurrentBranchLogWithDate(currentBranchMessages, ChatBranch.SmartGoal, completionDate)
+                addCurrentBranchLogWithDate(
+                    currentBranchMessages,
+                    ChatBranch.SmartGoal,
+                    completionDate
+                )
                 resetCompletionDate()
                 currentBranchMessages.clear()
                 "Great work! Lets save that goal now. Is there anything else you would like to do today?"
@@ -236,7 +281,13 @@ class ChatbotMessageManager (
         }
     }
 
-    private fun handleThoughtRecordBranch(): String{
+    /**
+     * Handles the logic for the Thought Record branch. Each step in the Thought Record process
+     * leads to a new question being asked to help the user explore their thoughts and emotions.
+     *
+     * @return The bot's response for the current step in the Thought Record process.
+     */
+    private fun handleThoughtRecordBranch(): String {
         return when (branchStep) {
             0 -> {
                 branchStep++
@@ -302,7 +353,14 @@ class ChatbotMessageManager (
         }
     }
 
-    private fun handleAnxietyExplorationBranch(): String{
+    /**
+     * Handles the logic for the Anxiety Exploration branch. Each step in the anxiety exploration process
+     * helps the user examine their worries, analyze the evidence for and against their worries,
+     * and develop strategies for managing those worries.
+     *
+     * @return The bot's response for the current step in the Anxiety Exploration process.
+     */
+    private fun handleAnxietyExplorationBranch(): String {
         return when (branchStep) {
             0 -> {
                 branchStep++
@@ -343,6 +401,13 @@ class ChatbotMessageManager (
         }
     }
 
+    /**
+     * Handles the logic for the Action Plan branch. Each step in the action plan process
+     * helps the user define a positive activity, set a date for it, consider obstacles,
+     * and create strategies to overcome those obstacles.
+     *
+     * @return The bot's response for the current step in the Action Plan process.
+     */
     private fun handleActionPlanBranch(): String {
         return when (branchStep) {
             0 -> {
@@ -372,7 +437,11 @@ class ChatbotMessageManager (
 
             else -> {
                 currentBranch = ChatBranch.Initial
-                addCurrentBranchLogWithDate(currentBranchMessages, ChatBranch.SmartGoal, completionDate)
+                addCurrentBranchLogWithDate(
+                    currentBranchMessages,
+                    ChatBranch.SmartGoal,
+                    completionDate
+                )
                 resetCompletionDate()
                 currentBranchMessages.clear()
                 "Great work! Lets save that action plan now. Is there anything else you would like to do today?"
@@ -380,7 +449,14 @@ class ChatbotMessageManager (
         }
     }
 
-    private fun handleCBTModelingBranch(): String{
+    /**
+     * Handles the logic for the CBT Modeling branch. Each step in the CBT modeling process
+     * helps the user apply the cognitive-behavioral therapy triangle to a situation they have experienced,
+     * identifying the relationships between thoughts, feelings, and behaviors.
+     *
+     * @return The bot's response for the current step in the CBT Modeling process.
+     */
+    private fun handleCBTModelingBranch(): String {
         return when (branchStep) {
             0 -> {
                 branchStep++

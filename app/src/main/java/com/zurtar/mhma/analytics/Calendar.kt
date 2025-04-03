@@ -52,6 +52,15 @@ import java.util.Date
 import java.util.Locale
 import kotlin.reflect.KSuspendFunction1
 
+/**
+ * Displays a horizontal calendar with daily evaluations. Each date can be selected, and associated mood colors
+ * are displayed based on the evaluations. Allows navigation through months and displays mood-based color indicators.
+ *
+ * @param modifier Optional modifier to customize the layout.
+ * @param evaluations List of daily evaluations to display on the calendar.
+ * @param selectedDate The currently selected date, if any.
+ * @param onDateSelect Callback triggered when a date is selected.
+ */
 @Composable
 fun AppHorizontalCalendar(
     modifier: Modifier = Modifier,
@@ -130,6 +139,13 @@ fun AppHorizontalCalendar(
 
 }
 
+/**
+ * Displays a header for the month containing navigation buttons and the name of the current month.
+ *
+ * @param month The current month to display.
+ * @param daysOfWeek List of days of the week to display in the header.
+ * @param animateScrollToMonth A function to animate scrolling to a specific month.
+ */
 @Composable
 fun MonthHeader(
     month: YearMonth,
@@ -188,6 +204,14 @@ fun MonthHeader(
     }
 }
 
+/**
+ * Displays a single day in the calendar, showing the date and mood color based on the evaluation.
+ *
+ * @param day The day to display.
+ * @param isSelected Whether the day is selected.
+ * @param moodColor The background color for the mood associated with the day.
+ * @param onClick Callback to be invoked when the day is clicked.
+ */
 @Composable
 fun Day(
     day: CalendarDay,

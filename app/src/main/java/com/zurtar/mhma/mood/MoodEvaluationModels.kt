@@ -26,7 +26,11 @@ import javax.inject.Inject
 import kotlin.random.Random
 
 /**
- * Daily/Quick Evaluation UI State & ViewModel
+ * UI state for Daily Evaluation.
+ *
+ * @property dailyEntry The current [DailyEvaluationEntry] for the user.
+ * @property isSubmitted Flag indicating if the daily entry has been submitted.
+ * @property page The current page of the evaluation.
  */
 data class DailyEvaluationUiState(
     val dailyEntry: DailyEvaluationEntry = DailyEvaluationEntry(),
@@ -34,21 +38,35 @@ data class DailyEvaluationUiState(
     val page: Int = 0
 )
 
+/**
+ * ViewModel for handling daily mood evaluation operations.
+ *
+ * This ViewModel manages the state of the daily evaluation, including submitting the evaluation,
+ * navigating through the pages, and updating the selected emotions and their intensities.
+ *
+ * @property dailyMoodRepository Repository for handling daily mood data storage and retrieval.
+ */
 @HiltViewModel
 class DailyEvaluationViewModel @Inject constructor(
     private val dailyMoodRepository: DailyMoodRepository
 ) : ViewModel() {
 
+    // Mutable state flow for daily evaluation UI state
     private val _uiState = MutableStateFlow(DailyEvaluationUiState())
+    // Publicly exposed state flow for UI to observe
     val uiState: StateFlow<DailyEvaluationUiState> = _uiState.asStateFlow()
 
+    /**
+     * Submits the current daily evaluation by recording the emotions and their intensities.
+     *
+     * This method updates the UI state to reflect the submission and saves the daily mood entry
+     * into the repository.
+     */
     fun onSubmit() {
-
         val emotionsMap: Map<String, Float> =
             _uiState.value.dailyEntry.selectedEmotions.zip(_uiState.value.dailyEntry.emotionIntensities)
-                .sortedByDescending { (_, intensity) ->
-                    intensity
-                }.toMap()
+                .sortedByDescending { (_, intensity) -> intensity }
+                .toMap()
 
         _uiState.update { currentState ->
             currentState.copy(
@@ -64,27 +82,35 @@ class DailyEvaluationViewModel @Inject constructor(
         viewModelScope.launch {
             dailyMoodRepository.addMoodEntry(
                 _uiState.value.dailyEntry.copy(
-                    dateCompleted = Date.from(
-                        Instant.now()
-                    )
+                    dateCompleted = Date.from(Instant.now())
                 )
             )
         }
     }
 
+    /**
+     * Navigates to the next page of the daily evaluation.
+     */
     fun onNext() {
-
         _uiState.update { currentState ->
             currentState.copy(page = currentState.page + 1)
         }
     }
 
+    /**
+     * Navigates to the previous page of the daily evaluation.
+     */
     fun onBack() {
         _uiState.update { currentState ->
             currentState.copy(page = currentState.page - 1)
         }
     }
 
+    /**
+     * Updates the stress level based on the selected emoji.
+     *
+     * @param emoji The emoji representing the user's current stress level.
+     */
     fun updateEmotion(emoji: ImageVector) {
         val stressLevel = when (emoji) {
             EmojiFrown -> "Very Stressed"
@@ -100,6 +126,11 @@ class DailyEvaluationViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Toggles the selection of an emotion for the daily evaluation.
+     *
+     * @param emotion The emotion to be selected or deselected.
+     */
     fun emotionSelect(emotion: String) {
         Log.println(Log.DEBUG, "DailyEval:: ", "$emotion")
 
@@ -124,18 +155,21 @@ class DailyEvaluationViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Updates the intensity of a selected emotion.
+     *
+     * @param value The new intensity value for the emotion.
+     * @param index The index of the emotion to be updated.
+     */
     fun updateIntensity(value: Float, index: Int) {
-
         val intensityList = _uiState.value.dailyEntry.emotionIntensities.toMutableList()
         intensityList[index] = value
         Log.println(Log.DEBUG, "DailyEval:: ", "$value")
 
         val emotionsMap: Map<String, Float> =
             _uiState.value.dailyEntry.selectedEmotions.zip(intensityList)
-                .sortedByDescending { (_, intensity) ->
-                    intensity
-                }.toMap()
-
+                .sortedByDescending { (_, intensity) -> intensity }
+                .toMap()
 
         _uiState.update { currentState ->
             currentState.copy(
@@ -148,6 +182,9 @@ class DailyEvaluationViewModel @Inject constructor(
         Log.println(Log.DEBUG, "DailyEval:: ", "$intensityList")
     }
 
+    /**
+     * Updates the strongest emotion based on the current selection and intensity.
+     */
     fun updateStrongestEmotion() {
         val strongest = _uiState.value.dailyEntry.emotionsMap.entries.first().toPair()
 
@@ -159,11 +196,14 @@ class DailyEvaluationViewModel @Inject constructor(
             )
         }
     }
-
 }
 
 /**
- * Bi-Weekly Evaluation UI State & ViewModel
+ * UI state for Bi-Weekly Evaluation.
+ *
+ * @property biWeeklyEntry The current [BiWeeklyEvaluationEntry] for the user.
+ * @property questionResponse The list of responses to the evaluation questions.
+ * @property page The current page of the bi-weekly evaluation.
  */
 data class BiWeeklyEvaluationUiState(
     val biWeeklyEntry: BiWeeklyEvaluationEntry = BiWeeklyEvaluationEntry(),
@@ -171,6 +211,14 @@ data class BiWeeklyEvaluationUiState(
     val page: Int = 0,
 )
 
+/**
+ * ViewModel for handling bi-weekly mood evaluation operations.
+ *
+ * This ViewModel manages the state of the bi-weekly evaluation, including navigating through the pages,
+ * updating responses, and submitting the bi-weekly mood entry.
+ *
+ * @property biWeeklyMoodRepository Repository for handling bi-weekly mood data storage and retrieval.
+ */
 @HiltViewModel
 class BiWeeklyEvaluationViewModel @Inject constructor(
     private val biWeeklyMoodRepository: BiWeeklyMoodRepository
@@ -179,10 +227,8 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(BiWeeklyEvaluationUiState())
     val uiState: StateFlow<BiWeeklyEvaluationUiState> = _uiState.asStateFlow()
 
-
     /**
-     * Triggered when Next button is pressed
-     * Should increment page count and possibly do verification
+     * Increments the page count and triggers the submission if it's the last page.
      */
     fun onNext() {
         _uiState.update { currentState ->
@@ -193,12 +239,20 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
             submitMoodEntry()
     }
 
+    /**
+     * Decrements the page count.
+     */
     fun onBack() {
         _uiState.update { currentState ->
             currentState.copy(page = currentState.page - 1)
         }
     }
 
+    /**
+     * Updates the response for the current question.
+     *
+     * @param selected The new response for the current question.
+     */
     fun onSelect(selected: Int) {
         val newList = _uiState.value.questionResponse.toMutableList()
         newList[_uiState.value.page] = selected
@@ -210,7 +264,9 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
         }
     }
 
-
+    /**
+     * Debugging function that calculates and logs the depression and anxiety scores based on the responses.
+     */
     fun debugScore() {
         val depressionScore = _uiState.value.questionResponse.subList(0, 9).sum()
         val anxietyScore = _uiState.value.questionResponse.subList(9, 15).sum()
@@ -229,23 +285,11 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
         Log.println(Log.DEBUG, "BiWeeklyEvalVM", "Anxiety Score: $anxietyScore")
     }
 
+    /**
+     * Submits the bi-weekly mood entry to the repository.
+     */
     private fun submitMoodEntry() {
-        debugScore();
-        /*
-                val ran = Random(Instant.now().toEpochMilli())
-                val biWeeklyEntries: MutableList<BiWeeklyEvaluationEntry> = mutableListOf()
-
-                for (i in 0..10) {
-                    val date = LocalDate.now().minusWeeks(i.toLong()).toDate()
-
-                    biWeeklyEntries.add(
-                        BiWeeklyEvaluationEntry(
-                            depressionScore = ran.nextInt(0, 27),
-                            anxietyScore = ran.nextInt(0, 21),
-                            dateCompleted = date
-                        )
-                    )
-                }*/
+        debugScore()
 
         viewModelScope.launch {
             biWeeklyMoodRepository.addMoodEntry(
@@ -255,22 +299,33 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
             )
         }
     }
-
 }
 
 /**
- * Evaluation Menu/Landing Page UI State & ViewModel
+ * UI state for the Evaluation Menu/Landing Page.
+ *
+ * @property isBiWeeklyCompleted Flag indicating if the bi-weekly evaluation has been completed.
+ * @property isDailyEntry Flag indicating if the daily evaluation entry has been completed.
  */
 data class EvaluationMenuUiState(
     val isBiWeeklyCompleted: Boolean = false,
     val isDailyEntry: Boolean = false
 )
 
+/**
+ * ViewModel for managing the evaluation menu, tracking completion status of daily and bi-weekly evaluations.
+ *
+ * This ViewModel checks whether the daily or bi-weekly evaluation has been completed for the current date.
+ *
+ * @property dailyMoodRepository Repository for daily mood data.
+ * @property biWeeklyMoodRepository Repository for bi-weekly mood data.
+ */
 @HiltViewModel
 class EvaluationMenuViewModel @Inject constructor(
     private val dailyMoodRepository: DailyMoodRepository,
     private val biWeeklyMoodRepository: BiWeeklyMoodRepository
 ) : ViewModel() {
+
     private val _uiState = MutableStateFlow(EvaluationMenuUiState())
     val uiState: StateFlow<EvaluationMenuUiState> = _uiState.asStateFlow()
 
@@ -287,17 +342,4 @@ class EvaluationMenuViewModel @Inject constructor(
             }
         }
     }
-
-    fun updateBiWeekly() {
-        if (!_uiState.value.isBiWeeklyCompleted) {
-            _uiState.update { currentState ->
-                currentState.copy(isBiWeeklyCompleted = true)
-            }
-        } else {
-            _uiState.update { currentState ->
-                currentState.copy(isBiWeeklyCompleted = false)
-            }
-        }
-    }
-
 }

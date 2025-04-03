@@ -28,7 +28,19 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlin.random.Random
 
-
+/**
+ * Represents a daily mood evaluation entry that is stored safely in the database.
+ * This includes the selected emotions, their intensities, a map of emotions to their values,
+ * the stress level, the strongest emotions (first and second), and the date the entry was completed.
+ *
+ * @property selectedEmotions The list of emotions selected by the user.
+ * @property emotionIntensities The intensities of the selected emotions.
+ * @property emotionsMap A map containing the emotions and their respective intensities.
+ * @property stressLevel The user's reported stress level.
+ * @property strongestEmotionFirst The first strongest emotion (stored in Firestore).
+ * @property strongestEmotionSecond The intensity of the second strongest emotion.
+ * @property dateCompleted The date when the mood evaluation was completed.
+ */
 @Serializable
 data class DailyEvaluationEntryDBSafe(
     val selectedEmotions: List<String> = listOf(),
@@ -49,6 +61,18 @@ data class DailyEvaluationEntryDBSafe(
     val dateCompleted: Date? = null
 )
 
+/**
+ * Represents a daily mood evaluation entry that is used in the application.
+ * This includes the selected emotions, their intensities, a map of emotions to their values,
+ * the stress level, the strongest emotion (as a pair), and the date the entry was completed.
+ *
+ * @property selectedEmotions The list of emotions selected by the user.
+ * @property emotionIntensities The intensities of the selected emotions.
+ * @property emotionsMap A map containing the emotions and their respective intensities.
+ * @property stressLevel The user's reported stress level.
+ * @property strongestEmotion The strongest emotion and its intensity as a pair.
+ * @property dateCompleted The date when the mood evaluation was completed.
+ */
 @Serializable
 data class DailyEvaluationEntry(
     val selectedEmotions: List<String> = listOf(),
@@ -62,43 +86,90 @@ data class DailyEvaluationEntry(
     val dateCompleted: Date? = null
 )
 
-
+/**
+ * Serializer for the [Pair] of emotions and their intensities, allowing serialization and deserialization.
+ * This serializer encodes the emotion name as a string and its intensity as a float.
+ */
 object EmotionPairSerializer : KSerializer<Pair<String, Float>> {
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor("DateSerializer", PrimitiveKind.STRING)
 
+    /**
+     * Serializes a [Pair] of emotion and intensity.
+     *
+     * @param encoder The encoder used to serialize the data.
+     * @param value The pair of emotion and intensity to serialize.
+     */
     override fun serialize(encoder: Encoder, value: Pair<String, Float>) {
         encoder.encodeString(value.first)
         encoder.encodeFloat(value.second)
     }
 
+    /**
+     * Deserializes a [Pair] of emotion and intensity from a serialized format.
+     *
+     * @param decoder The decoder used to deserialize the data.
+     * @return The deserialized pair of emotion and intensity.
+     */
     override fun deserialize(decoder: Decoder): Pair<String, Float> {
         return Pair(decoder.decodeString(), decoder.decodeFloat())
     }
 
 }
 
+/**
+ * Repository for managing daily mood evaluations. This repository serves as a middle layer
+ * between the data source and the application, handling operations related to daily mood entries.
+ *
+ * @property dailyMoodRemoteDataSource The remote data source for interacting with Firestore.
+ */
 @Singleton
 class DailyMoodRepository @Inject constructor(
     private var dailyMoodRemoteDataSource: DailyMoodRemoteDataSource
 ) {
-
+    /**
+     * Fetches all mood entries from the remote data source.
+     *
+     * @return A list of [DailyEvaluationEntry] representing the mood entries.
+     */
     suspend fun fetchMoodEntries(): List<DailyEvaluationEntry> =
         dailyMoodRemoteDataSource.fetchMoodEntries()
 
+    /**
+     * Adds a new mood entry to the remote data source.
+     *
+     * @param moodEntry The mood entry to be added.
+     */
     suspend fun addMoodEntry(moodEntry: DailyEvaluationEntry) =
         dailyMoodRemoteDataSource.addMoodEntry(moodEntry)
 
+    /**
+     * Returns a [Flow] of mood entries from the remote data source.
+     * This flow emits real-time updates when data changes.
+     *
+     * @return A [Flow] of lists of [DailyEvaluationEntry].
+     */
     fun getMoodEntries(): Flow<List<DailyEvaluationEntry>> =
         dailyMoodRemoteDataSource.getMoodEntries()
 }
 
+/**
+ * Data source for managing daily mood evaluations in Firestore.
+ * This class provides methods for adding, fetching, and listening to mood entries.
+ *
+ * @property fireStoreDatasource The Firestore instance used to interact with the database.
+ */
 @Singleton
 class DailyMoodRemoteDataSource @Inject constructor(
     private val fireStoreDatasource: FirebaseFirestore
 ) {
     private val TAG = "DailyMoodRemoteDataSource"
 
+    /**
+     * Adds a new mood entry to the Firestore database.
+     *
+     * @param moodEntry The mood entry to be added.
+     */
     suspend fun addMoodEntry(moodEntry: DailyEvaluationEntry) {
         val response = fireStoreDatasource.collection("users")
             .document(Firebase.auth.currentUser?.uid!!)
@@ -106,6 +177,11 @@ class DailyMoodRemoteDataSource @Inject constructor(
             .add(moodEntry.toDBSafe()).await()
     }
 
+    /**
+     * Fetches all mood entries from the Firestore database.
+     *
+     * @return A list of [DailyEvaluationEntry] fetched from the database.
+     */
     suspend fun fetchMoodEntries(): List<DailyEvaluationEntry> {
         val documents = fireStoreDatasource.collection("users")
             .document(Firebase.auth.currentUser?.uid!!)
@@ -116,23 +192,22 @@ class DailyMoodRemoteDataSource @Inject constructor(
             Log.d("FirestoreDocument", doc.data.toString())
         }
 
-
         return fireStoreDatasource.collection("users")
             .document(Firebase.auth.currentUser?.uid!!)
             .collection("DailyMoodEntries")
             .get().await().toObjects<DailyEvaluationEntryDBSafe>().toNormalList()
-
     }
 
+    /**
+     * Listens for real-time updates to the mood entries in Firestore and emits changes as a [Flow].
+     *
+     * @return A [Flow] of lists of [DailyEvaluationEntry].
+     */
     fun getMoodEntries(): Flow<List<DailyEvaluationEntry>> = callbackFlow {
-        /*  val collectionRef = fireStoreDatasource.collection("users")
-              .document(Firebase.auth.currentUser?.uid!!)
-              .collection("DailyMoodEntries")
-  */
         val options = SnapshotListenOptions.Builder()
             .setMetadataChanges(MetadataChanges.INCLUDE)
             .setSource(ListenSource.DEFAULT)
-            .build();
+            .build()
 
         val listenerRegistration = fireStoreDatasource.collection("users")
             .document(Firebase.auth.currentUser?.uid!!)
@@ -152,15 +227,29 @@ class DailyMoodRemoteDataSource @Inject constructor(
     }
 }
 
+/**
+ * Extension function to convert a list of [DailyEvaluationEntry] to a list of [DailyEvaluationEntryDBSafe].
+ *
+ * @return A list of [DailyEvaluationEntryDBSafe] representing the database-safe version of the entries.
+ */
 fun List<DailyEvaluationEntry>.toDBSafeList(): List<DailyEvaluationEntryDBSafe> {
     return this.map { it.toDBSafe() }
 }
 
+/**
+ * Extension function to convert a list of [DailyEvaluationEntryDBSafe] to a list of [DailyEvaluationEntry].
+ *
+ * @return A list of [DailyEvaluationEntry] representing the normal version of the entries.
+ */
 fun List<DailyEvaluationEntryDBSafe>.toNormalList(): List<DailyEvaluationEntry> {
     return this.map { it.toNormal() }
 }
 
-
+/**
+ * Converts a [DailyEvaluationEntry] to a [DailyEvaluationEntryDBSafe] object for safe storage in Firestore.
+ *
+ * @return A [DailyEvaluationEntryDBSafe] object.
+ */
 fun DailyEvaluationEntry.toDBSafe(): DailyEvaluationEntryDBSafe {
     return DailyEvaluationEntryDBSafe(
         selectedEmotions = this.selectedEmotions,
@@ -175,6 +264,11 @@ fun DailyEvaluationEntry.toDBSafe(): DailyEvaluationEntryDBSafe {
     )
 }
 
+/**
+ * Converts a [DailyEvaluationEntryDBSafe] to a [DailyEvaluationEntry].
+ *
+ * @return A [DailyEvaluationEntry] object.
+ */
 fun DailyEvaluationEntryDBSafe.toNormal(): DailyEvaluationEntry {
     return DailyEvaluationEntry(
         selectedEmotions = this.selectedEmotions,

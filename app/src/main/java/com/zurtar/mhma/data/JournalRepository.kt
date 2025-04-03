@@ -17,6 +17,14 @@ import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Represents a journal entry that contains a title, content, and the date the entry was created.
+ *
+ * @property id The unique identifier for the journal entry.
+ * @property title The title of the journal entry.
+ * @property content The content of the journal entry.
+ * @property createdAt The date when the journal entry was created.
+ */
 data class JournalEntry(
     var id: String = "",
     var title: String = "",
@@ -26,33 +34,76 @@ data class JournalEntry(
     var createdAt: Date? = null
 )
 
+/**
+ * Repository class responsible for handling operations related to journal entries.
+ * It acts as a bridge between the data source and the rest of the application, providing methods to
+ * add, update, delete, and fetch journal entries.
+ *
+ * @property journalRemoteDataSource The remote data source for interacting with Firestore for journal entry data.
+ */
 @Singleton
 class JournalRepository @Inject constructor(
     private val journalRemoteDataSource: JournalRemoteDataSource
 ) {
+    /**
+     * Deletes a journal entry by its ID.
+     *
+     * @param id The ID of the journal entry to delete.
+     */
     suspend fun deleteJournalEntry(id: String) =
         journalRemoteDataSource.deleteJournalEntry(id = id)
 
+    /**
+     * Deletes a journal entry using the provided [JournalEntry] object.
+     *
+     * @param journalEntry The journal entry to delete.
+     */
     suspend fun deleteJournalEntry(journalEntry: JournalEntry) =
         journalRemoteDataSource.deleteJournalEntry(id = journalEntry.id)
 
+    /**
+     * Adds a new journal entry to the Firestore database.
+     *
+     * @param journalEntry The journal entry to add.
+     */
     suspend fun addJournalEntry(journalEntry: JournalEntry) =
         journalRemoteDataSource.addJournalEntry(journalEntry)
 
+    /**
+     * Updates an existing journal entry in the Firestore database.
+     * If the entry does not exist, it will be added.
+     *
+     * @param journalEntry The journal entry to update.
+     */
     suspend fun updateMoodEntry(journalEntry: JournalEntry) =
         journalRemoteDataSource.updateMoodEntry(journalEntry)
 
-
+    /**
+     * Returns a [Flow] that emits a list of journal entries in real-time, listening for updates from Firestore.
+     *
+     * @return A [Flow] of [JournalEntry] objects.
+     */
     fun getJournalEntries(): Flow<List<JournalEntry>> =
         journalRemoteDataSource.getJournalEntries()
 }
 
+/**
+ * Data source class for managing journal entries in Firestore. This class is responsible for adding,
+ * deleting, updating, and fetching journal entries from the Firestore database.
+ *
+ * @property fireStoreDatasource The Firestore instance used to interact with the Firestore database.
+ */
 @Singleton
 class JournalRemoteDataSource @Inject constructor(
     private val fireStoreDatasource: FirebaseFirestore
 ) {
     private val TAG: String = "JournalRemoteDataSource"
 
+    /**
+     * Deletes a journal entry from Firestore by its ID.
+     *
+     * @param id The ID of the journal entry to delete.
+     */
     suspend fun deleteJournalEntry(id: String) {
         val response = fireStoreDatasource.collection("users")
             .document(Firebase.auth.currentUser?.uid!!)
@@ -61,6 +112,11 @@ class JournalRemoteDataSource @Inject constructor(
             .delete().await()
     }
 
+    /**
+     * Adds a new journal entry to Firestore.
+     *
+     * @param journalEntry The journal entry to add.
+     */
     suspend fun addJournalEntry(journalEntry: JournalEntry) {
         val response = fireStoreDatasource.collection("users")
             .document(Firebase.auth.currentUser?.uid!!)
@@ -69,7 +125,11 @@ class JournalRemoteDataSource @Inject constructor(
             .set(journalEntry)
     }
 
-    // Will add if one is already present
+    /**
+     * Updates an existing journal entry in Firestore. If the journal entry does not exist, it will be added.
+     *
+     * @param journalEntry The journal entry to update.
+     */
     suspend fun updateMoodEntry(journalEntry: JournalEntry) {
         val response = fireStoreDatasource.collection("users")
             .document(Firebase.auth.currentUser?.uid!!)
@@ -78,6 +138,11 @@ class JournalRemoteDataSource @Inject constructor(
             .set(journalEntry).await()
     }
 
+    /**
+     * Fetches all journal entries from Firestore and returns them as a list of [JournalEntry] objects.
+     *
+     * @return A list of [JournalEntry] objects fetched from Firestore.
+     */
     suspend fun fetchJournalEntries(): List<JournalEntry> {
         val response = fireStoreDatasource.collection("users")
             .document(Firebase.auth.currentUser?.uid!!)
@@ -87,11 +152,15 @@ class JournalRemoteDataSource @Inject constructor(
         return response.toObjects<JournalEntry>()
     }
 
+    /**
+     * Returns a [Flow] of journal entries, listening for real-time updates from Firestore.
+     *
+     * @return A [Flow] of [JournalEntry] objects representing the user's journal entries.
+     */
     fun getJournalEntries(): Flow<List<JournalEntry>> = callbackFlow {
         val collectionRef = fireStoreDatasource.collection("users")
             .document(Firebase.auth.currentUser?.uid!!)
             .collection("JournalEntries")
-
 
         val listenerRegistration = collectionRef.addSnapshotListener { snapshot, e ->
             if (e != null) {
@@ -106,4 +175,3 @@ class JournalRemoteDataSource @Inject constructor(
         awaitClose { listenerRegistration.remove() }
     }
 }
-

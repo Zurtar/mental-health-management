@@ -50,7 +50,15 @@ import com.zurtar.mhma.theme.EmojiNeutral
 import com.zurtar.mhma.theme.EmojiSmile
 import com.zurtar.mhma.util.MoodEvaluationTopAppBar
 
-
+/**
+ * Composable for displaying the Daily Mood Evaluation screen with a top app bar and navigation options.
+ *
+ * @param modifier Modifier for customizations to the layout.
+ * @param viewModel The ViewModel to provide the UI state for the daily mood evaluation.
+ * @param openDrawer A function to open the navigation drawer.
+ * @param onNavigateToAnalytics A function to navigate to the analytics screen with an optional parameter for the selected entry.
+ * @param onNavigateToJournal A function to navigate to the journal screen.
+ */
 @Composable
 fun DailyMoodEvaluationScreen(
     modifier: Modifier = Modifier,
@@ -86,6 +94,23 @@ fun DailyMoodEvaluationScreen(
     }
 }
 
+/**
+ * Composable that represents the content of the Daily Mood Evaluation screen, showing the evaluation process
+ * and handling the navigation between pages and submission of data.
+ *
+ * @param modifier Modifier for customizations to the layout.
+ * @param dailyEntry The current daily evaluation entry containing user responses.
+ * @param isSubmitted Flag indicating whether the evaluation has been submitted.
+ * @param page The current page in the mood evaluation process (e.g., page 0 for emotion selection, page 1 for intensity rating).
+ * @param onEmotionSelect A function to handle the selection of an emotion.
+ * @param onSubmit A function to handle submission of the mood evaluation.
+ * @param onBack A function to navigate back to the previous page.
+ * @param onNext A function to move to the next page.
+ * @param updateIntensity A function to update the intensity of the selected emotion.
+ * @param updateEmotion A function to update the selected emotion.
+ * @param onNavigateToAnalytics A function to navigate to the analytics screen with the selected data.
+ * @param onNavigateToJournal A function to navigate to the journal screen.
+ */
 @Composable
 private fun DailyMoodEvaluationScreenContent(
     modifier: Modifier = Modifier,
@@ -107,7 +132,6 @@ private fun DailyMoodEvaluationScreenContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-
         if (isSubmitted == 1) {
             DailyResult(
                 dailyEntry = dailyEntry,
@@ -116,7 +140,6 @@ private fun DailyMoodEvaluationScreenContent(
             )
             return
         }
-
 
         if (page == 0)
             MoodSelectionQuestionPage(
@@ -143,40 +166,59 @@ private fun DailyMoodEvaluationScreenContent(
             horizontalArrangement = Arrangement.SpaceAround
         ) {
             if (page > 0)
-                FilledTonalButton(modifier = Modifier.width(120.dp).height(50.dp).padding(top = 10.dp),
+                FilledTonalButton(modifier = Modifier
+                    .width(120.dp)
+                    .height(50.dp)
+                    .padding(top = 10.dp),
                     onClick = { onBack() },
-                    content = { Text(
-                        text = "Back",
-                        fontSize = 18.sp
-                    )})
+                    content = {
+                        Text(
+                            text = "Back",
+                            fontSize = 18.sp
+                        )
+                    })
 
             var text = "Next"
             if (page == 1) {
                 text = "Submit"
-                FilledTonalButton(modifier = Modifier.width(120.dp).height(50.dp).padding(top = 10.dp),
+                FilledTonalButton(modifier = Modifier
+                    .width(120.dp)
+                    .height(50.dp)
+                    .padding(top = 10.dp),
                     onClick = { onSubmit() },
-                    content = { Text(
-                        text = text,
-                        fontSize = 18.sp
-                    )
+                    content = {
+                        Text(
+                            text = text,
+                            fontSize = 18.sp
+                        )
                     })
 
             } else {
-                FilledTonalButton(modifier  = Modifier.width(120.dp).height(50.dp).padding(top = 10.dp),
+                FilledTonalButton(modifier = Modifier
+                    .width(120.dp)
+                    .height(50.dp)
+                    .padding(top = 10.dp),
                     onClick = { onNext() },
-                    content = { Text(
-                                    text = text,
-                                    fontSize = 18.sp
-                                )
+                    content = {
+                        Text(
+                            text = text,
+                            fontSize = 18.sp
+                        )
                     })
             }
         }
     }
 }
 
-
-//PAGE ONE QUESTIONS
-
+/**
+ * Composable that represents the page where the user selects their emotion for the daily mood evaluation.
+ * Displays emotion selection cards to allow users to choose their current emotional state.
+ *
+ * @param modifier Modifier for customizations to the layout.
+ * @param dailyEntry The current daily evaluation entry containing user responses.
+ * @param emotionSelect A function to handle the selection of an emotion.
+ * @param updateEmotion A function to update the selected mood emoji.
+ */
 @Composable
 fun MoodSelectionQuestionPage(
     modifier: Modifier = Modifier,
@@ -195,6 +237,14 @@ fun MoodSelectionQuestionPage(
 
 }
 
+/**
+ * Composable that displays a card with different emotions to allow users to select which emotion they felt
+ * strongest during the day.
+ *
+ * @param modifier Modifier for customizations to the layout.
+ * @param dailyEntry The current daily evaluation entry containing user responses.
+ * @param emotionSelect A function to handle the selection of an emotion.
+ */
 @Composable
 private fun EmotionSelectionCard(
     modifier: Modifier = Modifier,
@@ -252,7 +302,13 @@ private fun EmotionSelectionCard(
     }
 }
 
-
+/**
+ * Composable that displays a card allowing the user to select their stress level using emojis.
+ * The user can select an emoji representing their current mood.
+ *
+ * @param modifier Modifier for customizations to the layout.
+ * @param updateEmotion A function to update the selected stress emoji.
+ */
 @Composable
 private fun StressSelectionCard(
     modifier: Modifier = Modifier,
@@ -314,45 +370,17 @@ private fun StressSelectionCard(
                     )
                 }
             }
-//                Spacer(modifier = Modifier.height(16.dp))
-            /*
-                            if (selectedEmotion != null) {
-                                Text(
-                                    text = "Please pick a option on why you are feeling $selectedEmotion:",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-
-                                // Rating options: 1 to 5 as a vertical list
-                                Column(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                                ) {
-                                    (1..5).forEach { rating ->
-                                        Button(
-                                            onClick = {
-                                                selectedRating = rating
-                                                onNavigate() // Navigate to the AI page when a button is clicked
-                                            },
-                                            shape = RoundedCornerShape(50),
-                                            colors = ButtonDefaults.buttonColors(
-                                                containerColor = if (selectedRating == rating) Color.Gray else Color.LightGray
-                                            ),
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(50.dp)
-                                        ) {
-                                            Text("Item $rating")
-                                        }
-                                    }
-                                }
-                            }
-            */
         }
     }
 }
 
-
-//PAGE 2 QUESTIONS
+/**
+ * Composable that displays a card allowing the user to rate the intensity of the emotions they selected.
+ * Users can slide a scale from 1-10 to indicate how strongly they are feeling each emotion.
+ *
+ * @param dailyEntry The current daily evaluation entry containing user responses.
+ * @param updateIntensity A function to update the intensity of a selected emotion.
+ */
 @Composable
 fun EmotionRating(
     dailyEntry: DailyEvaluationEntry, updateIntensity: (Float, Int) -> Unit
@@ -409,7 +437,15 @@ fun EmotionRating(
     }
 }
 
-
+/**
+ * Composable that displays the results after completing the daily mood evaluation.
+ * Provides a summary of the user's selected emotions, their stress level, and navigation options.
+ *
+ * @param modifier Modifier for customizations to the layout.
+ * @param dailyEntry The current daily evaluation entry containing user responses.
+ * @param onNavigateToAnalytics A function to navigate to the evaluation analytics screen.
+ * @param onNavigateToJournal A function to navigate to the journal screen.
+ */
 @Composable
 private fun DailyResult(
     modifier: Modifier = Modifier,
@@ -455,7 +491,11 @@ private fun DailyResult(
 
 }
 
-
+/**
+ * Composable that displays a table summarizing the selected emotions and their corresponding scores.
+ *
+ * @param dailyEntry The current daily evaluation entry containing user responses.
+ */
 @Composable
 fun EmotionSummaryTable(dailyEntry: DailyEvaluationEntry) {
 
@@ -494,7 +534,13 @@ fun EmotionSummaryTable(dailyEntry: DailyEvaluationEntry) {
     }
 }
 
-
+/**
+ * Composable that displays a row showing a single emotion and its corresponding score.
+ *
+ * @param modifier Modifier for customizations to the layout.
+ * @param emotion The emotion name.
+ * @param score The score associated with the emotion.
+ */
 @Composable
 fun EmotionsChart(modifier: Modifier = Modifier, emotion: String, score: String) {
 
@@ -522,6 +568,16 @@ fun EmotionsChart(modifier: Modifier = Modifier, emotion: String, score: String)
     }
 }
 
+
+/**
+ * Composable that represents a clickable chip-style button displaying an emotion.
+ * Allows the user to select the emotion.
+ *
+ * @param emotion The emotion text to display.
+ * @param color The color associated with the emotion.
+ * @param isSelected A flag to indicate whether the emotion is selected.
+ * @param onClick A function to handle the chip click action.
+ */
 @Composable
 private fun EmotionChip(emotion: String, color: Color, isSelected: Boolean, onClick: () -> Unit) {
     Button(
@@ -544,17 +600,3 @@ private fun EmotionChip(emotion: String, color: Color, isSelected: Boolean, onCl
         )
     }
 }
-
-
-/*
-
-
-@Preview(showBackground = true)
-@Composable
-fun PastEmotionsScreenPreview() {
-    AppTheme {
-        val navController = rememberNavController()
-        PastEmotionsScreen(navController = navController)
-    }
-}
-*/

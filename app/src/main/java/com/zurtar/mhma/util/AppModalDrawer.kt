@@ -26,6 +26,15 @@ import com.zurtar.mhma.Navigation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+/**
+ * Composable that displays a modal drawer for navigation.
+ *
+ * @param drawerState State of the drawer, controls whether it's open or closed.
+ * @param currentRoute The current navigation route to highlight active section.
+ * @param navigationActions Actions to navigate to different parts of the app.
+ * @param coroutineScope CoroutineScope to manage drawer interactions.
+ * @param content Composable content to be displayed inside the main area of the app.
+ */
 @Composable
 fun AppModalDrawer(
     drawerState: DrawerState,
@@ -51,6 +60,18 @@ fun AppModalDrawer(
     }
 }
 
+/**
+ * Composable representing the navigation drawer content.
+ *
+ * @param currentRoute The current route to determine what to highlight in the drawer.
+ * @param viewModel Navigation view model to track user login state.
+ * @param navigateToHome Function to navigate to the Home screen.
+ * @param navigateToAccount Function to navigate to the Account screen.
+ * @param navigateToLogin Function to navigate to the Login screen.
+ * @param navigateToSignup Function to navigate to the Signup screen.
+ * @param closeDrawer Function to close the drawer when an item is selected.
+ * @param modifier Modifier for customizing the drawer appearance.
+ */
 @Composable
 private fun AppDrawer(
     currentRoute: Any,
@@ -109,6 +130,11 @@ private fun AppDrawer(
 
 }
 
+/**
+ * Creates a custom shape for the navigation drawer.
+ *
+ * @return A custom shape used to define the drawer's outline.
+ */
 fun customDrawerShape() = object : Shape {
     override fun createOutline(
         size: Size, layoutDirection: LayoutDirection, density: Density

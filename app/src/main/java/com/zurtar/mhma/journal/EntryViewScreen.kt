@@ -34,6 +34,19 @@ from the journaling screen. From this screen, there will be two buttons at the b
 and "Edit", back will popback to the journaling screen. Edit will navigate to the appropriate
 Entry modification screen.
  */
+
+
+/**
+ * Composable, Displays the entry view screen, where users can see the details of a selected journal entry.
+ * It has options to navigate back to the journaling screen or edit the current entry.
+ *
+ * @param modifier Modifier to be applied to the composable.
+ * @param viewModel The [ViewModel] providing the UI state.
+ * @param id The ID of the `JounralEntry` to view.
+ * @param openDrawer A lambda to open the navigation drawer.
+ * @param onNavigateBack A lambda to navigate back to the journaling screen.
+ * @param onNavigateToEntryEdit A lambda to navigate to the entry edit screen.
+ */
 @Composable
 fun EntryViewScreen(
     modifier: Modifier = Modifier,
@@ -72,7 +85,15 @@ fun EntryViewScreen(
     }
 }
 
-
+/**
+ * Composable, Displays the content of the entry view screen, showing the title and content of the selected entry.
+ * Also provides buttons to navigate back or edit the entry.
+ *
+ * @param modifier Modifier to be applied to the composable.
+ * @param entry The journal entry to display.
+ * @param onNavigateBack A lambda to handle the navigation back action.
+ * @param onNavigateToEntryEdit A lambda to navigate to the entry edit screen.
+ */
 @Composable
 private fun EntryViewScreenContent(
     modifier: Modifier = Modifier,

@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.google.hilt.android)
     alias(libs.plugins.google.ksp)
+    alias(libs.plugins.kotlin.dokka)
 }
 
 android {

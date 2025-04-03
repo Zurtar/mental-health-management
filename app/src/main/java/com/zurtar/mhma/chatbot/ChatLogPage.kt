@@ -34,6 +34,16 @@ import com.zurtar.mhma.util.ChatLogTopAppBar
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+/**
+ * Composable, displays a ChatLog page that shows previously saved/completed cognitive behavioral therapy activities.
+ * This page includes the top app bar and content of the log.
+ *
+ * @param modifier Modifier to be applied to the root composable
+ * @param logId ID of the log to be displayed
+ * @param onNavigateBack Lambda to handle the navigation back
+ * @param viewModel ViewModel to fetch the log data
+ * @param openDrawer Lambda to open the navigation drawer
+ */
 @Composable
 fun ChatLogPage(
     modifier: Modifier = Modifier,
@@ -62,7 +72,7 @@ fun ChatLogPage(
 }
 
 
-/*
+/**
 Composable function used to display previously saved/completed cognitive behavioural
 therapy activities. Recreates the view the user would have originally seen of of in the
 ChatbotPage.
@@ -72,8 +82,17 @@ to regenerate the view.
 
 Title of the log is created using the helper function getLogTypeDisplayName
 
-For the actual logic of the contents of the bot messages, handleBotMessage function is used in
-tandem with various other handle..Branch functions
+ *For the actual logic of the contents of the bot messages, handleBotMessage function is used in
+ *tandem with various other handle..Branch functions*
+ */
+
+
+/**
+ * Composes the content of the chat log page by displaying the log's details.
+ *
+ * @param modifier Modifier to be applied to the content
+ * @param log Log data to be displayed
+ * @param onNavigateBack Lambda to handle navigation back
  */
 @Composable
 fun ChatLogPageContent(
@@ -139,19 +158,12 @@ fun ChatLogPageContent(
     }
 }
 
-
-fun getLogTypeDisplayName(logType: ChatBranch?): String {
-    return when (logType) {
-        ChatBranch.SmartGoal -> "Activity Type: Smart Goal"
-        ChatBranch.ThoughtRecord -> "Activity Type: Thought Record"
-        ChatBranch.AnxietyExploration -> "Activity Type: Anxiety Exploration"
-        ChatBranch.ActionPlan -> "Activity Type: Action Plan"
-        ChatBranch.CBTModeling -> "Activity Type: CBT Modeling"
-        null -> "Error: Unknown log type"
-        else -> "Error: Unknown log type"
-    }
-}
-
+/**
+ * Displays a user's message in the chat log with a timestamp.
+ * The message is shown on the right side of the screen.
+ *
+ * @param message The chat message data to be displayed
+ */
 @Composable
 fun UserMessageItemReconstruct(message: ChatMessage) {
     val formattedTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(message.createdAt)
@@ -182,6 +194,13 @@ fun UserMessageItemReconstruct(message: ChatMessage) {
     }
 }
 
+/**
+ * Displays the bot's message in the chat log, based on the provided branch and message number.
+ * The message is shown on the left side of the screen.
+ *
+ * @param branch The branch of the chat log to handle the bot's message
+ * @param messageNumber The number of the message to be displayed
+ */
 @Composable
 fun BotMessageItemReconstruct(branch: ChatBranch, messageNumber: Int) {
     val botMessage = handleBotMessage(branch, messageNumber)
@@ -206,12 +225,15 @@ fun BotMessageItemReconstruct(branch: ChatBranch, messageNumber: Int) {
     }
 }
 
-/*
-Determines what message should be created for the bot based on the logType/branch, and
-the message number (since we know total messages based on logType, appropriate bot
-message can be determined based on messageNumber. Similar to reverse process done using
-branchStep
-*/
+
+/**
+ * Determines the appropriate bot message based on the branch and message number.
+ * Each branch has specific messages to be shown depending on the current message number.
+ *
+ * @param branch The current chat branch type to determine the message.
+ * @param messageNumber The index of the message to be displayed.
+ * @return The appropriate message for the bot based on the given branch and message number.
+ */
 private fun handleBotMessage(branch: ChatBranch, messageNumber: Int): String {
     return when (branch) {
         ChatBranch.SmartGoal -> handleSmartGoalItem(messageNumber)
@@ -223,11 +245,30 @@ private fun handleBotMessage(branch: ChatBranch, messageNumber: Int): String {
     }
 }
 
-/*
-Bellow functions are called upon by handleBotMessage, being given a messageNumber
-to select the appropriate output String for that respective branch
+/**
+ * Returns the display name for a given log type.
+ *
+ * @param logType The type of log (branch) to display.
+ * @return The display name for the log type.
  */
+fun getLogTypeDisplayName(logType: ChatBranch?): String {
+    return when (logType) {
+        ChatBranch.SmartGoal -> "Activity Type: Smart Goal"
+        ChatBranch.ThoughtRecord -> "Activity Type: Thought Record"
+        ChatBranch.AnxietyExploration -> "Activity Type: Anxiety Exploration"
+        ChatBranch.ActionPlan -> "Activity Type: Action Plan"
+        ChatBranch.CBTModeling -> "Activity Type: CBT Modeling"
+        null -> "Error: Unknown log type"
+        else -> "Error: Unknown log type"
+    }
+}
 
+/**
+ * Returns the bot's message for the Smart Goal activity type.
+ *
+ * @param messageNumber The index of the message to be displayed.
+ * @return The message for the Smart Goal activity.
+ */
 private fun handleSmartGoalItem(messageNumber: Int): String {
     return when (messageNumber) {
         0 -> "What is it that you would like to do? Try to be as specific as you can be, to help make your goal as concrete as possible."
@@ -239,6 +280,12 @@ private fun handleSmartGoalItem(messageNumber: Int): String {
     }
 }
 
+/**
+ * Returns the bot's message for the Thought Record activity type.
+ *
+ * @param messageNumber The index of the message to be displayed.
+ * @return The message for the Thought Record activity.
+ */
 private fun handleThoughtRecordItem(messageNumber: Int): String {
     return when (messageNumber) {
         0 -> "Lets start by discussing what event led to the negative feelings. Could you please describe the situation to me?"
@@ -256,6 +303,12 @@ private fun handleThoughtRecordItem(messageNumber: Int): String {
     }
 }
 
+/**
+ * Returns the bot's message for the Anxiety Exploration activity type.
+ *
+ * @param messageNumber The index of the message to be displayed.
+ * @return The message for the Anxiety Exploration activity.
+ */
 private fun handleAnxietyExplorationItem(messageNumber: Int): String {
     return when (messageNumber) {
         0 -> "What is something that could happen to you or in your life that you're worried about?"
@@ -268,6 +321,12 @@ private fun handleAnxietyExplorationItem(messageNumber: Int): String {
     }
 }
 
+/**
+ * Returns the bot's message for the Action Plan activity type.
+ *
+ * @param messageNumber The index of the message to be displayed.
+ * @return The message for the Action Plan activity.
+ */
 private fun handleActionPlanItem(messageNumber: Int): String {
     return when (messageNumber) {
         0 -> "What positive activity would you like to do?."
@@ -279,6 +338,12 @@ private fun handleActionPlanItem(messageNumber: Int): String {
     }
 }
 
+/**
+ * Returns the bot's message for the CBT Modeling activity type.
+ *
+ * @param messageNumber The index of the message to be displayed.
+ * @return The message for the CBT Modeling activity.
+ */
 private fun handleCBTModelingItem(messageNumber: Int): String {
     return when (messageNumber) {
         0 -> "Lets start by identifying the situation you would like to model. Could you describe the situation?"

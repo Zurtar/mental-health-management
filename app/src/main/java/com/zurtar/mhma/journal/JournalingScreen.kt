@@ -43,13 +43,23 @@ import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.util.Locale
 
-/*
+/**
 This is the home page for the Journaling section. It is composed of two functions:
 JournalingPage, and EntryItem. EntryItem is used to to create composables of any
 entries currently in existence, which JournalingPage then displays to the user in
 a lazy column.
- */
+ **/
 
+/**
+ * Displays the home page for the Journaling section, consisting of a top app bar,
+ * a floating action button to add a new journal entry, and a list of existing journal entries.
+ *
+ * @param modifier Modifier to be applied to the composable.
+ * @param viewModel The ViewModel providing the UI state.
+ * @param openDrawer A lambda to open the navigation drawer.
+ * @param onNavigateToEntryCreation A lambda to navigate to the entry creation screen.
+ * @param onNavigateToEntryView A lambda to navigate to a detailed view of a journal entry.
+ */
 @Composable
 fun JournalingScreen(
     modifier: Modifier = Modifier,

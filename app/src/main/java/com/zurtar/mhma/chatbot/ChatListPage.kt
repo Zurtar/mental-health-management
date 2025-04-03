@@ -1,7 +1,5 @@
 package com.zurtar.mhma.chatbot
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.background
@@ -20,7 +18,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -39,13 +36,19 @@ import com.zurtar.mhma.R
 import com.zurtar.mhma.data.ChatLog
 import com.zurtar.mhma.util.ChatListTopAppBar
 
-/*
-Main function for the ChatListPage, which is used to display a list of previously completed
-chatLogs or cognitive behavioural therapy activities.
-
-Relies on helper composables ChatListPage Content and LogItem (ChatListPageContent is used
-for rendering the content of the page, while LogItem defines the composables that are actually being
-listed on the page)
+/**
+ * Main function for the ChatListPage, used to display a list of previously completed
+ * chatLogs or cognitive behavioural therapy activities.
+ *
+ * Relies on helper composables ChatListPageContent and LogItem. ChatListPageContent
+ * is used for rendering the content of the page, while LogItem defines the composables
+ * that are listed on the page.
+ *
+ * @param modifier Optional modifier for the composable.
+ * @param viewModel The view model for accessing the list of logs.
+ * @param onNavigateToChatbot Callback function for navigating to the chatbot page.
+ * @param onNavigateToChatLog Callback function for navigating to a specific chat log.
+ * @param openDrawer Callback function for opening the navigation drawer.
  */
 @Composable
 fun ChatListPage(
@@ -74,8 +77,14 @@ fun ChatListPage(
     }
 }
 
-/*
-Composable function used to display the contents of the ChatListPage.
+/**
+ * Composable function used to display the contents of the ChatListPage.
+ *
+ * @param modifier Optional modifier for the composable.
+ * @param logList List of ChatLog objects to display.
+ * @param deleteLog Callback function to delete a log.
+ * @param onNavigateToChatbot Callback function for navigating to the chatbot page.
+ * @param onNavigateToChatLog Callback function for navigating to a specific chat log.
  */
 @Composable
 private fun ChatListPageContent(
@@ -112,8 +121,12 @@ private fun ChatListPageContent(
     }
 }
 
-/*
-Composable to create "card" for ChatLog object
+/**
+ * Composable to create a "card" for the ChatLog object.
+ *
+ * @param item The ChatLog item to display.
+ * @param onDelete Callback function to delete the log.
+ * @param onNavigateToChatLog Callback function to navigate to a specific chat log.
  */
 @Composable
 fun LogItem(
@@ -178,9 +191,11 @@ fun LogItem(
     }
 }
 
-/*
-Helper function for the display of the different chat branches
-on buttons
+/**
+ * Helper function for displaying the different chat branches on buttons.
+ *
+ * @param logType The chat branch type for which the display name is generated.
+ * @return The display name of the chat branch.
  */
 fun getBranchDisplayName(logType: ChatBranch?): String {
     return when (logType) {
