@@ -1,7 +1,6 @@
 package com.zurtar.mhma.data
 
 import android.util.Log
-import com.google.android.gms.common.internal.safeparcel.SafeParcelable.Field
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -16,16 +15,15 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.util.Date
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import java.util.Date
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.random.Random
 
 /**
@@ -59,7 +57,26 @@ data class DailyEvaluationEntryDBSafe(
 
     @Serializable(with = DateSerializer::class)
     val dateCompleted: Date? = null
-)
+) {
+    /**
+     * Converts a [DailyEvaluationEntryDBSafe] to a [DailyEvaluationEntry].
+     *
+     * @return A [DailyEvaluationEntry] object.
+     */
+    fun toNormal(): DailyEvaluationEntry {
+        return DailyEvaluationEntry(
+            selectedEmotions = this.selectedEmotions,
+            emotionIntensities = this.emotionIntensities,
+            emotionsMap = this.emotionsMap,
+            stressLevel = this.stressLevel,
+            strongestEmotion = Pair(
+                this.strongestEmotionFirst ?: "Other",
+                this.strongestEmotionSecond
+            ),
+            dateCompleted = this.dateCompleted
+        )
+    }
+}
 
 /**
  * Represents a daily mood evaluation entry that is used in the application.
@@ -84,7 +101,28 @@ data class DailyEvaluationEntry(
 
     @Serializable(with = DateSerializer::class)
     val dateCompleted: Date? = null
-)
+) {
+    /**
+     * Converts a [DailyEvaluationEntry] to a [DailyEvaluationEntryDBSafe] object for safe storage in Firestore.
+     *
+     * @return A [DailyEvaluationEntryDBSafe] object.
+     */
+    fun toDBSafe(): DailyEvaluationEntryDBSafe {
+        return DailyEvaluationEntryDBSafe(
+            selectedEmotions = this.selectedEmotions,
+            emotionIntensities = this.emotionIntensities,
+            emotionsMap = this.emotionsMap,
+            stressLevel = this.stressLevel,
+            strongestEmotionFirst = this.emotionsMap.entries.sortedByDescending { it.value }
+                ?.first()
+                ?.toPair()?.first ?: listOf("Fearful", "Sad", "Angry").shuffled().first(),
+            strongestEmotionSecond = this.emotionsMap.entries.sortedByDescending { it.value }
+                ?.first()
+                ?.toPair()?.second ?: Random.nextInt(0, 10).toFloat(),
+            dateCompleted = this.dateCompleted
+        )
+    }
+}
 
 /**
  * Serializer for the [Pair] of emotions and their intensities, allowing serialization and deserialization.
@@ -243,39 +281,4 @@ fun List<DailyEvaluationEntry>.toDBSafeList(): List<DailyEvaluationEntryDBSafe> 
  */
 fun List<DailyEvaluationEntryDBSafe>.toNormalList(): List<DailyEvaluationEntry> {
     return this.map { it.toNormal() }
-}
-
-/**
- * Converts a [DailyEvaluationEntry] to a [DailyEvaluationEntryDBSafe] object for safe storage in Firestore.
- *
- * @return A [DailyEvaluationEntryDBSafe] object.
- */
-fun DailyEvaluationEntry.toDBSafe(): DailyEvaluationEntryDBSafe {
-    return DailyEvaluationEntryDBSafe(
-        selectedEmotions = this.selectedEmotions,
-        emotionIntensities = this.emotionIntensities,
-        emotionsMap = this.emotionsMap,
-        stressLevel = this.stressLevel,
-        strongestEmotionFirst = this.emotionsMap.entries.sortedByDescending { it.value }?.first()
-            ?.toPair()?.first ?: listOf("Fearful", "Sad", "Angry").shuffled().first(),
-        strongestEmotionSecond = this.emotionsMap.entries.sortedByDescending { it.value }?.first()
-            ?.toPair()?.second ?: Random.nextInt(0, 10).toFloat(),
-        dateCompleted = this.dateCompleted
-    )
-}
-
-/**
- * Converts a [DailyEvaluationEntryDBSafe] to a [DailyEvaluationEntry].
- *
- * @return A [DailyEvaluationEntry] object.
- */
-fun DailyEvaluationEntryDBSafe.toNormal(): DailyEvaluationEntry {
-    return DailyEvaluationEntry(
-        selectedEmotions = this.selectedEmotions,
-        emotionIntensities = this.emotionIntensities,
-        emotionsMap = this.emotionsMap,
-        stressLevel = this.stressLevel,
-        strongestEmotion = Pair(this.strongestEmotionFirst ?: "Other", this.strongestEmotionSecond),
-        dateCompleted = this.dateCompleted
-    )
 }

@@ -1,3 +1,5 @@
+import org.jetbrains.dokka.gradle.DokkaTask
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -81,9 +83,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
     implementation(libs.androidx.hilt.navigation.compose)
-//    implementation(libs.androidx.navigation.compose)
-//    implementation(libs.androidx.ui.test.android)
-
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -97,8 +96,16 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.firestore)
 
-    //for Charts
     implementation(libs.himanshoe.charty)
+}
+
+tasks.withType<DokkaTask>().configureEach {
+    dokkaSourceSets {
+        named("main") {
+            moduleName.set("Vibe Check: Mental Health Management")
+            includes.from(layout.projectDirectory.dir("docs/package-docs.md"))
+        }
+    }
 }
 
 tasks.dokkaHtml {
