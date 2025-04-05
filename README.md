@@ -2,7 +2,8 @@
 
 ### Option 1: Using the APK 
 
-If you already have android device that meets the requirements you can directly install the APK onto the phone without additional tools or setup. 
+If you already have android device that meets the requirements you can directly install the APK onto the phone without additional tools or setup. The APK can be found under [releases](https://github.com/Zurtar/mental-health-management/releases)
+
 ##### Enabling Unknown App Installation 
 Note: You must have the option "Install unknown apps" enabled for the browser you are downloading the APK in, on the **phone**. 
 
