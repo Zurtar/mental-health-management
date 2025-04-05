@@ -1,3 +1,7 @@
+# Documentation
+
+The API reference can be found at: [vibe-check-docs](https://zurtar.github.io/mental-health-management/). This is built from the KDoc comments within the application each time the project is built.
+
 # Getting started 
 
 ### Option 1: Using the APK 
