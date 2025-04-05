@@ -211,7 +211,7 @@ fun ChatbotPageContent(
             }
 
 
-        } else if (currentBranch != ChatBranch.Initial) {
+        } else if (currentBranch != ChatBranch.Initial && currentBranch != ChatBranch.Explanation) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
