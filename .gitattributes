@@ -1,1 +1,1 @@
-app/docs/* linguist-vendored
+app/docs/** linguist-detectable=false
