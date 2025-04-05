@@ -41,3 +41,7 @@ Contains all classes/methods related to User Accounts mainly UI focused exce
 Contains all classes/methods for the Mood Analytics feature
 
 # Package com.zurtar.mhma.data
+
+This package represents the data layer for the application,
+
+TODO: Needs more info as this is a core feature of the application

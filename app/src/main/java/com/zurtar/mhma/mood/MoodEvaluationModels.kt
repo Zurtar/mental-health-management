@@ -2,7 +2,6 @@ package com.zurtar.mhma.mood
 
 import android.util.Log
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.zurtar.mhma.analytics.toDate
@@ -23,7 +22,6 @@ import java.time.Instant
 import java.util.Date
 import java.time.LocalDate
 import javax.inject.Inject
-import kotlin.random.Random
 
 /**
  * UI state for Daily Evaluation.
@@ -267,7 +265,7 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
     /**
      * Debugging function that calculates and logs the depression and anxiety scores based on the responses.
      */
-    fun debugScore() {
+    fun updateScore() {
         val depressionScore = _uiState.value.questionResponse.subList(0, 9).sum()
         val anxietyScore = _uiState.value.questionResponse.subList(9, 15).sum()
 
@@ -289,7 +287,7 @@ class BiWeeklyEvaluationViewModel @Inject constructor(
      * Submits the bi-weekly mood entry to the repository.
      */
     private fun submitMoodEntry() {
-        debugScore()
+        updateScore()
 
         viewModelScope.launch {
             biWeeklyMoodRepository.addMoodEntry(

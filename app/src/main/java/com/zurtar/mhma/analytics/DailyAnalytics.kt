@@ -1,6 +1,5 @@
 package com.zurtar.mhma.analytics
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -28,7 +27,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.zurtar.mhma.data.DailyEvaluationEntry
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Date
 
 
 /**
@@ -44,14 +42,14 @@ fun DailyAnalyticsScreenContent(
     viewModel: DailyAnalyticsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    Log.println(Log.DEBUG, "DailyAnalytics", uiState.pastEvaluations.toString())
 
     val labelToContent: Map<String, @Composable () -> Unit> = mapOf(
         "Mood Calendar" to {
             DailyEvaluationCalendar(
                 evaluations = uiState.pastEvaluations,
                 selectedDate = uiState.selectedDate,
-                onDateSelect = { d: LocalDate? -> viewModel.selectDate(d) })
+                onDateSelect = { d: LocalDate? -> viewModel.selectDate(d) }
+            )
         },
         "History" to {
             DailyHistoricalAnalytics(
@@ -60,7 +58,11 @@ fun DailyAnalyticsScreenContent(
         } // call DailyHistoricalAnalytics here
     )
 
-    TabbedContent(labelToContent = labelToContent, key = labelToContent.keys.first())
+    TabbedContent(
+        modifier = modifier,
+        labelToContent = labelToContent,
+        key = labelToContent.keys.first()
+    )
 }
 
 /**

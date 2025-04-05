@@ -42,7 +42,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.zurtar.mhma.util.DefaultTopAppBar
 import com.zurtar.mhma.R
 import com.zurtar.mhma.data.models.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.util.MoodEvaluationTopAppBar

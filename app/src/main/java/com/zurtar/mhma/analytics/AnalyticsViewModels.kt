@@ -1,14 +1,12 @@
 package com.zurtar.mhma.analytics
 
-import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.himanshoe.charty.line.model.LineData
-import com.zurtar.mhma.auth.AuthState
-import com.zurtar.mhma.data.models.BiWeeklyEvaluationEntry
 import com.zurtar.mhma.data.BiWeeklyMoodRepository
 import com.zurtar.mhma.data.DailyEvaluationEntry
 import com.zurtar.mhma.data.DailyMoodRepository
+import com.zurtar.mhma.data.models.BiWeeklyEvaluationEntry
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +14,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.util.Date
 import javax.inject.Inject
 
 /**

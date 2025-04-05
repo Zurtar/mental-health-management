@@ -48,7 +48,6 @@ fun BiWeeklyAnalyticsScreenContent(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val labelToContent: Map<String, @Composable () -> Unit> = mapOf(
-        //MoodGraphScreen(uiState.graphData!!)
         "Mood Graph" to {
             MoodGraphScreen(
                 uiState.pastEvaluations ?: listOf<BiWeeklyEvaluationEntry>()
@@ -60,9 +59,7 @@ fun BiWeeklyAnalyticsScreenContent(
                 onNavigateToSummaryDialog = onNavigateToSummaryDialog
             )
         },
-        // "Insights" to { }
     )
-
     TabbedContent(labelToContent = labelToContent, key = labelToContent.keys.first())
 }
 
