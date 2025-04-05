@@ -16,7 +16,7 @@ If you have trouble with this there are a variety of resource online that will l
 1. Download and Install Android Studiohttps://developer.android.com/studio
 2. Navigate to: **File** > **New** > **Project from Version Control**, 
 3. Under Repository URL put the url of this repository 
-![[Pasted image 20250404213914.png]]
+![image](https://github.com/user-attachments/assets/aa42aaab-76ad-4ca8-9d14-58ef728b59ca)
 
 4. Once the project imports you may be prompted to configure your IDE, unfortunately we cannot provide detailed steps for this portion as it will differ depending on your installation. But in general you should be able to Sync the Gradle project (Ctrl + O) .
 5. Run the app, you will be prompted to create a device to emulate, `Medium Phone API 35` is the reccomended choice, SDK of at least 25 is required.
