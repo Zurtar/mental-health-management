@@ -23,6 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.zurtar.mhma.data.JournalEntry
 import com.zurtar.mhma.util.DefaultTopAppBar
 import com.zurtar.mhma.util.JournalingTopAppBar
+import kotlinx.coroutines.coroutineScope
 
 /**
  * Composable for the EntryModification page. It can be used for either creating a new entry or editing an existing one.
@@ -46,7 +47,7 @@ fun EntryModificationScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val list = uiState.entryList
 
-    val entry = list.find {
+    val entry = uiState.entryList.find {
         it.id == id
     }
     Scaffold(modifier = modifier.fillMaxSize(),
@@ -151,18 +152,20 @@ private fun EntryModificationScreenContent(
     onEditEntry: (String, String, String) -> Unit,
     onNavigateBack: () -> Unit
 ) {
-    var title by remember { mutableStateOf(entry?.title ?: "") }
-    var content by remember { mutableStateOf(entry?.content ?: "") }
+
+    var entry_ = entry?.copy() ?: JournalEntry()
+    var title by remember { mutableStateOf(entry_.title) }
+    var content by remember { mutableStateOf(entry_.content) }
 
     Column(modifier = modifier.padding(16.dp)) {
         OutlinedTextField(
-            value = title,
-            onValueChange = { title = it },
+            value = if (title.isEmpty()) entry_.title else title,
+            onValueChange = { title =  it },
             label = { Text("Write journal entry title here...") },
             modifier = Modifier.fillMaxWidth()
         )
         OutlinedTextField(
-            value = content,
+            value = if (content.isEmpty()) entry_.content else content,
             onValueChange = { content = it },
             label = { Text("Write your entry here...") },
             modifier = Modifier
@@ -184,7 +187,7 @@ private fun EntryModificationScreenContent(
                 Text("Cancel")
             }
             Button(onClick = {
-                onEditEntry(entry?.id ?: "null", title, content)
+                onEditEntry(entry_.id, title, content)
                 onNavigateBack()
             }) {
                 Text("Save Entry")

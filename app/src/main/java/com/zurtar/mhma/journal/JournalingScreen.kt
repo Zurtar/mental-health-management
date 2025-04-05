@@ -114,8 +114,8 @@ private fun JournalingScreenContent(
                     itemsIndexed(it) { index: Int, item: JournalEntry ->
                         EntryItem(
                             item = item,
-                            onDelete = { deleteEntry(item.id) },
-                            onView = { onNavigateToEntryView(item.id) })
+                            onDelete = { deleteEntry(entryList.get(index).id) },
+                            onView = { onNavigateToEntryView(entryList.get(index).id) })
                     }
                 }
             )
